@@ -1,4 +1,6 @@
 # Cortext9 担当APIスキーマ 第一版 v0
+
+> **v0.1 細分化**: 単位一覧・子ID・追加 payload は [`Cortext9-unit-api-schema-v0.1-addendum.md`](Cortext9-unit-api-schema-v0.1-addendum.md) と [`Cortext9-unit-catalog-v0.1.json`](Cortext9-unit-catalog-v0.1.json)。共通エンベロープは本ファイルのまま。
 # 全ドメイン・フロンティア圧勝単位（NUFC）向け
 
 - 日付: 2026-09-05
