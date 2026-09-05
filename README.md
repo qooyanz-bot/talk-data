@@ -11,6 +11,7 @@ H1 / Future Concept の**正本**リポジトリ。
 
 | パス | 内容 |
 |---|---|
+| `character/` | デジタルキャラクターのConcept設計（初音ミクから開始） |
 | `future-concept/` | Future Concept 本体ドラフト |
 | `gates/` | Action開始ゲート書類 |
 | `address/` | 失敗条件・閾値・Dimensionメモ |
@@ -18,3 +19,7 @@ H1 / Future Concept の**正本**リポジトリ。
 | `changelog/` | 版・訂正履歴 |
 
 Concept ≠ Dimension。CLEAR ≠ 全目的達成。
+
+## character カテゴリの追加（2026-09-05）
+
+Kの指示により、設定したConceptに基づいて振る舞うデジタルキャラクターの設計を記録するため、`character/` を追加する。最初の対象は初音ミク。個別設定は各文書で草案・未設定・承認済みを区別する。
