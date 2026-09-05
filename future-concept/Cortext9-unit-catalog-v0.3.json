@@ -1,0 +1,2305 @@
+{
+  "api_version": "cortext9-unit/v0.3",
+  "notes": "Further finer crush units on v0.2. Child IDs preferred; parent fallback. No diagnostic/legal-judgment/military-ops assertive units. life_safe/writing added; care/legal/finance/crisis remain non-assertive.",
+  "previous": "cortext9-unit/v0.2",
+  "count": 359,
+  "added_in_v0_3": [
+    "N53a",
+    "N53b",
+    "N54a",
+    "N54b",
+    "N56a",
+    "N56b",
+    "N57a",
+    "N57b",
+    "N58a",
+    "N58b",
+    "N59a",
+    "N59b",
+    "N61a",
+    "N61b",
+    "N62a",
+    "N62b",
+    "N63a",
+    "N63b",
+    "N64a",
+    "N64b",
+    "N65a",
+    "N65b",
+    "N66a",
+    "N66b",
+    "N67a",
+    "N67b",
+    "N68a",
+    "N68b",
+    "N69a",
+    "N69b",
+    "N70a",
+    "N70b",
+    "N71a",
+    "N71b",
+    "N72a",
+    "N72b",
+    "N73a",
+    "N73b",
+    "N74a",
+    "N74b",
+    "N75a",
+    "N75b",
+    "N76a",
+    "N76b",
+    "N77a",
+    "N77b",
+    "N78a",
+    "N78b",
+    "N79a",
+    "N79b",
+    "N81a",
+    "N81b",
+    "N82a",
+    "N82b",
+    "N83a",
+    "N83b",
+    "N84a",
+    "N84b",
+    "N85a",
+    "N85b",
+    "N86a",
+    "N86b",
+    "N87a",
+    "N87b",
+    "N88a",
+    "N88b",
+    "N89a",
+    "N89b",
+    "N91",
+    "N91a",
+    "N92",
+    "N93",
+    "N94",
+    "N95",
+    "N95a",
+    "N96",
+    "N97",
+    "N98",
+    "N99",
+    "N100",
+    "N101",
+    "N101a",
+    "N101b",
+    "N102",
+    "N103",
+    "N104",
+    "N104a",
+    "N104b",
+    "N105",
+    "N106",
+    "N107",
+    "N108",
+    "N109",
+    "N110",
+    "N111",
+    "N111a",
+    "N112",
+    "N113",
+    "N114",
+    "N115",
+    "N116",
+    "N117",
+    "N118",
+    "N119",
+    "N120",
+    "N121",
+    "N122",
+    "N123",
+    "N124",
+    "N125",
+    "N126",
+    "N127",
+    "N128",
+    "N129",
+    "N130",
+    "N130a",
+    "N130b",
+    "N131",
+    "N132",
+    "N133",
+    "N134",
+    "N135",
+    "N136",
+    "N137",
+    "N138",
+    "N139",
+    "N140",
+    "N141",
+    "N142",
+    "N143",
+    "N144",
+    "N145",
+    "N146",
+    "N146a",
+    "N146b",
+    "N147",
+    "N148",
+    "N149",
+    "N150",
+    "N150a",
+    "N150b"
+  ],
+  "units": [
+    {
+      "id": "N01",
+      "name": "議事録下書き",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N01a",
+      "name": "会議アジェンダ作成",
+      "domain": "work",
+      "parent": "N01"
+    },
+    {
+      "id": "N01b",
+      "name": "決定事項→ToDo化",
+      "domain": "work",
+      "parent": "N01"
+    },
+    {
+      "id": "N01c",
+      "name": "お詫び・丁寧メール",
+      "domain": "work",
+      "parent": "N01"
+    },
+    {
+      "id": "N01d",
+      "name": "催促・リマインドメール",
+      "domain": "work",
+      "parent": "N01"
+    },
+    {
+      "id": "N02",
+      "name": "仕様→チケット分解",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N02a",
+      "name": "受け入れ条件(AC)作成",
+      "domain": "work",
+      "parent": "N02"
+    },
+    {
+      "id": "N02b",
+      "name": "見積もり用タスク粒度分割",
+      "domain": "work",
+      "parent": "N02"
+    },
+    {
+      "id": "N02c",
+      "name": "リスク・依存の洗い出し",
+      "domain": "work",
+      "parent": "N02"
+    },
+    {
+      "id": "N03",
+      "name": "関数単位実装",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N03a",
+      "name": "型定義・インターフェース作成",
+      "domain": "dev",
+      "parent": "N03"
+    },
+    {
+      "id": "N03b",
+      "name": "単体テスト生成",
+      "domain": "dev",
+      "parent": "N03"
+    },
+    {
+      "id": "N03c",
+      "name": "リファクタ（挙動維持）",
+      "domain": "dev",
+      "parent": "N03"
+    },
+    {
+      "id": "N03d",
+      "name": "コメント・docstring整備",
+      "domain": "dev",
+      "parent": "N03"
+    },
+    {
+      "id": "N04",
+      "name": "失敗テスト修正",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N04a",
+      "name": "エラーログ切り分け手順",
+      "domain": "dev",
+      "parent": "N04"
+    },
+    {
+      "id": "N04b",
+      "name": "フレークテスト安定化案",
+      "domain": "dev",
+      "parent": "N04"
+    },
+    {
+      "id": "N04c",
+      "name": "最小再現コード作成",
+      "domain": "dev",
+      "parent": "N04"
+    },
+    {
+      "id": "N05",
+      "name": "PRレビュー指摘",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N05a",
+      "name": "セキュリティ観点レビュー",
+      "domain": "dev",
+      "parent": "N05"
+    },
+    {
+      "id": "N05b",
+      "name": "パフォーマンス観点レビュー",
+      "domain": "dev",
+      "parent": "N05"
+    },
+    {
+      "id": "N05c",
+      "name": "PR説明文生成",
+      "domain": "dev",
+      "parent": "N05"
+    },
+    {
+      "id": "N05d",
+      "name": "破壊的変更のチェックリスト",
+      "domain": "dev",
+      "parent": "N05"
+    },
+    {
+      "id": "N06",
+      "name": "根拠付き短文要約",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N06a",
+      "name": "未決・未確認の抽出",
+      "domain": "research",
+      "parent": "N06"
+    },
+    {
+      "id": "N06b",
+      "name": "主張と証拠の対応表",
+      "domain": "research",
+      "parent": "N06"
+    },
+    {
+      "id": "N06c",
+      "name": "要約の長さ別リライト",
+      "domain": "research",
+      "parent": "N06"
+    },
+    {
+      "id": "N07",
+      "name": "比較表作成",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N07a",
+      "name": "評価軸の提案",
+      "domain": "research",
+      "parent": "N07"
+    },
+    {
+      "id": "N07b",
+      "name": "競合・代替の列挙",
+      "domain": "research",
+      "parent": "N07"
+    },
+    {
+      "id": "N07c",
+      "name": "Pros/Consのみ",
+      "domain": "research",
+      "parent": "N07"
+    },
+    {
+      "id": "N08",
+      "name": "中学生向け解説",
+      "domain": "edu",
+      "parent": null
+    },
+    {
+      "id": "N08a",
+      "name": "例え話のみ生成",
+      "domain": "edu",
+      "parent": "N08"
+    },
+    {
+      "id": "N08b",
+      "name": "確認問題のみ生成",
+      "domain": "edu",
+      "parent": "N08"
+    },
+    {
+      "id": "N08c",
+      "name": "用語集（短）",
+      "domain": "edu",
+      "parent": "N08"
+    },
+    {
+      "id": "N09",
+      "name": "ヒントのみ誘導",
+      "domain": "edu",
+      "parent": null
+    },
+    {
+      "id": "N09a",
+      "name": "段階ヒント（1つずつ）",
+      "domain": "edu",
+      "parent": "N09"
+    },
+    {
+      "id": "N09b",
+      "name": "誤答パターン指摘（答えなし）",
+      "domain": "edu",
+      "parent": "N09"
+    },
+    {
+      "id": "N10",
+      "name": "FC柱の整理",
+      "domain": "fc",
+      "parent": null
+    },
+    {
+      "id": "N10a",
+      "name": "未決リスト化",
+      "domain": "fc",
+      "parent": "N10"
+    },
+    {
+      "id": "N10b",
+      "name": "H1用語の短定義",
+      "domain": "fc",
+      "parent": "N10"
+    },
+    {
+      "id": "N10c",
+      "name": "旧解釈退行チェック",
+      "domain": "fc",
+      "parent": "N10"
+    },
+    {
+      "id": "N11",
+      "name": "ゲート仮採点",
+      "domain": "fc",
+      "parent": null
+    },
+    {
+      "id": "N11a",
+      "name": "Hard Reject(E系)のみ採点",
+      "domain": "fc",
+      "parent": "N11"
+    },
+    {
+      "id": "N11b",
+      "name": "開始ゲート6条件チェック",
+      "domain": "fc",
+      "parent": "N11"
+    },
+    {
+      "id": "N12",
+      "name": "changelog下書き",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N12a",
+      "name": "コミットメッセージ案",
+      "domain": "ops",
+      "parent": "N12"
+    },
+    {
+      "id": "N12b",
+      "name": "昇格候補1行追加案",
+      "domain": "ops",
+      "parent": "N12"
+    },
+    {
+      "id": "N13",
+      "name": "自己点検E系",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N13a",
+      "name": "インベントリ差分要約",
+      "domain": "ops",
+      "parent": "N13"
+    },
+    {
+      "id": "N13b",
+      "name": "週次ダイジェスト見出し",
+      "domain": "ops",
+      "parent": "N13"
+    },
+    {
+      "id": "N14",
+      "name": "表データ整形",
+      "domain": "data",
+      "parent": null
+    },
+    {
+      "id": "N14a",
+      "name": "CSVヘッダ正規化",
+      "domain": "data",
+      "parent": "N14"
+    },
+    {
+      "id": "N14b",
+      "name": "欠損・異常値フラグ",
+      "domain": "data",
+      "parent": "N14"
+    },
+    {
+      "id": "N14c",
+      "name": "JSON↔表変換",
+      "domain": "data",
+      "parent": "N14"
+    },
+    {
+      "id": "N15",
+      "name": "SQL下書き",
+      "domain": "data",
+      "parent": null
+    },
+    {
+      "id": "N15a",
+      "name": "SELECTのみ（破壊なし保証）",
+      "domain": "data",
+      "parent": "N15"
+    },
+    {
+      "id": "N15b",
+      "name": "実行計画の読み方コメント",
+      "domain": "data",
+      "parent": "N15"
+    },
+    {
+      "id": "N15c",
+      "name": "インデックス案（非適用）",
+      "domain": "data",
+      "parent": "N15"
+    },
+    {
+      "id": "N16",
+      "name": "翻訳",
+      "domain": "transform",
+      "parent": null
+    },
+    {
+      "id": "N16a",
+      "name": "用語集固定翻訳",
+      "domain": "transform",
+      "parent": "N16"
+    },
+    {
+      "id": "N16b",
+      "name": "敬体・常体のトーン変換",
+      "domain": "transform",
+      "parent": "N16"
+    },
+    {
+      "id": "N16c",
+      "name": "箇条書き↔段落変換",
+      "domain": "transform",
+      "parent": "N16"
+    },
+    {
+      "id": "N17",
+      "name": "図の説明",
+      "domain": "mm",
+      "parent": null
+    },
+    {
+      "id": "N17a",
+      "name": "UI画面の要素一覧",
+      "domain": "mm",
+      "parent": "N17"
+    },
+    {
+      "id": "N17b",
+      "name": "フロー図の步骤列挙",
+      "domain": "mm",
+      "parent": "N17"
+    },
+    {
+      "id": "N17c",
+      "name": "スライド1枚の要約",
+      "domain": "mm",
+      "parent": "N17"
+    },
+    {
+      "id": "N18",
+      "name": "危険依頼拒否",
+      "domain": "safety",
+      "parent": null
+    },
+    {
+      "id": "N18a",
+      "name": "拒否＋安全な代替提案",
+      "domain": "safety",
+      "parent": "N18"
+    },
+    {
+      "id": "N18b",
+      "name": "ポリシー根拠の短い説明",
+      "domain": "safety",
+      "parent": "N18"
+    },
+    {
+      "id": "N19",
+      "name": "週報・日報テンプレ記入",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N20",
+      "name": "1枚提案構成のみ",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N21",
+      "name": "FAQ下書き（社内）",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N22",
+      "name": "OpenAPI断片生成",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N23",
+      "name": "正規表現の説明とテスト例",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N24",
+      "name": "依存アップデート注意点リスト",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N25",
+      "name": "設計トレードオフ3択",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N26",
+      "name": "論文ではない一般知識の限界注記付き解説",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N27",
+      "name": "反証観点の列挙",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N28",
+      "name": "参考文献ルール（偽引用防止）",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N29",
+      "name": "学習ロードマップ（週単位）",
+      "domain": "edu",
+      "parent": null
+    },
+    {
+      "id": "N30",
+      "name": "誤概念の訂正（優しく）",
+      "domain": "edu",
+      "parent": null
+    },
+    {
+      "id": "N31",
+      "name": "Address表の1行追加案",
+      "domain": "fc",
+      "parent": null
+    },
+    {
+      "id": "N32",
+      "name": "Future Concept失敗シナリオ短編",
+      "domain": "fc",
+      "parent": null
+    },
+    {
+      "id": "N33",
+      "name": "RunPod費用メモ整形",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N34",
+      "name": "ルーチン結果の1段落要約",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N35",
+      "name": "ログから時系列タイムライン",
+      "domain": "data",
+      "parent": null
+    },
+    {
+      "id": "N36",
+      "name": "メトリクス定義の明確化",
+      "domain": "data",
+      "parent": null
+    },
+    {
+      "id": "N37",
+      "name": "英日UIラベル統一",
+      "domain": "transform",
+      "parent": null
+    },
+    {
+      "id": "N38",
+      "name": "誤字脱字・表記ゆれ修正",
+      "domain": "transform",
+      "parent": null
+    },
+    {
+      "id": "N39",
+      "name": "スクリーンショットの操作手順化",
+      "domain": "mm",
+      "parent": null
+    },
+    {
+      "id": "N40",
+      "name": "図表キャプション案",
+      "domain": "mm",
+      "parent": null
+    },
+    {
+      "id": "N41",
+      "name": "個人情報のマスキング案",
+      "domain": "safety",
+      "parent": null
+    },
+    {
+      "id": "N42",
+      "name": "秘密が混入していないか点検",
+      "domain": "safety",
+      "parent": null
+    },
+    {
+      "id": "N43",
+      "name": "受診前の質問リスト化（非診断）",
+      "domain": "care_safe",
+      "parent": null
+    },
+    {
+      "id": "N44",
+      "name": "契約の読み方チェックリスト（非断定）",
+      "domain": "legal_safe",
+      "parent": null
+    },
+    {
+      "id": "N45",
+      "name": "家計・投資の仕組み説明（非助言）",
+      "domain": "finance_safe",
+      "parent": null
+    },
+    {
+      "id": "N46",
+      "name": "危機時コミュニケーション草稿（一般）",
+      "domain": "crisis_safe",
+      "parent": null
+    },
+    {
+      "id": "N47",
+      "name": "アクセシビリティ改善提案",
+      "domain": "product",
+      "parent": null
+    },
+    {
+      "id": "N48",
+      "name": "ユーザーストーリー1本",
+      "domain": "product",
+      "parent": null
+    },
+    {
+      "id": "N49",
+      "name": "受け入れデモ手順",
+      "domain": "product",
+      "parent": null
+    },
+    {
+      "id": "N50",
+      "name": "インシデント事後レビュー骨子",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N19a",
+      "name": "日報の事実のみ抽出",
+      "domain": "work",
+      "parent": "N19"
+    },
+    {
+      "id": "N19b",
+      "name": "週報のハイライト3点",
+      "domain": "work",
+      "parent": "N19"
+    },
+    {
+      "id": "N20a",
+      "name": "提案の課題定義のみ",
+      "domain": "work",
+      "parent": "N20"
+    },
+    {
+      "id": "N20b",
+      "name": "提案の効果仮説のみ",
+      "domain": "work",
+      "parent": "N20"
+    },
+    {
+      "id": "N21a",
+      "name": "FAQの質問候補生成",
+      "domain": "work",
+      "parent": "N21"
+    },
+    {
+      "id": "N21b",
+      "name": "FAQ回答の根拠注記",
+      "domain": "work",
+      "parent": "N21"
+    },
+    {
+      "id": "N22a",
+      "name": "リクエスト例のみ",
+      "domain": "dev",
+      "parent": "N22"
+    },
+    {
+      "id": "N22b",
+      "name": "エラーレスポンス定義",
+      "domain": "dev",
+      "parent": "N22"
+    },
+    {
+      "id": "N23a",
+      "name": "正規表現の分解説明",
+      "domain": "dev",
+      "parent": "N23"
+    },
+    {
+      "id": "N23b",
+      "name": "マッチ失敗ケース列挙",
+      "domain": "dev",
+      "parent": "N23"
+    },
+    {
+      "id": "N24a",
+      "name": "破壊的変更の有無チェック",
+      "domain": "dev",
+      "parent": "N24"
+    },
+    {
+      "id": "N24b",
+      "name": "ロールバック手順メモ",
+      "domain": "dev",
+      "parent": "N24"
+    },
+    {
+      "id": "N25a",
+      "name": "トレードオフ採点表",
+      "domain": "dev",
+      "parent": "N25"
+    },
+    {
+      "id": "N25b",
+      "name": "採用しない案の理由",
+      "domain": "dev",
+      "parent": "N25"
+    },
+    {
+      "id": "N26a",
+      "name": "知識の確度ラベル付け",
+      "domain": "research",
+      "parent": "N26"
+    },
+    {
+      "id": "N26b",
+      "name": "要出典箇所のマーキング",
+      "domain": "research",
+      "parent": "N26"
+    },
+    {
+      "id": "N27a",
+      "name": "反証実験の設計案",
+      "domain": "research",
+      "parent": "N27"
+    },
+    {
+      "id": "N27b",
+      "name": "前提の洗い出し",
+      "domain": "research",
+      "parent": "N27"
+    },
+    {
+      "id": "N28a",
+      "name": "引用形式の整形",
+      "domain": "research",
+      "parent": "N28"
+    },
+    {
+      "id": "N28b",
+      "name": "存在未確認文献の除去",
+      "domain": "research",
+      "parent": "N28"
+    },
+    {
+      "id": "N29a",
+      "name": "週ごとの到達目標のみ",
+      "domain": "edu",
+      "parent": "N29"
+    },
+    {
+      "id": "N29b",
+      "name": "前提知識チェックリスト",
+      "domain": "edu",
+      "parent": "N29"
+    },
+    {
+      "id": "N30a",
+      "name": "誤概念の対比表",
+      "domain": "edu",
+      "parent": "N30"
+    },
+    {
+      "id": "N30b",
+      "name": "正しい手順のミニ例",
+      "domain": "edu",
+      "parent": "N30"
+    },
+    {
+      "id": "N31a",
+      "name": "proxy候補の列挙",
+      "domain": "fc",
+      "parent": "N31"
+    },
+    {
+      "id": "N31b",
+      "name": "閾値案の1行",
+      "domain": "fc",
+      "parent": "N31"
+    },
+    {
+      "id": "N32a",
+      "name": "失敗シナリオのトリガー条件",
+      "domain": "fc",
+      "parent": "N32"
+    },
+    {
+      "id": "N32b",
+      "name": "回避レバーの列挙",
+      "domain": "fc",
+      "parent": "N32"
+    },
+    {
+      "id": "N33a",
+      "name": "時間×単価の表整形",
+      "domain": "ops",
+      "parent": "N33"
+    },
+    {
+      "id": "N33b",
+      "name": "無駄遣い候補の指摘",
+      "domain": "ops",
+      "parent": "N33"
+    },
+    {
+      "id": "N34a",
+      "name": "異常のみ1段落",
+      "domain": "ops",
+      "parent": "N34"
+    },
+    {
+      "id": "N34b",
+      "name": "変化なし宣言文",
+      "domain": "ops",
+      "parent": "N34"
+    },
+    {
+      "id": "N35a",
+      "name": "エラー行のみ抽出",
+      "domain": "data",
+      "parent": "N35"
+    },
+    {
+      "id": "N35b",
+      "name": "タイムゾーン注記付き時系列",
+      "domain": "data",
+      "parent": "N35"
+    },
+    {
+      "id": "N36a",
+      "name": "分子・分母の定義",
+      "domain": "data",
+      "parent": "N36"
+    },
+    {
+      "id": "N36b",
+      "name": "除外条件の明示",
+      "domain": "data",
+      "parent": "N36"
+    },
+    {
+      "id": "N37a",
+      "name": "用語ゆれの統一表",
+      "domain": "transform",
+      "parent": "N37"
+    },
+    {
+      "id": "N37b",
+      "name": "文字数制約付きラベル",
+      "domain": "transform",
+      "parent": "N37"
+    },
+    {
+      "id": "N38a",
+      "name": "固有名詞保護の校正",
+      "domain": "transform",
+      "parent": "N38"
+    },
+    {
+      "id": "N38b",
+      "name": "半角全角の正規化",
+      "domain": "transform",
+      "parent": "N38"
+    },
+    {
+      "id": "N39a",
+      "name": "操作の前提条件リスト",
+      "domain": "mm",
+      "parent": "N39"
+    },
+    {
+      "id": "N39b",
+      "name": "失敗時の戻り手順",
+      "domain": "mm",
+      "parent": "N39"
+    },
+    {
+      "id": "N40a",
+      "name": "キャプション短/長2案",
+      "domain": "mm",
+      "parent": "N40"
+    },
+    {
+      "id": "N40b",
+      "name": "altテキスト案",
+      "domain": "mm",
+      "parent": "N40"
+    },
+    {
+      "id": "N41a",
+      "name": "メール・電話のマスキング",
+      "domain": "safety",
+      "parent": "N41"
+    },
+    {
+      "id": "N41b",
+      "name": "住所・IDのマスキング",
+      "domain": "safety",
+      "parent": "N41"
+    },
+    {
+      "id": "N42a",
+      "name": "APIキーらしき文字列検出",
+      "domain": "safety",
+      "parent": "N42"
+    },
+    {
+      "id": "N42b",
+      "name": "パスフレーズらしき検出",
+      "domain": "safety",
+      "parent": "N42"
+    },
+    {
+      "id": "N43a",
+      "name": "症状の時系列整理（非診断）",
+      "domain": "care_safe",
+      "parent": "N43"
+    },
+    {
+      "id": "N43b",
+      "name": "持参情報チェックリスト（非診断）",
+      "domain": "care_safe",
+      "parent": "N43"
+    },
+    {
+      "id": "N44a",
+      "name": "定義語の洗い出し（非断定）",
+      "domain": "legal_safe",
+      "parent": "N44"
+    },
+    {
+      "id": "N44b",
+      "name": "曖昧条項の質問リスト（非断定）",
+      "domain": "legal_safe",
+      "parent": "N44"
+    },
+    {
+      "id": "N45a",
+      "name": "金利・複利の仕組み図説（非助言）",
+      "domain": "finance_safe",
+      "parent": "N45"
+    },
+    {
+      "id": "N45b",
+      "name": "手数料の見え方整理（非助言）",
+      "domain": "finance_safe",
+      "parent": "N45"
+    },
+    {
+      "id": "N46a",
+      "name": "事実確認の質問リスト",
+      "domain": "crisis_safe",
+      "parent": "N46"
+    },
+    {
+      "id": "N46b",
+      "name": "関係者向け短文テンプレ",
+      "domain": "crisis_safe",
+      "parent": "N46"
+    },
+    {
+      "id": "N47a",
+      "name": "キーボード操作のみ改善",
+      "domain": "product",
+      "parent": "N47"
+    },
+    {
+      "id": "N47b",
+      "name": "コントラスト・テキスト改善",
+      "domain": "product",
+      "parent": "N47"
+    },
+    {
+      "id": "N48a",
+      "name": "ユーザーストーリーの受入条件",
+      "domain": "product",
+      "parent": "N48"
+    },
+    {
+      "id": "N48b",
+      "name": "非機能要求の1行",
+      "domain": "product",
+      "parent": "N48"
+    },
+    {
+      "id": "N49a",
+      "name": "デモ用サンプルデータ案",
+      "domain": "product",
+      "parent": "N49"
+    },
+    {
+      "id": "N49b",
+      "name": "デモ失敗時のフォールバック",
+      "domain": "product",
+      "parent": "N49"
+    },
+    {
+      "id": "N50a",
+      "name": "タイムライン骨子のみ",
+      "domain": "ops",
+      "parent": "N50"
+    },
+    {
+      "id": "N50b",
+      "name": "再発防止の仮説リスト",
+      "domain": "ops",
+      "parent": "N50"
+    },
+    {
+      "id": "N51",
+      "name": "会議の決定 vs 議論の分離",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N51a",
+      "name": "決定だけ箇条書き",
+      "domain": "work",
+      "parent": "N51"
+    },
+    {
+      "id": "N51b",
+      "name": "未決だけ箇条書き",
+      "domain": "work",
+      "parent": "N51"
+    },
+    {
+      "id": "N52",
+      "name": "ステークホルダー向け要約",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N52a",
+      "name": "経営向け3行",
+      "domain": "work",
+      "parent": "N52"
+    },
+    {
+      "id": "N52b",
+      "name": "現場向け手順中心",
+      "domain": "work",
+      "parent": "N52"
+    },
+    {
+      "id": "N53",
+      "name": "オンボーディングチェックリスト",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N54",
+      "name": "面接質問の構造化（非評価断定）",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N55",
+      "name": "CI失敗ログの最短切り分け",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N55a",
+      "name": "失敗ジョブの特定",
+      "domain": "dev",
+      "parent": "N55"
+    },
+    {
+      "id": "N55b",
+      "name": "フレーク疑いフラグ",
+      "domain": "dev",
+      "parent": "N55"
+    },
+    {
+      "id": "N56",
+      "name": "Dockerfile最小改善案",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N57",
+      "name": "環境変数一覧の文書化",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N58",
+      "name": "マイグレーション下書き（破壊なし注記）",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N59",
+      "name": "ベンチマーク手順書",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N60",
+      "name": "仮説→検証手順カード",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N60a",
+      "name": "成功判定の明示",
+      "domain": "research",
+      "parent": "N60"
+    },
+    {
+      "id": "N60b",
+      "name": "失敗時の次の一手",
+      "domain": "research",
+      "parent": "N60"
+    },
+    {
+      "id": "N61",
+      "name": "用語のドメイン間対応表",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N62",
+      "name": "調査メモの出典スロット埋め",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N63",
+      "name": "口頭発表の1分ピッチ",
+      "domain": "edu",
+      "parent": null
+    },
+    {
+      "id": "N64",
+      "name": "練習問題の難易度ラダー",
+      "domain": "edu",
+      "parent": null
+    },
+    {
+      "id": "N65",
+      "name": "誤答からの学習ポイント",
+      "domain": "edu",
+      "parent": null
+    },
+    {
+      "id": "N66",
+      "name": "ConceptとDimensionの混同チェック",
+      "domain": "fc",
+      "parent": null
+    },
+    {
+      "id": "N67",
+      "name": "CLEAR条件の自己点検質問",
+      "domain": "fc",
+      "parent": null
+    },
+    {
+      "id": "N68",
+      "name": "Addressスコア表の欠損埋め",
+      "domain": "fc",
+      "parent": null
+    },
+    {
+      "id": "N69",
+      "name": "正本昇格チェックリスト",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N70",
+      "name": "ルーチン失敗の原因候補",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N71",
+      "name": "バックアップ確認手順",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N72",
+      "name": "スキーマ差分の人間向け説明",
+      "domain": "data",
+      "parent": null
+    },
+    {
+      "id": "N73",
+      "name": "重複行の判定ルール案",
+      "domain": "data",
+      "parent": null
+    },
+    {
+      "id": "N74",
+      "name": "単位・通貨の正規化ルール",
+      "domain": "data",
+      "parent": null
+    },
+    {
+      "id": "N75",
+      "name": "議事録→英語サマリ",
+      "domain": "transform",
+      "parent": null
+    },
+    {
+      "id": "N76",
+      "name": "口語→書き言葉変換",
+      "domain": "transform",
+      "parent": null
+    },
+    {
+      "id": "N77",
+      "name": "動画のチャプター案（非視聴断定）",
+      "domain": "mm",
+      "parent": null
+    },
+    {
+      "id": "N78",
+      "name": "ワイヤーの画面遷移リスト",
+      "domain": "mm",
+      "parent": null
+    },
+    {
+      "id": "N79",
+      "name": "権限昇格リスクのチェックリスト",
+      "domain": "safety",
+      "parent": null
+    },
+    {
+      "id": "N80",
+      "name": "外部送信前の最終点検",
+      "domain": "safety",
+      "parent": null
+    },
+    {
+      "id": "N80a",
+      "name": "宛先・CCの確認文言",
+      "domain": "safety",
+      "parent": "N80"
+    },
+    {
+      "id": "N80b",
+      "name": "添付の過不足チェック",
+      "domain": "safety",
+      "parent": "N80"
+    },
+    {
+      "id": "N81",
+      "name": "アクセシビリティ手動テスト手順",
+      "domain": "product",
+      "parent": null
+    },
+    {
+      "id": "N82",
+      "name": "リリースノート顧客向け",
+      "domain": "product",
+      "parent": null
+    },
+    {
+      "id": "N83",
+      "name": "サポート返信の共感＋手順",
+      "domain": "product",
+      "parent": null
+    },
+    {
+      "id": "N84",
+      "name": "KPI定義の一文化",
+      "domain": "product",
+      "parent": null
+    },
+    {
+      "id": "N85",
+      "name": "A/Bテスト仮説カード（非統計断定）",
+      "domain": "product",
+      "parent": null
+    },
+    {
+      "id": "N86",
+      "name": "プロンプトの失敗例カタログ化",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N87",
+      "name": "評価セットの項目設計",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N88",
+      "name": "拒否ケースのゴールデン例",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N89",
+      "name": "単位間ハンドオフ仕様の1行",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N90",
+      "name": "Reception振り分けルール案",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N90a",
+      "name": "曖昧入力の確認質問",
+      "domain": "ml_ops",
+      "parent": "N90"
+    },
+    {
+      "id": "N90b",
+      "name": "複数単位候補の並べ方",
+      "domain": "ml_ops",
+      "parent": "N90"
+    },
+    {
+      "id": "N53a",
+      "name": "初日チェックのみ",
+      "domain": "work",
+      "parent": "N53"
+    },
+    {
+      "id": "N53b",
+      "name": "初週チェックのみ",
+      "domain": "work",
+      "parent": "N53"
+    },
+    {
+      "id": "N54a",
+      "name": "行動質問のみ（非評価）",
+      "domain": "work",
+      "parent": "N54"
+    },
+    {
+      "id": "N54b",
+      "name": "技術質問のみ（非評価）",
+      "domain": "work",
+      "parent": "N54"
+    },
+    {
+      "id": "N56a",
+      "name": "レイヤ削減案",
+      "domain": "dev",
+      "parent": "N56"
+    },
+    {
+      "id": "N56b",
+      "name": "キャッシュ活用案",
+      "domain": "dev",
+      "parent": "N56"
+    },
+    {
+      "id": "N57a",
+      "name": "必須/任意の分類",
+      "domain": "dev",
+      "parent": "N57"
+    },
+    {
+      "id": "N57b",
+      "name": "秘密かどうかの分類",
+      "domain": "dev",
+      "parent": "N57"
+    },
+    {
+      "id": "N58a",
+      "name": "アップのみ案",
+      "domain": "dev",
+      "parent": "N58"
+    },
+    {
+      "id": "N58b",
+      "name": "ダウン手順メモ",
+      "domain": "dev",
+      "parent": "N58"
+    },
+    {
+      "id": "N59a",
+      "name": "ウォームアップ手順",
+      "domain": "dev",
+      "parent": "N59"
+    },
+    {
+      "id": "N59b",
+      "name": "計測項目テンプレ",
+      "domain": "dev",
+      "parent": "N59"
+    },
+    {
+      "id": "N61a",
+      "name": "同義語クラスタ",
+      "domain": "research",
+      "parent": "N61"
+    },
+    {
+      "id": "N61b",
+      "name": "衝突する定義の列挙",
+      "domain": "research",
+      "parent": "N61"
+    },
+    {
+      "id": "N62a",
+      "name": "URLスロット埋め",
+      "domain": "research",
+      "parent": "N62"
+    },
+    {
+      "id": "N62b",
+      "name": "日付スロット埋め",
+      "domain": "research",
+      "parent": "N62"
+    },
+    {
+      "id": "N63a",
+      "name": "フック文のみ",
+      "domain": "edu",
+      "parent": "N63"
+    },
+    {
+      "id": "N63b",
+      "name": "締めの1文のみ",
+      "domain": "edu",
+      "parent": "N63"
+    },
+    {
+      "id": "N64a",
+      "name": "初級問題のみ",
+      "domain": "edu",
+      "parent": "N64"
+    },
+    {
+      "id": "N64b",
+      "name": "上級問題のみ",
+      "domain": "edu",
+      "parent": "N64"
+    },
+    {
+      "id": "N65a",
+      "name": "なぜ間違えたかの仮説",
+      "domain": "edu",
+      "parent": "N65"
+    },
+    {
+      "id": "N65b",
+      "name": "次に解く類題",
+      "domain": "edu",
+      "parent": "N65"
+    },
+    {
+      "id": "N66a",
+      "name": "Concept誤用の指摘",
+      "domain": "fc",
+      "parent": "N66"
+    },
+    {
+      "id": "N66b",
+      "name": "Dimension誤用の指摘",
+      "domain": "fc",
+      "parent": "N66"
+    },
+    {
+      "id": "N67a",
+      "name": "CLEAR手前の未達リスト",
+      "domain": "fc",
+      "parent": "N67"
+    },
+    {
+      "id": "N67b",
+      "name": "CLEAR後の退化兆候",
+      "domain": "fc",
+      "parent": "N67"
+    },
+    {
+      "id": "N68a",
+      "name": "空セルの候補埋め",
+      "domain": "fc",
+      "parent": "N68"
+    },
+    {
+      "id": "N68b",
+      "name": "矛盾セルのフラグ",
+      "domain": "fc",
+      "parent": "N68"
+    },
+    {
+      "id": "N69a",
+      "name": "§17手順の照合",
+      "domain": "ops",
+      "parent": "N69"
+    },
+    {
+      "id": "N69b",
+      "name": "changelog欠落チェック",
+      "domain": "ops",
+      "parent": "N69"
+    },
+    {
+      "id": "N70a",
+      "name": "スケジュール起因候補",
+      "domain": "ops",
+      "parent": "N70"
+    },
+    {
+      "id": "N70b",
+      "name": "認証起因候補",
+      "domain": "ops",
+      "parent": "N70"
+    },
+    {
+      "id": "N71a",
+      "name": "リストア試験手順",
+      "domain": "ops",
+      "parent": "N71"
+    },
+    {
+      "id": "N71b",
+      "name": "世代数確認手順",
+      "domain": "ops",
+      "parent": "N71"
+    },
+    {
+      "id": "N72a",
+      "name": "追加カラム説明",
+      "domain": "data",
+      "parent": "N72"
+    },
+    {
+      "id": "N72b",
+      "name": "削除カラム影響",
+      "domain": "data",
+      "parent": "N72"
+    },
+    {
+      "id": "N73a",
+      "name": "キー列の提案",
+      "domain": "data",
+      "parent": "N73"
+    },
+    {
+      "id": "N73b",
+      "name": "あいまい一致ルール",
+      "domain": "data",
+      "parent": "N73"
+    },
+    {
+      "id": "N74a",
+      "name": "通貨コード統一",
+      "domain": "data",
+      "parent": "N74"
+    },
+    {
+      "id": "N74b",
+      "name": "単位換算表",
+      "domain": "data",
+      "parent": "N74"
+    },
+    {
+      "id": "N75a",
+      "name": "決定事項のみ英訳",
+      "domain": "transform",
+      "parent": "N75"
+    },
+    {
+      "id": "N75b",
+      "name": "アクションのみ英訳",
+      "domain": "transform",
+      "parent": "N75"
+    },
+    {
+      "id": "N76a",
+      "name": "敬語への変換",
+      "domain": "transform",
+      "parent": "N76"
+    },
+    {
+      "id": "N76b",
+      "name": "カジュアルへの変換",
+      "domain": "transform",
+      "parent": "N76"
+    },
+    {
+      "id": "N77a",
+      "name": "章タイトル案のみ",
+      "domain": "mm",
+      "parent": "N77"
+    },
+    {
+      "id": "N77b",
+      "name": "タイムスタンプ案のみ",
+      "domain": "mm",
+      "parent": "N77"
+    },
+    {
+      "id": "N78a",
+      "name": "画面IDの採番",
+      "domain": "mm",
+      "parent": "N78"
+    },
+    {
+      "id": "N78b",
+      "name": "戻り導線の列挙",
+      "domain": "mm",
+      "parent": "N78"
+    },
+    {
+      "id": "N79a",
+      "name": "読み取り専用化の案",
+      "domain": "safety",
+      "parent": "N79"
+    },
+    {
+      "id": "N79b",
+      "name": "最小権限の案",
+      "domain": "safety",
+      "parent": "N79"
+    },
+    {
+      "id": "N81a",
+      "name": "スクリーンリーダー手順",
+      "domain": "product",
+      "parent": "N81"
+    },
+    {
+      "id": "N81b",
+      "name": "拡大表示手順",
+      "domain": "product",
+      "parent": "N81"
+    },
+    {
+      "id": "N82a",
+      "name": "新機能のみ抜粋",
+      "domain": "product",
+      "parent": "N82"
+    },
+    {
+      "id": "N82b",
+      "name": "破壊的変更の警告文",
+      "domain": "product",
+      "parent": "N82"
+    },
+    {
+      "id": "N83a",
+      "name": "共感文のみ",
+      "domain": "product",
+      "parent": "N83"
+    },
+    {
+      "id": "N83b",
+      "name": "解決手順のみ",
+      "domain": "product",
+      "parent": "N83"
+    },
+    {
+      "id": "N84a",
+      "name": "分子の定義",
+      "domain": "product",
+      "parent": "N84"
+    },
+    {
+      "id": "N84b",
+      "name": "分母の定義",
+      "domain": "product",
+      "parent": "N84"
+    },
+    {
+      "id": "N85a",
+      "name": "介入の定義のみ",
+      "domain": "product",
+      "parent": "N85"
+    },
+    {
+      "id": "N85b",
+      "name": "成功指標の候補（非断定）",
+      "domain": "product",
+      "parent": "N85"
+    },
+    {
+      "id": "N86a",
+      "name": "失敗の類型タグ付け",
+      "domain": "ml_ops",
+      "parent": "N86"
+    },
+    {
+      "id": "N86b",
+      "name": "再現プロンプト抽出",
+      "domain": "ml_ops",
+      "parent": "N86"
+    },
+    {
+      "id": "N87a",
+      "name": "正例セット設計",
+      "domain": "ml_ops",
+      "parent": "N87"
+    },
+    {
+      "id": "N87b",
+      "name": "負例セット設計",
+      "domain": "ml_ops",
+      "parent": "N87"
+    },
+    {
+      "id": "N88a",
+      "name": "拒否理由テンプレ",
+      "domain": "ml_ops",
+      "parent": "N88"
+    },
+    {
+      "id": "N88b",
+      "name": "代替提案テンプレ",
+      "domain": "ml_ops",
+      "parent": "N88"
+    },
+    {
+      "id": "N89a",
+      "name": "必須フィールド一覧",
+      "domain": "ml_ops",
+      "parent": "N89"
+    },
+    {
+      "id": "N89b",
+      "name": "任意フィールド一覧",
+      "domain": "ml_ops",
+      "parent": "N89"
+    },
+    {
+      "id": "N91",
+      "name": "会議のタイムボックス案",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N91a",
+      "name": "議題ごとの分数割",
+      "domain": "work",
+      "parent": "N91"
+    },
+    {
+      "id": "N92",
+      "name": "エスカレーション文面",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N93",
+      "name": "休暇引き継ぎメモ",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N94",
+      "name": "RACI表の下書き",
+      "domain": "work",
+      "parent": null
+    },
+    {
+      "id": "N95",
+      "name": "依存ライブラリのCVE要約（非パッチ断定）",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N95a",
+      "name": "影響範囲の仮説",
+      "domain": "dev",
+      "parent": "N95"
+    },
+    {
+      "id": "N96",
+      "name": "フィーチャーフラグ設計メモ",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N97",
+      "name": "ログレベル見直し案",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N98",
+      "name": "APIバージョニング方針案",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N99",
+      "name": "デッドコード疑いリスト",
+      "domain": "dev",
+      "parent": null
+    },
+    {
+      "id": "N100",
+      "name": "調査ログの時系列カード",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N101",
+      "name": "一次情報と二次情報の分離",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N101a",
+      "name": "一次のみ抽出",
+      "domain": "research",
+      "parent": "N101"
+    },
+    {
+      "id": "N101b",
+      "name": "二次のみ抽出",
+      "domain": "research",
+      "parent": "N101"
+    },
+    {
+      "id": "N102",
+      "name": "未検証主張の警告ラベル",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N103",
+      "name": "比較対象の公平化チェック",
+      "domain": "research",
+      "parent": null
+    },
+    {
+      "id": "N104",
+      "name": "フラッシュカード生成",
+      "domain": "edu",
+      "parent": null
+    },
+    {
+      "id": "N104a",
+      "name": "表面（問い）のみ",
+      "domain": "edu",
+      "parent": "N104"
+    },
+    {
+      "id": "N104b",
+      "name": "裏面（答え）のみ",
+      "domain": "edu",
+      "parent": "N104"
+    },
+    {
+      "id": "N105",
+      "name": "学習振り返りの3問い",
+      "domain": "edu",
+      "parent": null
+    },
+    {
+      "id": "N106",
+      "name": "例え話の限界注記",
+      "domain": "edu",
+      "parent": null
+    },
+    {
+      "id": "N107",
+      "name": "H1a/H1b/H1cの差分整理",
+      "domain": "fc",
+      "parent": null
+    },
+    {
+      "id": "N108",
+      "name": "Future Concept柱の一文化",
+      "domain": "fc",
+      "parent": null
+    },
+    {
+      "id": "N109",
+      "name": "ゲート失敗の再採点依頼文",
+      "domain": "fc",
+      "parent": null
+    },
+    {
+      "id": "N110",
+      "name": "旧解釈退行の具体例探し",
+      "domain": "fc",
+      "parent": null
+    },
+    {
+      "id": "N111",
+      "name": "デプロイ前チェックリスト",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N111a",
+      "name": "ロールバック可否確認",
+      "domain": "ops",
+      "parent": "N111"
+    },
+    {
+      "id": "N112",
+      "name": "監視アラート文言の人間向け化",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N113",
+      "name": "オンコール引き継ぎ",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N114",
+      "name": "容量計画の前提洗い出し",
+      "domain": "ops",
+      "parent": null
+    },
+    {
+      "id": "N115",
+      "name": "欠損パターンの分類",
+      "domain": "data",
+      "parent": null
+    },
+    {
+      "id": "N116",
+      "name": "外れ値の説明候補（非削除断定）",
+      "domain": "data",
+      "parent": null
+    },
+    {
+      "id": "N117",
+      "name": "結合キーの健全性チェック",
+      "domain": "data",
+      "parent": null
+    },
+    {
+      "id": "N118",
+      "name": "ピボット表の軸提案",
+      "domain": "data",
+      "parent": null
+    },
+    {
+      "id": "N119",
+      "name": "方言→標準語変換",
+      "domain": "transform",
+      "parent": null
+    },
+    {
+      "id": "N120",
+      "name": "長文の段落分割",
+      "domain": "transform",
+      "parent": null
+    },
+    {
+      "id": "N121",
+      "name": "見出し階層の正規化",
+      "domain": "transform",
+      "parent": null
+    },
+    {
+      "id": "N122",
+      "name": "図中テキストのOCR後整形",
+      "domain": "mm",
+      "parent": null
+    },
+    {
+      "id": "N123",
+      "name": "色だけに依存しない説明",
+      "domain": "mm",
+      "parent": null
+    },
+    {
+      "id": "N124",
+      "name": "スライドノート下書き",
+      "domain": "mm",
+      "parent": null
+    },
+    {
+      "id": "N125",
+      "name": "共有リンク公開範囲チェック",
+      "domain": "safety",
+      "parent": null
+    },
+    {
+      "id": "N126",
+      "name": "ログに出してはいけない項目リスト",
+      "domain": "safety",
+      "parent": null
+    },
+    {
+      "id": "N127",
+      "name": "利用規約の読み方質問（非断定）",
+      "domain": "legal_safe",
+      "parent": null
+    },
+    {
+      "id": "N128",
+      "name": "薬の一般情報の探し方（非処方）",
+      "domain": "care_safe",
+      "parent": null
+    },
+    {
+      "id": "N129",
+      "name": "予算表の前提注記（非投資助言）",
+      "domain": "finance_safe",
+      "parent": null
+    },
+    {
+      "id": "N130",
+      "name": "災害時の安否テンプレ（一般）",
+      "domain": "crisis_safe",
+      "parent": null
+    },
+    {
+      "id": "N130a",
+      "name": "安否の事実欄のみ",
+      "domain": "crisis_safe",
+      "parent": "N130"
+    },
+    {
+      "id": "N130b",
+      "name": "支援要請の欄のみ",
+      "domain": "crisis_safe",
+      "parent": "N130"
+    },
+    {
+      "id": "N131",
+      "name": "ブログ見出し案10",
+      "domain": "writing",
+      "parent": null
+    },
+    {
+      "id": "N132",
+      "name": "要約の読みやすさリライト",
+      "domain": "writing",
+      "parent": null
+    },
+    {
+      "id": "N133",
+      "name": "禁止語・避け語の置換",
+      "domain": "writing",
+      "parent": null
+    },
+    {
+      "id": "N134",
+      "name": "引用の長さ短縮",
+      "domain": "writing",
+      "parent": null
+    },
+    {
+      "id": "N135",
+      "name": "旅程の骨子（非予約）",
+      "domain": "life_safe",
+      "parent": null
+    },
+    {
+      "id": "N136",
+      "name": "荷造りチェックリスト",
+      "domain": "life_safe",
+      "parent": null
+    },
+    {
+      "id": "N137",
+      "name": "引っ越しタスク分解",
+      "domain": "life_safe",
+      "parent": null
+    },
+    {
+      "id": "N138",
+      "name": "料理の手順カード（非栄養断定）",
+      "domain": "life_safe",
+      "parent": null
+    },
+    {
+      "id": "N139",
+      "name": "筋トレのフォーム注意（非医療）",
+      "domain": "life_safe",
+      "parent": null
+    },
+    {
+      "id": "N140",
+      "name": "睡眠衛生の一般Tips（非診断）",
+      "domain": "care_safe",
+      "parent": null
+    },
+    {
+      "id": "N141",
+      "name": "単位のSLA文言案",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N142",
+      "name": "タイムアウト時のフォールバック文",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N143",
+      "name": "部分成功(partial)の説明文",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N144",
+      "name": "unit_id誤りの訂正候補",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N145",
+      "name": "gates違反のユーザー向け説明",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N146",
+      "name": "圧勝指標の定義カード",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N146a",
+      "name": "主指標のみ",
+      "domain": "ml_ops",
+      "parent": "N146"
+    },
+    {
+      "id": "N146b",
+      "name": "副指標のみ",
+      "domain": "ml_ops",
+      "parent": "N146"
+    },
+    {
+      "id": "N147",
+      "name": "狭くする提案（負けたとき）",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N148",
+      "name": "GPU載せ替え手順メモ",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N149",
+      "name": "単一GPUに載せる単位の選定理由",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N150",
+      "name": "Cortext9 Receptionの応答テンプレ",
+      "domain": "ml_ops",
+      "parent": null
+    },
+    {
+      "id": "N150a",
+      "name": "担当決定の告知文",
+      "domain": "ml_ops",
+      "parent": "N150"
+    },
+    {
+      "id": "N150b",
+      "name": "担当不明時の確認文",
+      "domain": "ml_ops",
+      "parent": "N150"
+    }
+  ]
+}
