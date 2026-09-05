@@ -1,0 +1,95 @@
+{
+  "api_version": "cortext9-unit/v0",
+  "units": [
+    {
+      "id": "N01",
+      "name": "議事・メール下書き",
+      "domain": "work"
+    },
+    {
+      "id": "N02",
+      "name": "仕様→チケット",
+      "domain": "work"
+    },
+    {
+      "id": "N03",
+      "name": "関数単位実装",
+      "domain": "dev"
+    },
+    {
+      "id": "N04",
+      "name": "失敗テスト修正",
+      "domain": "dev"
+    },
+    {
+      "id": "N05",
+      "name": "PRレビュー指摘",
+      "domain": "dev"
+    },
+    {
+      "id": "N06",
+      "name": "根拠付き要約",
+      "domain": "research"
+    },
+    {
+      "id": "N07",
+      "name": "比較表",
+      "domain": "research"
+    },
+    {
+      "id": "N08",
+      "name": "中学生向け解説",
+      "domain": "edu"
+    },
+    {
+      "id": "N09",
+      "name": "ヒントのみ誘導",
+      "domain": "edu"
+    },
+    {
+      "id": "N10",
+      "name": "FC柱整理",
+      "domain": "fc"
+    },
+    {
+      "id": "N11",
+      "name": "ゲート仮採点",
+      "domain": "fc"
+    },
+    {
+      "id": "N12",
+      "name": "changelog下書き",
+      "domain": "ops"
+    },
+    {
+      "id": "N13",
+      "name": "自己点検E系",
+      "domain": "ops"
+    },
+    {
+      "id": "N14",
+      "name": "表データ整形",
+      "domain": "data"
+    },
+    {
+      "id": "N15",
+      "name": "SQL下書き",
+      "domain": "data"
+    },
+    {
+      "id": "N16",
+      "name": "翻訳",
+      "domain": "transform"
+    },
+    {
+      "id": "N17",
+      "name": "図の説明",
+      "domain": "mm"
+    },
+    {
+      "id": "N18",
+      "name": "危険依頼拒否",
+      "domain": "safety"
+    }
+  ]
+}
