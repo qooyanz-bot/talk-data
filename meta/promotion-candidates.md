@@ -5,9 +5,11 @@
 ## 候補
 | 日付 | 内容 | 推奨パス | 状態 |
 |---|---|---|---|
-| 2026-09-05 | FC-H1.0 / 失敗条件 / Address / ゲート / §17 / プロンプトv1.2 | 済（正本化済み） | done |
+| 2026-09-05 | FC-H1.0 / 失敗条件 / Address / ゲート / §17 / プロンプトv1.2 | 済 | done |
 | 2026-09-05 | 境界BD-v0 | future-concept/boundaries-draft-BD-v0.md | draft・未決維持 |
 | 2026-09-05 | 自動化委任v1 | meta/automation-delegation-v1.md | 委任として採用 |
+| 2026-09-05 | GSM / QPS / SMQ / CSR-1 / DF-1 / NUFC | future-concept/* | 草案群 |
+| 2026-09-05 | **Cortext9**（分散NUFC配備） | future-concept/Cortext9-v0.md | **K命名・正本保存** |
 
 ## 保留（いま決めない）
 - 知的存在／低質存続／連続性の確定
