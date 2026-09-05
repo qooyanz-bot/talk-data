@@ -2,6 +2,8 @@
 
 
 
+
+> **v0.4 さらなる細分化**: [`Cortext9-unit-api-schema-v0.4-addendum.md`](Cortext9-unit-api-schema-v0.4-addendum.md) / [`Cortext9-unit-catalog-v0.4.json`](Cortext9-unit-catalog-v0.4.json)。
 > **v0.3 さらなる細分化**: [`Cortext9-unit-api-schema-v0.3-addendum.md`](Cortext9-unit-api-schema-v0.3-addendum.md) / [`Cortext9-unit-catalog-v0.3.json`](Cortext9-unit-catalog-v0.3.json)。
 > **v0.2 さらなる細分化**: [`Cortext9-unit-api-schema-v0.2-addendum.md`](Cortext9-unit-api-schema-v0.2-addendum.md) / [`Cortext9-unit-catalog-v0.2.json`](Cortext9-unit-catalog-v0.2.json)（v0.1追記も有効）。
 > **v0.1 細分化**: 単位一覧・子ID・追加 payload は [`Cortext9-unit-api-schema-v0.1-addendum.md`](Cortext9-unit-api-schema-v0.1-addendum.md) と [`Cortext9-unit-catalog-v0.1.json`](Cortext9-unit-catalog-v0.1.json)。共通エンベロープは本ファイルのまま。
