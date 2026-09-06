@@ -16,6 +16,7 @@ import protocol_claim_gate
 import replay_verifier
 import response_contract
 import resolution_gate
+import runtime_manifest
 
 
 def evaluate(
@@ -92,6 +93,7 @@ def _resolve_flag_conflicts(args: argparse.Namespace, exclusive_flag: str) -> li
         "--verify-decision-log": args.verify_decision_log is not None,
         "--validate-protocol-manifest": args.validate_protocol_manifest is not None,
         "--conformance": args.conformance,
+        "--runtime-manifest": args.runtime_manifest,
     }
     for flag, active in exclusive_modes.items():
         if flag != exclusive_flag and active:
@@ -119,6 +121,11 @@ def main(argv: list[str] | None = None) -> int:
         "--limitations",
         action="store_true",
         help="Print the synthetic-only LIMITATIONS / conformance document as JSON (no address/evidence)",
+    )
+    parser.add_argument(
+        "--runtime-manifest",
+        action="store_true",
+        help="Print the reference-runtime manifest (frozen files list and package_digest) as JSON (no address/evidence)",
     )
     parser.add_argument(
         "--check-contract-only",
@@ -164,6 +171,14 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps({"status": "INVALID_INPUT", "errors": conflicts}, ensure_ascii=False, sort_keys=True))
             return 2
         print(json.dumps(limitations.limitations(), ensure_ascii=False, sort_keys=True))
+        return 0
+
+    if args.runtime_manifest:
+        conflicts = _resolve_flag_conflicts(args, "--runtime-manifest")
+        if conflicts:
+            print(json.dumps({"status": "INVALID_INPUT", "errors": conflicts}, ensure_ascii=False, sort_keys=True))
+            return 2
+        print(json.dumps(runtime_manifest.manifest(), ensure_ascii=False, sort_keys=True))
         return 0
 
     if args.check_contract_only is not None:
@@ -219,8 +234,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.address is None or args.evidence is None or args.now is None:
         parser.error(
             "address, evidence, and --now are required unless --limitations, "
-            "--check-contract-only, --verify-decision-log, --validate-protocol-manifest, "
-            "or --conformance is set"
+            "--runtime-manifest, --check-contract-only, --verify-decision-log, "
+            "--validate-protocol-manifest, or --conformance is set"
         )
 
     claim_type_errors: list[str] = []

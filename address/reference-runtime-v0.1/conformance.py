@@ -29,6 +29,24 @@ _NOT_RUN = "NOT_RUN"
 _BLOCKED = "BLOCKED"
 _MANIFEST_VALID = "MANIFEST_VALID"
 
+# Closed enums for conformance checks and their allowed statuses.
+CHECK_IDS_ALLOWED: frozenset[str] = frozenset({
+    "limitations_document",
+    "synthetic_address_validate",
+    "synthetic_evaluate_ready",
+    "synthetic_evaluate_abstain",
+    "r6g_protocol_manifest",
+    "r6g_experiment_result_claim",
+})
+
+CHECK_STATUSES_ALLOWED: frozenset[str] = frozenset({
+    _PASS,
+    _FAIL,
+    _NOT_RUN,
+    _LIMITATIONS,
+    _BLOCKED,
+})
+
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 VALID_ADDRESS = FIXTURES / "valid_synthetic_address.json"
 VALID_EVIDENCE = FIXTURES / "valid_evidence_bundle.json"
@@ -37,6 +55,8 @@ EVAL_NOW = "2026-09-06T00:00:00Z"
 
 
 def _check(check_id: str, status: str, detail: Any) -> dict[str, Any]:
+    assert check_id in CHECK_IDS_ALLOWED, f"unknown check_id: {check_id}"
+    assert status in CHECK_STATUSES_ALLOWED, f"unknown check status: {status}"
     return {"id": check_id, "status": status, "detail": detail}
 
 

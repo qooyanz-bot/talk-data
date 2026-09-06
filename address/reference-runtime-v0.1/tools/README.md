@@ -1,3 +1,7 @@
-# tools
+Regenerator scripts for frozen documentation and conformance fixtures.
 
-Frozen-doc regenerators: `regenerate_limitations.py`, `regenerate_conformance_report.py`, or both via `regenerate_all_frozen_docs.py`. Pass `--check` for dry-run drift detection (exit 0 if fixtures already match; non-zero if a rewrite would change files; no writes). Contract goldens: `regenerate_contract_goldens.py`. Do not hand-edit fixtures.
+- `regenerate_limitations.py`: rebuilds `fixtures/limitations.json`
+- `regenerate_conformance_report.py`: rebuilds `fixtures/conformance_report.json`
+- `regenerate_runtime_manifest.py`: rebuilds `fixtures/runtime_manifest.json`
+- `regenerate_contract_goldens.py`: rebuilds `fixtures/golden_contract_*.json`
+- `regenerate_all_frozen_docs.py`: runs all document regenerators; `--check` for CI gate.

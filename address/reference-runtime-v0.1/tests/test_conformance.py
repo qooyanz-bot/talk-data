@@ -14,21 +14,6 @@ import limitations  # noqa: E402
 
 
 REQUIRED_TOP_KEYS = {"schema_version", "status", "checks"}
-REQUIRED_CHECK_IDS = {
-    "limitations_document",
-    "synthetic_address_validate",
-    "synthetic_evaluate_ready",
-    "synthetic_evaluate_abstain",
-    "r6g_protocol_manifest",
-    "r6g_experiment_result_claim",
-}
-ALLOWED_CHECK_STATUSES = {
-    "PASS",
-    "FAIL",
-    "NOT_RUN",
-    "LIMITATIONS",
-    "BLOCKED",
-}
 
 
 class ConformanceTests(unittest.TestCase):
@@ -39,11 +24,19 @@ class ConformanceTests(unittest.TestCase):
         self.assertIn(report["status"], {"CONFORMANT", "FAIL"})
         self.assertIsInstance(report["checks"], list)
         ids = [c["id"] for c in report["checks"]]
-        self.assertEqual(set(ids), REQUIRED_CHECK_IDS)
+        self.assertEqual(set(ids), conformance.CHECK_IDS_ALLOWED)
         for check in report["checks"]:
             with self.subTest(check_id=check["id"]):
                 self.assertEqual(set(check), {"id", "status", "detail"})
-                self.assertIn(check["status"], ALLOWED_CHECK_STATUSES)
+                self.assertIn(check["status"], conformance.CHECK_STATUSES_ALLOWED)
+
+    def test_check_ids_and_statuses_exported_as_frozensets(self):
+        self.assertIsInstance(conformance.CHECK_IDS_ALLOWED, frozenset)
+        self.assertIsInstance(conformance.CHECK_STATUSES_ALLOWED, frozenset)
+        self.assertIn("limitations_document", conformance.CHECK_IDS_ALLOWED)
+        self.assertIn("r6g_experiment_result_claim", conformance.CHECK_IDS_ALLOWED)
+        self.assertIn("PASS", conformance.CHECK_STATUSES_ALLOWED)
+        self.assertIn("LIMITATIONS", conformance.CHECK_STATUSES_ALLOWED)
 
     def test_fixture_matches_module_output(self):
         fixture = json.loads((ROOT / "fixtures" / "conformance_report.json").read_text(encoding="utf-8"))
@@ -114,6 +107,7 @@ class ConformanceTests(unittest.TestCase):
             ["address.json", "evidence.json"],
             ["--now", "2026-09-06T00:00:00Z"],
             ["--limitations"],
+            ["--runtime-manifest"],
             ["--check-contract-only", str(ROOT / "fixtures" / "golden_contract_ok_response.json")],
             ["--verify-decision-log", str(ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json")],
             ["--validate-protocol-manifest", str(ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json")],

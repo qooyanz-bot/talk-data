@@ -32,7 +32,8 @@
 - CLI `--check-contract-only RESPONSE.json` で、Gate再実行なしに保存済み公開応答をresponse_contract検証（OK=0、違反は機械可読errorsで非0）。decision_log 付き応答も検証対象（改ざん id・非null value は失敗）。
 - CLI `--verify-decision-log DECISION_LOG.json` で decision_log.verify のみ実行（OK=0 / INVALID=1）。resolve / `--limitations` / `--check-contract-only` / `--validate-protocol-manifest` / `--conformance` と相互排他。
 - CLI `--validate-protocol-manifest MANIFEST.json` で `protocol_claim_gate.validate_manifest` のみ実行（VALID=0 / `{status: MANIFEST_VALID, errors: []}`；INVALID=1 / `{status: MANIFEST_INVALID, errors: [...]}`）。resolve / `--limitations` / `--check-contract-only` / `--verify-decision-log` / `--conformance` と相互排他。
-- CLI `--conformance` で conformance runner を実行（CONFORMANT=0 / FAIL=1）。LIMITATIONS + synthetic battery + R6-G manifest/claim を単一レポートに集約。
+- CLI `--conformance` で conformance runner を実行（CONFORMANT=0 / FAIL=1）。LIMITATIONS + synthetic battery + R6-G manifest/claim を単一レポートに集約。閉集合 `CHECK_IDS_ALLOWED` / `CHECK_STATUSES_ALLOWED` は `conformance.py` が単一正本。
+- Runtime Manifest（`runtime_manifest.py` / CLI `--runtime-manifest` / `fixtures/runtime_manifest.json`）。凍結ファイル一覧（12モジュール）のLF正規化SHA-256および全体ダイジェスト（`package_digest()` → `sha256:<64 hex>`）を機械出力。`Address.lineage.runtime_sha` で参照可能な実装ダイジェスト（全Addressに強制せず、null許可は維持）。再生成は `tools/regenerate_runtime_manifest.py`（`regenerate_all_frozen_docs.py` へ統合）。
 - 保存済み公開応答のgolden fixture（`fixtures/golden_contract_ok_response.json` = READY / CONTRACTED_EVIDENCE、`fixtures/golden_contract_abstain_response.json` = ABSTAIN / shared-law EVIDENCE_REJECTED、`fixtures/golden_contract_contradiction_response.json` = ABSTAIN / CONTRADICTION・同一assertion_keyで衝突するassertion_value、`fixtures/golden_contract_stale_response.json` = ABSTAIN / EVIDENCE_STALE・observed_atが`--now`とfreshness max_ageに対して古い、`fixtures/golden_contract_semantic_independence_unmet_response.json` = ABSTAIN / SEMANTIC_INDEPENDENCE_UNMET・Address `semantic_independence=AUDITED` + CONTRACTED証拠（監査欠落）、`fixtures/golden_contract_audited_independence_response.json` = READY / AUDITED_INDEPENDENCE・Address `semantic_independence=AUDITED` + CONTRACTED証拠 + 有効typed `independence_audit`、`fixtures/golden_contract_decision_log_blocked_response.json` = READY / CONTRACTED_EVIDENCE + protocol_claim BLOCKED + R6-G frozen decision_log）で `--check-contract-only` / `response_contract.validate` の構造を凍結。value充填や入れ子`lineage.result_sha`刻印は失敗する。各goldenはdecision・value=null・residualあり・audit整合を固定。
 - `tools/regenerate_contract_goldens.py` が固定入力からevaluate()でREADY/ABSTAIN/CONTRADICTION/EVIDENCE_STALE/SEMANTIC_INDEPENDENCE_UNMET/AUDITED_INDEPENDENCE goldenを再生成し、digestの手編集を不要にする。unittestがfixtureとfresh evaluate()の完全一致を検査する。
 - `--check-contract-only` / `--verify-decision-log` / `--validate-protocol-manifest` / `--limitations` / `--conformance` は相互排他。address/evidence/`--now`/`--audit`/`--protocol-manifest`/`--claim-type`/`--independence-audit` との併用は早期に `INVALID_INPUT`（機械可読JSON・非0）で拒否する。
@@ -55,6 +56,7 @@ python address/reference-runtime-v0.1/address_cli.py address/reference-runtime-v
 python address/reference-runtime-v0.1/address_cli.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json address/reference-runtime-v0.1/fixtures/valid_evidence_bundle.json --now 2026-09-06T00:00:00Z --independence-audit path/to/independence_audit.json
 python address/reference-runtime-v0.1/address_cli.py --limitations
 python address/reference-runtime-v0.1/address_cli.py --conformance
+python address/reference-runtime-v0.1/address_cli.py --runtime-manifest
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only path/to/saved_response.json
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_ok_response.json
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_abstain_response.json
@@ -69,6 +71,8 @@ python address/reference-runtime-v0.1/tools/regenerate_limitations.py
 python address/reference-runtime-v0.1/tools/regenerate_limitations.py --check
 python address/reference-runtime-v0.1/tools/regenerate_conformance_report.py
 python address/reference-runtime-v0.1/tools/regenerate_conformance_report.py --check
+python address/reference-runtime-v0.1/tools/regenerate_runtime_manifest.py
+python address/reference-runtime-v0.1/tools/regenerate_runtime_manifest.py --check
 python address/reference-runtime-v0.1/tools/regenerate_all_frozen_docs.py
 python address/reference-runtime-v0.1/tools/regenerate_all_frozen_docs.py --check
 ```

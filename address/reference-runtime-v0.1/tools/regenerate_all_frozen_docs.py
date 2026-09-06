@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Rebuild frozen limitations + conformance fixtures via their regenerators.
+"""Rebuild frozen limitations + conformance + runtime_manifest fixtures via their regenerators.
 
-Calls regenerate_limitations then regenerate_conformance_report.
+Calls regenerate_limitations, regenerate_conformance_report, and regenerate_runtime_manifest.
 Does not touch contract goldens (use regenerate_contract_goldens.py).
 Run from repository root:
 
@@ -13,7 +13,7 @@ Or from this package directory:
   python tools/regenerate_all_frozen_docs.py
   python tools/regenerate_all_frozen_docs.py --check
 
---check: dry-run via both regenerators; exit 0 if both fixtures match;
+--check: dry-run via all regenerators; exit 0 if all fixtures match;
 exit non-zero if any rewrite would change files (does not write).
 """
 
@@ -39,7 +39,7 @@ def _load_main(script_name: str):
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Rebuild frozen limitations + conformance fixtures."
+        description="Rebuild frozen limitations + conformance + runtime_manifest fixtures."
     )
     parser.add_argument(
         "--check",
@@ -51,6 +51,7 @@ def main(argv: list[str] | None = None) -> int:
     for name in (
         "regenerate_limitations.py",
         "regenerate_conformance_report.py",
+        "regenerate_runtime_manifest.py",
     ):
         code = _load_main(name)(child_argv)
         if code:

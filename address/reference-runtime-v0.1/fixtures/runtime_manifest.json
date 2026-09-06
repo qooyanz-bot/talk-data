@@ -1,0 +1,67 @@
+{
+  "files": [
+    {
+      "bytes": 12360,
+      "path": "address_cli.py",
+      "sha256": "sha256:9dd8422e46fdd7e0e7e8c3bba8c1ff75079b23704b4fa462ea4e98c80f2c8a0a"
+    },
+    {
+      "bytes": 13122,
+      "path": "address_runtime.py",
+      "sha256": "sha256:fd472744b09bdfb59e515f94a03c3163997cec8d1e95658653a1e7a5a18285f4"
+    },
+    {
+      "bytes": 3421,
+      "path": "audit_log.py",
+      "sha256": "sha256:24b6ec3c4e2cb66d32dec34564eec353e33a8cb190e328b3dc122c6283674f24"
+    },
+    {
+      "bytes": 8185,
+      "path": "conformance.py",
+      "sha256": "sha256:433f7209a4d8e8b8b1cdff85743f082f3f084c6ac9be04e43bc4b5283e8d68c3"
+    },
+    {
+      "bytes": 6942,
+      "path": "decision_log.py",
+      "sha256": "sha256:9c0de983c4aff12bbf9981e4bbe73d44a3e959259b8628a0e723b0b8acc38b78"
+    },
+    {
+      "bytes": 12795,
+      "path": "evidence_contract.py",
+      "sha256": "sha256:e11b94c2467b41f42f81c353265bc205a23358c2dc551adfdf31ace97301532e"
+    },
+    {
+      "bytes": 2694,
+      "path": "limitations.py",
+      "sha256": "sha256:2c111bba3e4d65b1d251784e992677204a607dc39f57787c5f4b2143d1aa6eed"
+    },
+    {
+      "bytes": 5596,
+      "path": "protocol_claim_gate.py",
+      "sha256": "sha256:ec3161712f51180b25606fd8eb385bc3a0fe3747d6d7a607929193ca8b1d632f"
+    },
+    {
+      "bytes": 1706,
+      "path": "replay_verifier.py",
+      "sha256": "sha256:d25084b07656f0501b313925e02f525bb9c1cffa1d9e3f5fc9e6eae4bae3815d"
+    },
+    {
+      "bytes": 8392,
+      "path": "resolution_gate.py",
+      "sha256": "sha256:b7e88182bcd3eb6b8bfbbbeefcc7afebcc4187f575169b7b8899876a50f0cd9a"
+    },
+    {
+      "bytes": 6887,
+      "path": "response_contract.py",
+      "sha256": "sha256:18624ca4bd3c4669b90dc16fb693a2bc409177c8ac408dae37fa1e1b43bd18dd"
+    },
+    {
+      "bytes": 4475,
+      "path": "runtime_manifest.py",
+      "sha256": "sha256:d682980799c81893ee6f72645fcc0a9ec64a8eec98a2b6bdc593435f2f0f0c42"
+    }
+  ],
+  "package_digest": "sha256:9d80a21fc24fa89310e9fb07a22347cbf07dfee220205f6635e88153abd1325c",
+  "schema_version": "address-runtime-manifest-v1",
+  "status": "RUNTIME_MANIFEST"
+}
