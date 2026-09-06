@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-06 (Address memory and lineage boundaries)
+- Memory scopeにauthorized/versioned/revocableを必須化し、Lineageの入力参照をSHA-256形式に限定。未許可・追跡不能なMemory／入力参照を拒否する。
+
 ## 2026-09-06 (Address response contract)
 - CLI出力のResponse Contractを追加。Value非返却、既知の判定状態、Auditとの判断一致を検証し、将来の出力回帰を防ぐ。
 

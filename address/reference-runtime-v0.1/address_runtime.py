@@ -84,8 +84,15 @@ def validate(address: Any) -> list[str]:
     lineage = address["lineage"]
     if not isinstance(lineage, dict) or not isinstance(lineage.get("input_hashes"), list):
         errors.append("lineage requires input_hashes")
-    if not isinstance(address["memory_scope"], str) or not address["memory_scope"]:
+    elif not all(isinstance(item, str) and re.fullmatch(r"sha256:[0-9a-f]{64}", item) for item in lineage["input_hashes"]):
+        errors.append("lineage input_hashes must use sha256:<64 lowercase hex>")
+    memory_scope = address["memory_scope"]
+    if not isinstance(memory_scope, str):
         errors.append("memory_scope must be a non-empty string")
+    else:
+        memory_terms = {term.strip() for term in memory_scope.split(",") if term.strip()}
+        if not {"authorized", "versioned", "revocable"}.issubset(memory_terms):
+            errors.append("memory_scope must include authorized, versioned, and revocable")
     freshness = address["freshness_requirement"]
     if not isinstance(freshness, dict) or not isinstance(freshness.get("max_age"), str) or not re.fullmatch(r"P\d+D", freshness["max_age"]):
         errors.append("freshness_requirement.max_age must use P<n>D")
