@@ -106,6 +106,12 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 - 出力は特徴、prediction、clip/frame evidenceのみで、raw画像は成果物に残さない。
 - 検証: 全 217 テスト成功。未完成: 3D CNN/transformer等の実動画モデル、長時間clipの性能評価。
 
+## vision dependency contract
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/e71b36e`
+- `pyproject.toml` に `dev`（pytest + numpy）と `vision`（numpy + OpenCV + ONNX Runtime）のoptional dependency setを追加。
+- `pip install -e . --no-deps` のeditable build成功、全 217 テスト成功。torch/torchvision等の未導入状態を能力として偽装しない。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
