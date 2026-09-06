@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-07 (Physical AI Loop interview brief export)
+
+- `changelog/2026-09-07-physical-ai-loop-interview-brief.md` を追加。
+- 実装作業ディレクトリに全サンプルログ横断の面談/提出用Markdown brief生成とdownload UIを追加。
+- 検証: `npm test` 13/13 pass、`npm run build` exit 0、既存dev server HTTP 200、HTML内にbriefパネル文言あり。
+
 ## 2026-09-07 (Physical AI Loop arm-mobile fixture)
 
 - `changelog/2026-09-07-physical-ai-loop-arm-mobile-fixture.md` を追加。
