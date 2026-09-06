@@ -43,6 +43,11 @@ class AuditLogTests(unittest.TestCase):
         record["reason"] = "TAMPERED"
         self.assertIn("audit_id does not match", audit_log.verify(record)[0])
 
+    def test_malformed_digest_item_is_rejected_without_raising(self):
+        record = audit_log.create(self.address, self.evidence, self.outcome, "2026-09-06T00:00:00Z")
+        record["evidence_digests"] = ["not-an-object"]
+        self.assertEqual(audit_log.verify(record), ["invalid evidence digest list"])
+
 
 if __name__ == "__main__":
     unittest.main()

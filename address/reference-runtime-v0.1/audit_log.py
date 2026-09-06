@@ -41,7 +41,10 @@ def verify(record: Any) -> list[str]:
         return ["missing required fields: " + ", ".join(sorted(missing))]
     if record["schema_version"] != "ADDRESS-AUDIT-1.0":
         return ["unsupported audit schema version"]
-    if not isinstance(record["evidence_digests"], list) or any(set(item) != {"evidence_id", "digest"} for item in record["evidence_digests"]):
+    if not isinstance(record["evidence_digests"], list) or any(
+        not isinstance(item, dict) or set(item) != {"evidence_id", "digest"}
+        for item in record["evidence_digests"]
+    ):
         return ["invalid evidence digest list"]
     payload = dict(record)
     actual = payload.pop("audit_id")

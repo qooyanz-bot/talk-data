@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-06 (Audit Log malformed-input hardening)
+- Audit Logのevidence digest項目がobjectでない場合も、例外停止せず明示的に拒否するよう修正。
+
 ## 2026-09-06 (Address memory and lineage boundaries)
 - Memory scopeにauthorized/versioned/revocableを必須化し、Lineageの入力参照をSHA-256形式に限定。未許可・追跡不能なMemory／入力参照を拒否する。
 
