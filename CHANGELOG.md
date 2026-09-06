@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2026-09-06 (Address reference runtime v0.1)
+- Replay Verifierを追加。保存された監査ログを自己ハッシュだけでなく、同一Address・Evidence・時刻でGateを再実行して検証する。入力、系譜、判断の不一致を検出する。
 - content-addressed Audit Logを追加。値とassertion本文を記録せず、Address ID、証拠digest、判定、時刻から再計算可能な監査IDを生成・検証する。
 - Resolution Gateを追加。Address・Evidence Contract・鮮度・assertion矛盾を統合し、失敗時はすべて `ABSTAIN` と `value=null` を返す。
 - Evidence Contract evaluatorを追加。authority、generator、semantic lawの共有を検出し、別pathでも独立性とは認定しない。metadata分離を通過しても `CONTRACTED` とし、semantic independenceの監査済み主張はしない。

@@ -7,6 +7,7 @@
 - Evidence Contractを追加し、path IDだけでなくauthority・generator・semantic lawの共通原因を検出する。metadata分離は `CONTRACTED` に留め、監査済みsemantic independenceとは扱わない。
 - Resolution Gateを追加。Address、Evidence Contract、鮮度、assertion矛盾を統合し、未達時は必ず `ABSTAIN` / `value=null` とする。
 - content-addressed Audit Logを追加。Valueとassertion本文を保存せず、Address・evidence digest・判定・時刻を再計算できるaudit IDとして記録する。
+- Replay Verifierを追加。同じAddress・Evidence・時刻でGateを再実行し、監査ログの自己hashだけでなく、判断と系譜も照合する。
 
 ## 自己点検
 

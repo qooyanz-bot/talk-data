@@ -11,6 +11,7 @@
 - Evidence Contractの共通authority / generator / semantic law検出。path IDだけの相違は独立性と扱わない。
 - Resolution Gateによる `READY_FOR_VERIFICATION` / `ABSTAIN` 判定。証拠不足、共通原因、鮮度切れ、矛盾ではValueを返さない。
 - content-addressed Audit Log。Valueやassertion本文を保存せず、Address・証拠digest・判定を再検算可能にする。
+- Replay Verifier。保存済み監査ログに対して同じAddress・Evidence・時刻でGateを再実行し、判断と系譜の完全一致を検証する。
 
 ## 非対象
 
