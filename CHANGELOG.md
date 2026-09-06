@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-06 (CharacterOS platform v1 approved specification)
+
+- `characteros/` を新設し、K承認済みのCharacterOS-Engine / Operation / Client / Tool / Pay / Market / Gate / BASE初版仕様を追加。
+- 未検証のストア、法務、決済、GPU、スケール条件は公開前ゲートとして分離し、確定事実として記録しない。
+
 ## 2026-09-06 (Address CLI standalone mode mutual-exclusion matrix test)
 
 - `test_address_cli.py` に `test_standalone_modes_mutually_exclusive_matrix` を追加。

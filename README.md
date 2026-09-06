@@ -1,5 +1,9 @@
 # talk-data
 
+## CharacterOS
+
+2026-09-06にKが承認したCharacterOSプラットフォーム仕様の記録は[characteros/](characteros/README.md)を参照。
+
 H1 / Future Concept の**正本**リポジトリ。
 
 - Designer: K（亀田紀明）
