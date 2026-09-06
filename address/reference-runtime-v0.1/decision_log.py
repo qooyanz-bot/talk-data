@@ -102,6 +102,7 @@ def verify(record: Any) -> list[str]:
 
     claim_type must be in protocol_claim_gate.CLAIM_TYPE_ALLOWED.
     claim_reason when present (not None) must be in protocol_claim_gate.CLAIM_REASON_ALLOWED.
+    claim_status when present (not None) must be in protocol_claim_gate.CLAIM_STATUS_ALLOWED.
     State fields present (not None) must be in protocol_claim_gate closed sets.
     auditor_handoff.decision when not None must be PENDING|PASS.
     Handoff keys must be exactly {decision, primary_run_authorized}.
@@ -128,6 +129,15 @@ def verify(record: Any) -> list[str]:
         errors.append(
             "claim_reason must be one of "
             + protocol_claim_gate.format_allowed(protocol_claim_gate.CLAIM_REASON_ALLOWED)
+        )
+    claim_status = record.get("claim_status")
+    if claim_status is not None and (
+        not isinstance(claim_status, str)
+        or claim_status not in protocol_claim_gate.CLAIM_STATUS_ALLOWED
+    ):
+        errors.append(
+            "claim_status must be one of "
+            + protocol_claim_gate.format_allowed(protocol_claim_gate.CLAIM_STATUS_ALLOWED)
         )
     for field, allowed in protocol_claim_gate.STATE_ENUMS:
         value = record.get(field)

@@ -28,6 +28,10 @@ CLAIM_REASON_ALLOWED = frozenset(
         "RECORDED_EVIDENCE_GATES_PASS",
     }
 )
+# Closed claim_status vocabulary (assess_claim status emitters; decision_log / contract single source).
+CLAIM_STATUS_ALLOWED = frozenset(
+    {"ALLOWED_AS_DESIGN", "ALLOWED_AS_RESULT", "BLOCKED"}
+)
 
 STATE_ENUMS = (
     ("evidence_state", EVIDENCE_STATE_ALLOWED),

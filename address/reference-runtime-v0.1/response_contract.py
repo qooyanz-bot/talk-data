@@ -10,7 +10,8 @@ import protocol_claim_gate
 
 DECISIONS = {"ABSTAIN", "READY_FOR_VERIFICATION"}
 REPLAY_STATUSES = {"REPLAY_VERIFIED", "REPLAY_MISMATCH", "LINEAGE_MISMATCH", "INVALID_AUDIT"}
-PROTOCOL_CLAIM_STATUSES = {"ALLOWED_AS_DESIGN", "ALLOWED_AS_RESULT", "BLOCKED"}
+# Single source: protocol_claim_gate.CLAIM_STATUS_ALLOWED
+PROTOCOL_CLAIM_STATUSES = protocol_claim_gate.CLAIM_STATUS_ALLOWED
 
 # Machine-checkable decision_log shape (matches decision_log.build_decision_log output).
 DECISION_LOG_REQUIRED_KEYS = {

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address claim_status closed enum)
+
+- `protocol_claim_gate.CLAIM_STATUS_ALLOWED` = {ALLOWED_AS_DESIGN, ALLOWED_AS_RESULT, BLOCKED} を単一正本（assess_claim status emitters）。
+- `decision_log.verify` が claim_status（非 null）閉集合を強制。`response_contract.PROTOCOL_CLAIM_STATUSES` は同一 frozenset エイリアス（protocol_claim / decision_log 双方）。
+- unittest：未知 status は verify 失敗；共有定数；happy path / R6-G frozen fixture 通過。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address claim_reason closed enum)
 
 - `protocol_claim_gate.CLAIM_REASON_ALLOWED` = {NO_RESULT_CLAIM, EVIDENCE_GATES_UNMET, MANIFEST_INVALID, CLAIM_TYPE_UNKNOWN, CAPABILITY_EVIDENCE_NOT_RESULT_BACKED, RECORDED_EVIDENCE_GATES_PASS} を単一正本（assess_claim が実際に emit する全 reason）。

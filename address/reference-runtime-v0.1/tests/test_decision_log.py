@@ -516,6 +516,43 @@ class DecisionLogTests(unittest.TestCase):
         self.assertIn(frozen["claim_reason"], protocol_claim_gate.CLAIM_REASON_ALLOWED)
         self.assertEqual(decision_log.verify(frozen), [])
 
+    def test_verify_rejects_unknown_claim_status(self):
+        assessment = protocol_claim_gate.assess_claim(self.manifest, "EXPERIMENT_RESULT")
+        log = decision_log.build_decision_log(self.manifest, "EXPERIMENT_RESULT", assessment)
+        log["claim_status"] = "FAKE_STATUS"
+        errors = decision_log.verify(log)
+        self.assertTrue(any("claim_status must be one of" in e for e in errors))
+
+    def test_claim_status_allowed_shared_from_protocol_claim_gate(self):
+        self.assertEqual(
+            protocol_claim_gate.CLAIM_STATUS_ALLOWED,
+            frozenset({"ALLOWED_AS_DESIGN", "ALLOWED_AS_RESULT", "BLOCKED"}),
+        )
+        self.assertEqual(
+            response_contract.PROTOCOL_CLAIM_STATUSES,
+            protocol_claim_gate.CLAIM_STATUS_ALLOWED,
+        )
+
+    def test_happy_path_claim_statuses_verify(self):
+        for claim_type, expected_status in (
+            ("DESIGN_DESCRIPTION", "ALLOWED_AS_DESIGN"),
+            ("EXPERIMENT_RESULT", "BLOCKED"),
+        ):
+            with self.subTest(claim_type=claim_type):
+                assessment = protocol_claim_gate.assess_claim(self.manifest, claim_type)
+                self.assertEqual(assessment.get("status"), expected_status)
+                log = decision_log.build_decision_log(self.manifest, claim_type, assessment)
+                self.assertEqual(log["claim_status"], expected_status)
+                self.assertEqual(decision_log.verify(log), [])
+
+    def test_r6g_frozen_fixture_claim_status_still_valid(self):
+        frozen = json.loads(
+            (ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(frozen["claim_status"], "BLOCKED")
+        self.assertIn(frozen["claim_status"], protocol_claim_gate.CLAIM_STATUS_ALLOWED)
+        self.assertEqual(decision_log.verify(frozen), [])
+
 
 if __name__ == "__main__":
     unittest.main()
