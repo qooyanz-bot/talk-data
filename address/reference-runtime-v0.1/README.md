@@ -5,6 +5,7 @@
 ## 対象
 
 - required field、型、最小のConcept / Dimension分離、系譜ハッシュ
+- malformed inputの安全な拒否。境界検査は例外停止ではなく `INVALID` を返す。
 - `world_id`、Memory / Capability scope、Evidence / Law contract、残差のabstain表現
 - real worldでの公開・許可済みread/verify scope以外の拒否
 - canonical JSONからの安定した `address_id` 再計算

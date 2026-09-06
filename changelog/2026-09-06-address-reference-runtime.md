@@ -8,6 +8,7 @@
 - Resolution Gateを追加。Address、Evidence Contract、鮮度、assertion矛盾を統合し、未達時は必ず `ABSTAIN` / `value=null` とする。
 - content-addressed Audit Logを追加。Valueとassertion本文を保存せず、Address・evidence digest・判定・時刻を再計算できるaudit IDとして記録する。
 - Replay Verifierを追加。同じAddress・Evidence・時刻でGateを再実行し、監査ログの自己hashだけでなく、判断と系譜も照合する。
+- malformed inputの型・時間・scope境界検査を強化。入力不備による例外停止を避け、`INVALID` として明示的に拒否する。
 
 ## 自己点検
 
