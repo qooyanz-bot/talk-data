@@ -10,6 +10,7 @@
 - canonical JSONからの安定した `address_id` 再計算
 - Evidence Contractの共通authority / generator / semantic law検出。path IDだけの相違は独立性と扱わない。
 - Resolution Gateによる `READY_FOR_VERIFICATION` / `ABSTAIN` 判定。証拠不足、共通原因、鮮度切れ、矛盾ではValueを返さない。
+- content-addressed Audit Log。Valueやassertion本文を保存せず、Address・証拠digest・判定を再検算可能にする。
 
 ## 非対象
 
