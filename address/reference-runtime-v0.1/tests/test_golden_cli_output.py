@@ -28,6 +28,8 @@ class GoldenCliOutputTests(unittest.TestCase):
         self.assertEqual(resolution["decision"], self.golden["resolution"]["expected_decision"])
         self.assertEqual(resolution["reason"], self.golden["resolution"]["expected_reason"])
         self.assertIsNone(resolution["value"])
+        self.assertIsInstance(resolution["residual"], list)
+        self.assertTrue(resolution["residual"])  # fixture unknown slots remain residual
         self.assertEqual(response_contract.validate(self.result), [])
 
     def test_generated_audit_public_shape(self):

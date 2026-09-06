@@ -44,6 +44,14 @@ class ResolutionGateTests(unittest.TestCase):
         result = resolution_gate.resolve(self.address, self.bundle, "2026-09-06T00:00:00Z")
         self.assertEqual(result["reason"], "EVIDENCE_REJECTED")
 
+    def test_ready_keeps_unknown_slots_as_residual_and_value_null(self):
+        result = resolution_gate.resolve(self.address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertEqual(result["decision"], "READY_FOR_VERIFICATION")
+        self.assertIsNone(result["value"])
+        self.assertIn("continuity", result["residual"])
+        # Typed binding must not invent a filled slot payload.
+        self.assertNotIn("filled", result)
+
 
 if __name__ == "__main__":
     unittest.main()

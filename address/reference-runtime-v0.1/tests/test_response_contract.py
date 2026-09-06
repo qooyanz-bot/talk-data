@@ -39,3 +39,14 @@ class ResponseContractTests(unittest.TestCase):
     def test_invalid_protocol_claim_status_is_rejected(self):
         self.response["protocol_claim"] = {"status": "ALLOWED_AS_RESULT_FAKE"}
         self.assertIn("protocol_claim status is invalid", response_contract.validate(self.response))
+
+    def test_ready_response_exposes_unfilled_residual(self):
+        self.assertEqual(self.response["resolution"]["decision"], "READY_FOR_VERIFICATION")
+        self.assertIsNone(self.response["resolution"]["value"])
+        self.assertIn("continuity", self.response["resolution"]["residual"])
+
+    def test_filled_value_with_residual_is_rejected(self):
+        self.response["resolution"]["value"] = "invented"
+        # value non-null alone fails; residual present also forbids fill
+        errors = response_contract.validate(self.response)
+        self.assertTrue(any("null" in error or "residual" in error for error in errors))

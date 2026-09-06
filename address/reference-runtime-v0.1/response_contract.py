@@ -18,7 +18,7 @@ def validate(response: Any) -> list[str]:
     resolution = response.get("resolution")
     if not isinstance(resolution, dict):
         return ["resolution must be an object"]
-    required = {"decision", "reason", "details", "value"}
+    required = {"decision", "reason", "details", "value", "residual"}
     if required - set(resolution):
         return ["resolution missing required fields"]
     errors: list[str] = []
@@ -27,9 +27,9 @@ def validate(response: Any) -> list[str]:
     if resolution["value"] is not None:
         errors.append("public resolution value must be null")
     residual = resolution.get("residual")
-    if residual is not None and not isinstance(residual, list):
-        errors.append("resolution residual must be a list or omitted")
-    elif isinstance(residual, list) and residual and resolution["value"] is not None:
+    if not isinstance(residual, list):
+        errors.append("resolution residual must be a list")
+    elif residual and resolution["value"] is not None:
         errors.append("unresolved residual forbids a filled value")
     audit = response.get("generated_audit")
     if not isinstance(audit, dict):

@@ -14,7 +14,8 @@
       "decision",
       "reason",
       "details",
-      "value"
+      "value",
+      "residual"
     ],
     "decision_set": [
       "ABSTAIN",
@@ -22,7 +23,8 @@
     ],
     "expected_decision": "READY_FOR_VERIFICATION",
     "expected_reason": "CONTRACTED_EVIDENCE",
-    "value_must_be_null": true
+    "value_must_be_null": true,
+    "residual_must_remain_unfilled": true
   },
   "generated_audit": {
     "required_keys": [
