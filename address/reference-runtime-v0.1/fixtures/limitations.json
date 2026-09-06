@@ -1,0 +1,12 @@
+{
+  "crypto_bypass": "FORBIDDEN",
+  "future_direct": "FORBIDDEN",
+  "r6g_experiment": "NOT_RUN",
+  "r6g_reference": "SPEC_ONLY",
+  "real_domain_extrapolation": "FORBIDDEN",
+  "schema_version": "address-limitations-v1",
+  "secret_access": "FORBIDDEN",
+  "status": "LIMITATIONS",
+  "value_discovery": "NOT_IMPLEMENTED",
+  "world_scope": "SYNTHETIC_ONLY"
+}

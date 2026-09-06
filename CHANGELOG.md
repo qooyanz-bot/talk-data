@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-06 (Address LIMITATIONS / synthetic-only conformance)
+- `limitations.py` と `fixtures/limitations.json` を追加。world_scope=SYNTHETIC_ONLY、value_discovery=NOT_IMPLEMENTED、r6g_experiment=NOT_RUN（SPEC_ONLY）、real_domain_extrapolation / secret_access / crypto_bypass / future_direct=FORBIDDEN を機械可読に宣言。CLI `--limitations` でJSON出力（exit 0）。resolve / `--check-contract-only` と相互排他。R6-G実行・Value発見・現実外挿は主張しない。
+
 ## 2026-09-06 (Address contract-only EVIDENCE_STALE golden)
 - 公開応答EVIDENCE_STALE golden `fixtures/golden_contract_stale_response.json` を追加（observed_atが`--now`とfreshness max_ageに対して古い実evaluate出力: ABSTAIN / EVIDENCE_STALE / value=null・residualあり・audit整合）。`--check-contract-only` / validate で通過し、value充填・入れ子 `lineage.result_sha`・reason非EVIDENCE_STALEで失敗する回帰をREADY/ABSTAIN/CONTRADICTIONと対称に凍結。
 - `tools/regenerate_contract_goldens.py` と match-evaluate unittest に EVIDENCE_STALE を追加。

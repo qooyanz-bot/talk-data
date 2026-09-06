@@ -30,6 +30,8 @@
 - `tools/regenerate_contract_goldens.py` が固定入力からevaluate()でREADY/ABSTAIN/CONTRADICTION/EVIDENCE_STALE goldenを再生成し、digestの手編集を不要にする。unittestがfixtureとfresh evaluate()の完全一致を検査する。
 - `--check-contract-only` と address/evidence/`--now`/`--audit`/`--protocol-manifest`/`--claim-type` の併用は早期に `INVALID_INPUT`（機械可読JSON・非0）で拒否する。
 
+- LIMITATIONS / synthetic-only conformance surface（`limitations.py` / `fixtures/limitations.json`）。world_scope=SYNTHETIC_ONLY、value_discovery=NOT_IMPLEMENTED、r6g_experiment=NOT_RUN（reference SPEC_ONLY）、real_domain_extrapolation / secret_access / crypto_bypass / future_direct=FORBIDDEN を機械可読に宣言。CLI `--limitations` でJSON出力（address/evidence不要）。resolve / `--check-contract-only` と相互排他。
+
 ## 非対象
 
 - Valueの発見、現実の秘密・個人情報・未来値の取得
@@ -42,6 +44,7 @@
 python -m unittest discover -s address/reference-runtime-v0.1/tests -v
 python address/reference-runtime-v0.1/address_runtime.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json
 python address/reference-runtime-v0.1/address_cli.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json address/reference-runtime-v0.1/fixtures/valid_evidence_bundle.json --now 2026-09-06T00:00:00Z
+python address/reference-runtime-v0.1/address_cli.py --limitations
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only path/to/saved_response.json
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_ok_response.json
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_abstain_response.json
@@ -52,4 +55,4 @@ python address/reference-runtime-v0.1/tools/regenerate_contract_goldens.py
 
 契約goldenの再生成は `python address/reference-runtime-v0.1/tools/regenerate_contract_goldens.py` （固定Address・Evidence・`--now`相当時刻からevaluate()出力を書き戻す）。手編集しない。
 
-結果は `VALID`、又は機械可読な `INVALID` と違反一覧で返す。統合CLIはResolutionとvalue-free Audit Logを返し、`--audit` 指定時はReplayも検証する。`--check-contract-only` はGateを再実行せず、保存済み公開応答の契約だけを検査する（`CONTRACT_OK` / `CONTRACT_INVALID`）。address/evidence/`--now` など解決用引数と併用すると早期に `INVALID_INPUT` JSONで非0終了する。外部接続・ファイル書込み・Value導出はしない。
+結果は `VALID`、又は機械可読な `INVALID` と違反一覧で返す。統合CLIはResolutionとvalue-free Audit Logを返し、`--audit` 指定時はReplayも検証する。`--limitations` はAddress/EvidenceなしでLIMITATIONS文書をJSON出力する（exit 0）。`--check-contract-only` はGateを再実行せず、保存済み公開応答の契約だけを検査する（`CONTRACT_OK` / `CONTRACT_INVALID`）。`--limitations` / `--check-contract-only` と address/evidence/`--now` など解決用引数の併用、又は両モードの併用は早期に `INVALID_INPUT` JSONで非0終了する。外部接続・ファイル書込み・Value導出はしない。R6-G実行や現実ドメイン外挿は主張しない。

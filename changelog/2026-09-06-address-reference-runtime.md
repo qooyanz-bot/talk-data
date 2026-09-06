@@ -32,6 +32,8 @@
 - 公開応答CONTRADICTION golden fixture `fixtures/golden_contract_contradiction_response.json` を追加。同一`assertion_key`で衝突する`assertion_value`の実evaluate()出力（decision=ABSTAIN / reason=CONTRADICTION / value=null / residualあり / audit整合）を凍結。`--check-contract-only` / validate で通過し、value充填・入れ子`lineage.result_sha`刻印・reason非CONTRADICTIONで失敗するunittestをREADY/ABSTAINと対称に追加。
 - `tools/regenerate_contract_goldens.py` を追加。固定入力からevaluate()でREADY/ABSTAIN/CONTRADICTION goldenを再生成し、digest手編集を不要にする。unittestがfixtureとfresh evaluate()の完全一致を検査する。
 
+- LIMITATIONS / synthetic-only conformance surface（`limitations.py` / `fixtures/limitations.json`）を追加。world_scope=SYNTHETIC_ONLY、value_discovery=NOT_IMPLEMENTED、r6g_experiment=NOT_RUN（reference SPEC_ONLY）、real_domain_extrapolation / secret_access / crypto_bypass / future_direct=FORBIDDEN を機械可読に宣言。CLI `--limitations` でJSON出力（address/evidence不要・exit 0）。resolve / `--check-contract-only` と相互排他。evaluate公開応答は value=null を維持し value_discovery の NOT_IMPLEMENTED と矛盾しない。R6-G実行・Value発見・宇宙DB/秘密/暗号回避を事実として書かない。
+
 ## 自己点検
 
 - E系: 外部接続、秘密読取り、認証回避、個人の隠れた情報、未来値取得を実装していない。

@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import audit_log
+import limitations
 import protocol_claim_gate
 import replay_verifier
 import response_contract
@@ -50,8 +51,35 @@ def check_contract_only(response_path: str) -> dict[str, Any]:
     return {"status": "CONTRACT_OK", "errors": []}
 
 
+def _resolve_flag_conflicts(args: argparse.Namespace, exclusive_flag: str) -> list[str]:
+    """Collect mutual-exclusion errors for standalone modes (no resolve inputs)."""
+    conflicts: list[str] = []
+    if exclusive_flag == "--limitations" and args.check_contract_only is not None:
+        conflicts.append("--check-contract-only must not be supplied with --limitations")
+    if exclusive_flag == "--check-contract-only" and args.limitations:
+        conflicts.append("--limitations must not be supplied with --check-contract-only")
+    if args.address is not None:
+        conflicts.append(f"address positional must not be supplied with {exclusive_flag}")
+    if args.evidence is not None:
+        conflicts.append(f"evidence positional must not be supplied with {exclusive_flag}")
+    if args.now is not None:
+        conflicts.append(f"--now must not be supplied with {exclusive_flag}")
+    if args.audit is not None:
+        conflicts.append(f"--audit must not be supplied with {exclusive_flag}")
+    if args.protocol_manifest is not None:
+        conflicts.append(f"--protocol-manifest must not be supplied with {exclusive_flag}")
+    if args.claim_type is not None:
+        conflicts.append(f"--claim-type must not be supplied with {exclusive_flag}")
+    return conflicts
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Read-only Address resolution and replay verifier")
+    parser.add_argument(
+        "--limitations",
+        action="store_true",
+        help="Print the synthetic-only LIMITATIONS / conformance document as JSON (no address/evidence)",
+    )
     parser.add_argument(
         "--check-contract-only",
         metavar="RESPONSE.json",
@@ -65,20 +93,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--claim-type", help="Claim type to assess against the protocol manifest")
     args = parser.parse_args(argv)
 
+    if args.limitations:
+        conflicts = _resolve_flag_conflicts(args, "--limitations")
+        if conflicts:
+            print(json.dumps({"status": "INVALID_INPUT", "errors": conflicts}, ensure_ascii=False, sort_keys=True))
+            return 2
+        print(json.dumps(limitations.limitations(), ensure_ascii=False, sort_keys=True))
+        return 0
+
     if args.check_contract_only is not None:
-        conflicts: list[str] = []
-        if args.address is not None:
-            conflicts.append("address positional must not be supplied with --check-contract-only")
-        if args.evidence is not None:
-            conflicts.append("evidence positional must not be supplied with --check-contract-only")
-        if args.now is not None:
-            conflicts.append("--now must not be supplied with --check-contract-only")
-        if args.audit is not None:
-            conflicts.append("--audit must not be supplied with --check-contract-only")
-        if args.protocol_manifest is not None:
-            conflicts.append("--protocol-manifest must not be supplied with --check-contract-only")
-        if args.claim_type is not None:
-            conflicts.append("--claim-type must not be supplied with --check-contract-only")
+        conflicts = _resolve_flag_conflicts(args, "--check-contract-only")
         if conflicts:
             print(json.dumps({"status": "INVALID_INPUT", "errors": conflicts}, ensure_ascii=False, sort_keys=True))
             return 2
@@ -91,7 +115,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if result["status"] == "CONTRACT_OK" else 1
 
     if args.address is None or args.evidence is None or args.now is None:
-        parser.error("address, evidence, and --now are required unless --check-contract-only is set")
+        parser.error("address, evidence, and --now are required unless --limitations or --check-contract-only is set")
 
     try:
         result = evaluate(
