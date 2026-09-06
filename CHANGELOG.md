@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-07 (Physical AI Loop violation breakdown metrics)
+
+- `changelog/2026-09-07-physical-ai-loop-violation-breakdown.md` を追加。
+- 実装作業ディレクトリに違反内訳、違反削減率、clearance改善率、因果改善シグナルpanelを追加。
+- 検証: `npm test` 13/13 pass、`npm run build` exit 0、既存dev server HTTP 200、HTML内に新パネル文言あり。
+
 ## 2026-09-07 (Physical AI Loop interview brief export)
 
 - `changelog/2026-09-07-physical-ai-loop-interview-brief.md` を追加。
