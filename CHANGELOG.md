@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address decision_log closed-enum mirror)
+
+- `protocol_claim_gate` の閉集合 frozenset（`STATE_ENUMS` / `EVIDENCE_STATE_ALLOWED` 等 / `AUDITOR_HANDOFF_*`）を単一正本として export；`decision_log.verify` が状態フィールド（非 null）と `auditor_handoff.decision`（非 null → PENDING|PASS）および handoff キー厳密集合を同じ集合で検査。
+- Response Contract は decision_log 存在時に `decision_log.verify` 経由で同一 enum 検査（単一路）；handoff キー定数は `AUDITOR_HANDOFF_KEYS` を共有。
+- unittest：`evidence_state="EXECUTED"` 改ざんは verify/contract 失敗；R6-G frozen fixture / valid manifest の build_decision_log は通過。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address protocol manifest closed-enum validation)
 
 - `protocol_claim_gate.validate_manifest(manifest) -> list[str]`：manifest 状態フィールドの閉集合 enum を機械検査（例外なし）。evidence_state / implementation_state / experiment_state / independent_replay_state；protocol_id 非空文字列；auditor_handoff があるときキーは厳密に {decision, primary_run_authorized}、decision=`PENDING|PASS`（FAIL は fixtures/tests 未出現のため未採用）、primary_run_authorized=bool|null。

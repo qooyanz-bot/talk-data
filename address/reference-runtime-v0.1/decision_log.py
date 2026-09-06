@@ -13,10 +13,12 @@ from __future__ import annotations
 from typing import Any
 
 import audit_log
+import protocol_claim_gate
 
 SCHEMA_VERSION = "address-decision-log-v1"
 
 # Fields copied from the protocol manifest into the decision log (state only).
+# Closed enums: single source of truth in protocol_claim_gate.STATE_ENUMS.
 _STATE_FIELDS = (
     "evidence_state",
     "experiment_state",
@@ -25,6 +27,7 @@ _STATE_FIELDS = (
 )
 
 # auditor_handoff snapshot: decision + primary_run_authorized only (no secrets).
+# Exact key set matches protocol_claim_gate.AUDITOR_HANDOFF_KEYS.
 _HANDOFF_KEYS = ("decision", "primary_run_authorized")
 
 # Required keys on a content-addressed decision_log record (includes id).
@@ -90,7 +93,12 @@ create = build_decision_log
 
 
 def verify(record: Any) -> list[str]:
-    """Verify the record's required shape and self-addressed integrity."""
+    """Verify required shape, closed-enum states, handoff keys, and self-addressed integrity.
+
+    State fields present (not None) must be in protocol_claim_gate closed sets.
+    auditor_handoff.decision when not None must be PENDING|PASS.
+    Handoff keys must be exactly {decision, primary_run_authorized}.
+    """
     if not isinstance(record, dict):
         return ["decision_log must be an object"]
     missing = REQUIRED_KEYS - set(record)
@@ -98,7 +106,33 @@ def verify(record: Any) -> list[str]:
         return ["missing required fields: " + ", ".join(sorted(missing))]
     if record["schema_version"] != SCHEMA_VERSION:
         return ["unsupported decision_log schema version"]
+    errors: list[str] = []
+    for field, allowed in protocol_claim_gate.STATE_ENUMS:
+        value = record.get(field)
+        if value is not None and (not isinstance(value, str) or value not in allowed):
+            errors.append(f"{field} must be one of {protocol_claim_gate.format_allowed(allowed)}")
+    handoff = record.get("auditor_handoff")
+    if not isinstance(handoff, dict):
+        errors.append("auditor_handoff must be an object")
+    else:
+        if set(handoff) != protocol_claim_gate.AUDITOR_HANDOFF_KEYS:
+            errors.append(
+                "auditor_handoff keys must be only decision, primary_run_authorized"
+            )
+        decision = handoff.get("decision")
+        if decision is not None and (
+            not isinstance(decision, str)
+            or decision not in protocol_claim_gate.AUDITOR_HANDOFF_DECISION_ALLOWED
+        ):
+            errors.append(
+                "auditor_handoff.decision must be one of "
+                + protocol_claim_gate.format_allowed(
+                    protocol_claim_gate.AUDITOR_HANDOFF_DECISION_ALLOWED
+                )
+            )
     payload = dict(record)
     actual = payload.pop("decision_log_id")
     expected = "decision_log:" + audit_log.content_digest(payload).removeprefix("sha256:")
-    return [] if actual == expected else ["decision_log_id does not match canonical record hash"]
+    if actual != expected:
+        errors.append("decision_log_id does not match canonical record hash")
+    return errors

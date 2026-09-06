@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import address_cli  # noqa: E402
 import address_runtime  # noqa: E402
+import audit_log  # noqa: E402
 import decision_log  # noqa: E402
 import protocol_claim_gate  # noqa: E402
 import response_contract  # noqa: E402
@@ -299,6 +300,72 @@ class DecisionLogTests(unittest.TestCase):
         result["decision_log"]["decision_log_id"] = "decision_log:" + ("0" * 64)
         errors = response_contract.validate(result)
         self.assertTrue(any("decision_log_id does not match" in error for error in errors))
+
+
+    def test_verify_rejects_unknown_evidence_state_executed(self):
+        assessment = protocol_claim_gate.assess_claim(self.manifest, "EXPERIMENT_RESULT")
+        log = decision_log.build_decision_log(self.manifest, "EXPERIMENT_RESULT", assessment)
+        log["evidence_state"] = "EXECUTED"
+        payload = {key: value for key, value in log.items() if key != "decision_log_id"}
+        log["decision_log_id"] = "decision_log:" + audit_log.content_digest(payload).removeprefix("sha256:")
+        errors = decision_log.verify(log)
+        self.assertTrue(any("evidence_state must be one of" in error for error in errors))
+        self.assertFalse(any("decision_log_id" in error for error in errors))
+
+    def test_response_contract_rejects_unknown_decision_log_evidence_state(self):
+        result = address_cli.evaluate(
+            self.address,
+            self.bundle,
+            "2026-09-06T00:00:00Z",
+            protocol_manifest=self.manifest,
+            claim_type="EXPERIMENT_RESULT",
+        )
+        result["decision_log"]["evidence_state"] = "EXECUTED"
+        errors = response_contract.validate(result)
+        self.assertTrue(any("evidence_state must be one of" in error for error in errors))
+
+    def test_verify_rejects_unknown_auditor_handoff_decision(self):
+        assessment = protocol_claim_gate.assess_claim(self.manifest, "EXPERIMENT_RESULT")
+        log = decision_log.build_decision_log(self.manifest, "EXPERIMENT_RESULT", assessment)
+        log["auditor_handoff"] = {"decision": "FAIL", "primary_run_authorized": False}
+        payload = {key: value for key, value in log.items() if key != "decision_log_id"}
+        log["decision_log_id"] = "decision_log:" + audit_log.content_digest(payload).removeprefix("sha256:")
+        errors = decision_log.verify(log)
+        self.assertTrue(any("auditor_handoff.decision must be one of" in error for error in errors))
+
+    def test_verify_allows_none_state_fields(self):
+        assessment = protocol_claim_gate.assess_claim(self.manifest, "DESIGN_DESCRIPTION")
+        log = decision_log.build_decision_log({}, "DESIGN_DESCRIPTION", assessment)
+        for field in (
+            "evidence_state",
+            "experiment_state",
+            "implementation_state",
+            "independent_replay_state",
+        ):
+            self.assertIsNone(log[field])
+        self.assertEqual(decision_log.verify(log), [])
+
+    def test_build_decision_log_from_valid_manifest_passes_verify(self):
+        for claim_type in ("DESIGN_DESCRIPTION", "EXPERIMENT_RESULT", "CAPABILITY_CLAIM"):
+            with self.subTest(claim_type=claim_type):
+                assessment = protocol_claim_gate.assess_claim(self.manifest, claim_type)
+                log = decision_log.build_decision_log(self.manifest, claim_type, assessment)
+                self.assertEqual(decision_log.verify(log), [])
+
+    def test_closed_enums_shared_from_protocol_claim_gate(self):
+        self.assertIs(
+            decision_log.protocol_claim_gate.EVIDENCE_STATE_ALLOWED,
+            protocol_claim_gate.EVIDENCE_STATE_ALLOWED,
+        )
+        self.assertEqual(
+            set(decision_log._HANDOFF_KEYS),
+            protocol_claim_gate.AUDITOR_HANDOFF_KEYS,
+        )
+        self.assertEqual(
+            response_contract.DECISION_LOG_HANDOFF_KEYS,
+            protocol_claim_gate.AUDITOR_HANDOFF_KEYS,
+        )
+
 
     def test_r6g_frozen_decision_log_verifies(self):
         fixture = json.loads(

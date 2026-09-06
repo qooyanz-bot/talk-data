@@ -14,7 +14,7 @@ INDEPENDENT_REPLAY_STATE_ALLOWED = frozenset({"NOT_RUN", "REPLICATED"})
 AUDITOR_HANDOFF_DECISION_ALLOWED = frozenset({"PENDING", "PASS"})
 AUDITOR_HANDOFF_KEYS = frozenset({"decision", "primary_run_authorized"})
 
-_STATE_ENUMS = (
+STATE_ENUMS = (
     ("evidence_state", EVIDENCE_STATE_ALLOWED),
     ("implementation_state", IMPLEMENTATION_STATE_ALLOWED),
     ("experiment_state", EXPERIMENT_STATE_ALLOWED),
@@ -22,8 +22,12 @@ _STATE_ENUMS = (
 )
 
 
-def _one_of(allowed: frozenset[str]) -> str:
+def format_allowed(allowed: frozenset[str]) -> str:
     return ", ".join(sorted(allowed))
+
+
+def _one_of(allowed: frozenset[str]) -> str:
+    return format_allowed(allowed)
 
 
 def validate_manifest(manifest: Any) -> list[str]:
@@ -38,7 +42,7 @@ def validate_manifest(manifest: Any) -> list[str]:
     protocol_id = manifest.get("protocol_id")
     if not isinstance(protocol_id, str) or not protocol_id:
         errors.append("protocol_id must be a non-empty string")
-    for field, allowed in _STATE_ENUMS:
+    for field, allowed in STATE_ENUMS:
         value = manifest.get(field)
         if not isinstance(value, str) or value not in allowed:
             errors.append(f"{field} must be one of {_one_of(allowed)}")

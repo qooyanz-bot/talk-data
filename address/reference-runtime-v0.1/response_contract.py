@@ -6,6 +6,7 @@ from typing import Any
 
 import audit_log
 import decision_log
+import protocol_claim_gate
 
 DECISIONS = {"ABSTAIN", "READY_FOR_VERIFICATION"}
 REPLAY_STATUSES = {"REPLAY_VERIFIED", "REPLAY_MISMATCH", "LINEAGE_MISMATCH", "INVALID_AUDIT"}
@@ -27,7 +28,8 @@ DECISION_LOG_REQUIRED_KEYS = {
     "independent_replay_state",
     "decision_log_id",
 }
-DECISION_LOG_HANDOFF_KEYS = {"decision", "primary_run_authorized"}
+# Single source of truth: protocol_claim_gate.AUDITOR_HANDOFF_KEYS
+DECISION_LOG_HANDOFF_KEYS = protocol_claim_gate.AUDITOR_HANDOFF_KEYS
 
 
 def _nested_result_sha_errors(node: Any, path: str = "") -> list[str]:
