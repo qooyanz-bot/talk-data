@@ -23,3 +23,5 @@ jobs:
           python-version: '3.12'
       - name: Run reference-runtime tests
         run: python -m unittest discover -s address/reference-runtime-v0.1/tests -v
+      - name: Run conformance CLI
+        run: python address/reference-runtime-v0.1/address_cli.py --conformance

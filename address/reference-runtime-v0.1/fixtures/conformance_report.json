@@ -1,0 +1,77 @@
+{
+  "checks": [
+    {
+      "detail": {
+        "document": {
+          "audited_independence": "EXTERNAL_RECORD_REQUIRED",
+          "crypto_bypass": "FORBIDDEN",
+          "future_direct": "FORBIDDEN",
+          "protocol_result_claims": "GATED",
+          "r6g_experiment": "NOT_RUN",
+          "r6g_reference": "SPEC_ONLY",
+          "real_domain_extrapolation": "FORBIDDEN",
+          "schema_version": "address-limitations-v1",
+          "secret_access": "FORBIDDEN",
+          "status": "LIMITATIONS",
+          "value_discovery": "NOT_IMPLEMENTED",
+          "world_scope": "SYNTHETIC_ONLY"
+        },
+        "schema_version": "address-limitations-v1",
+        "status": "LIMITATIONS"
+      },
+      "id": "limitations_document",
+      "status": "LIMITATIONS"
+    },
+    {
+      "detail": {
+        "errors": [],
+        "fixture": "valid_synthetic_address.json",
+        "validate_status": "VALID"
+      },
+      "id": "synthetic_address_validate",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "decision": "READY_FOR_VERIFICATION",
+        "reason": "CONTRACTED_EVIDENCE",
+        "value": null
+      },
+      "id": "synthetic_evaluate_ready",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "decision": "ABSTAIN",
+        "path": "shared_law",
+        "reason": "EVIDENCE_REJECTED",
+        "value": null
+      },
+      "id": "synthetic_evaluate_abstain",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "errors": [],
+        "experiment_state": "NOT_RUN",
+        "fixture": "r6g_frozen_protocol_manifest.json",
+        "manifest_status": "MANIFEST_VALID"
+      },
+      "id": "r6g_protocol_manifest",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "claim_reason": "EVIDENCE_GATES_UNMET",
+        "claim_status": "BLOCKED",
+        "claim_type": "EXPERIMENT_RESULT",
+        "executed": false,
+        "limitations_r6g_experiment": "NOT_RUN"
+      },
+      "id": "r6g_experiment_result_claim",
+      "status": "NOT_RUN"
+    }
+  ],
+  "schema_version": "address-conformance-v1",
+  "status": "CONFORMANT"
+}

@@ -45,6 +45,10 @@ class ConformanceTests(unittest.TestCase):
                 self.assertEqual(set(check), {"id", "status", "detail"})
                 self.assertIn(check["status"], ALLOWED_CHECK_STATUSES)
 
+    def test_fixture_matches_module_output(self):
+        fixture = json.loads((ROOT / "fixtures" / "conformance_report.json").read_text(encoding="utf-8"))
+        self.assertEqual(fixture, conformance.run_conformance())
+
     def test_limitations_section_never_pass(self):
         report = conformance.run_conformance()
         lim = next(c for c in report["checks"] if c["id"] == "limitations_document")

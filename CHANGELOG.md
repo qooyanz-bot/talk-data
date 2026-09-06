@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address conformance report fixture + CI)
+
+- `fixtures/conformance_report.json` を `limitations.json` と同様に凍結（`run_conformance()` の決定的出力；タイムスタンプなし）。unittest が fixture と live `run_conformance()` の完全一致を検査。
+- CI `.github/workflows/address-reference-runtime.yml` に `python address/reference-runtime-v0.1/address_cli.py --conformance` ステップを追加（unittest の後；green main で exit 0）。
+- README 更新。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address conformance runner)
 
 - `conformance.py` / `run_conformance() -> dict`：機械可読適合レポート（`schema_version=address-conformance-v1`、`checks: [{id, status, detail}]`、overall=`CONFORMANT`|`FAIL`）。
