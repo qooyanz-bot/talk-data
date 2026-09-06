@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 (Address CLI --validate-protocol-manifest)
+
+- CLI `--validate-protocol-manifest MANIFEST.json` を追加：`protocol_claim_gate.validate_manifest` のみ実行。成功時 exit 0 + `{status: MANIFEST_VALID, errors: []}`；失敗時非0 + `{status: MANIFEST_INVALID, errors: [...]}`（INVALID_INPUT / CONTRACT 系と同形）。
+- resolve / `--limitations` / `--check-contract-only` / `--verify-decision-log` と相互排他（既存 standalone hygiene）。
+- unittest：R6-G frozen fixture VALID；未知 enum INVALID；flag combo 拒否。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
+
 ## 2026-09-06 (Address decision_log closed-enum mirror)
 
 - `protocol_claim_gate` の閉集合 frozenset（`STATE_ENUMS` / `EVIDENCE_STATE_ALLOWED` 等 / `AUDITOR_HANDOFF_*`）を単一正本として export；`decision_log.verify` が状態フィールド（非 null）と `auditor_handoff.decision`（非 null → PENDING|PASS）および handoff キー厳密集合を同じ集合で検査。

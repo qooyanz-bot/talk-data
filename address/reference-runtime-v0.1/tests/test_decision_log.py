@@ -410,6 +410,7 @@ class DecisionLogTests(unittest.TestCase):
             ["--now", "2026-09-06T00:00:00Z"],
             ["--limitations"],
             ["--check-contract-only", str(ROOT / "fixtures" / "golden_contract_ok_response.json")],
+            ["--validate-protocol-manifest", str(ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json")],
             ["--independence-audit", "audit.json"],
         ]
         for extra in cases:

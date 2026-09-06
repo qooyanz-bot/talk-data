@@ -73,6 +73,15 @@ def verify_decision_log_only(decision_log_path: str) -> dict[str, Any]:
     return {"status": "DECISION_LOG_OK", "errors": []}
 
 
+def validate_protocol_manifest_only(manifest_path: str) -> dict[str, Any]:
+    """Validate a protocol manifest JSON via protocol_claim_gate.validate_manifest (closed enums / handoff)."""
+    manifest = _load(manifest_path)
+    errors = protocol_claim_gate.validate_manifest(manifest)
+    if errors:
+        return {"status": "MANIFEST_INVALID", "errors": errors}
+    return {"status": "MANIFEST_VALID", "errors": []}
+
+
 def _resolve_flag_conflicts(args: argparse.Namespace, exclusive_flag: str) -> list[str]:
     """Collect mutual-exclusion errors for standalone modes (no resolve inputs)."""
     conflicts: list[str] = []
@@ -80,6 +89,7 @@ def _resolve_flag_conflicts(args: argparse.Namespace, exclusive_flag: str) -> li
         "--limitations": args.limitations,
         "--check-contract-only": args.check_contract_only is not None,
         "--verify-decision-log": args.verify_decision_log is not None,
+        "--validate-protocol-manifest": args.validate_protocol_manifest is not None,
     }
     for flag, active in exclusive_modes.items():
         if flag != exclusive_flag and active:
@@ -117,6 +127,11 @@ def main(argv: list[str] | None = None) -> int:
         "--verify-decision-log",
         metavar="DECISION_LOG.json",
         help="Verify a saved Decision Log JSON via decision_log.verify only (no resolve / no full response contract)",
+    )
+    parser.add_argument(
+        "--validate-protocol-manifest",
+        metavar="MANIFEST.json",
+        help="Validate a protocol manifest JSON via protocol_claim_gate.validate_manifest only (closed enums / handoff shape)",
     )
     parser.add_argument("address", nargs="?", help="Address JSON path")
     parser.add_argument("evidence", nargs="?", help="Evidence bundle JSON path")
@@ -164,10 +179,23 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 0 if result["status"] == "DECISION_LOG_OK" else 1
 
+    if args.validate_protocol_manifest is not None:
+        conflicts = _resolve_flag_conflicts(args, "--validate-protocol-manifest")
+        if conflicts:
+            print(json.dumps({"status": "INVALID_INPUT", "errors": conflicts}, ensure_ascii=False, sort_keys=True))
+            return 2
+        try:
+            result = validate_protocol_manifest_only(args.validate_protocol_manifest)
+        except (OSError, ValueError, json.JSONDecodeError, TypeError) as exc:
+            print(json.dumps({"status": "INVALID_INPUT", "errors": [str(exc)]}, ensure_ascii=False, sort_keys=True))
+            return 2
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0 if result["status"] == "MANIFEST_VALID" else 1
+
     if args.address is None or args.evidence is None or args.now is None:
         parser.error(
             "address, evidence, and --now are required unless --limitations, "
-            "--check-contract-only, or --verify-decision-log is set"
+            "--check-contract-only, --verify-decision-log, or --validate-protocol-manifest is set"
         )
 
     try:

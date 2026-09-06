@@ -1,10 +1,15 @@
 import copy
+import json
 import sys
+import tempfile
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+import address_cli  # noqa: E402
 import protocol_claim_gate  # noqa: E402
 
 
@@ -91,3 +96,56 @@ class ProtocolClaimGateTests(unittest.TestCase):
         self.assertEqual(result["status"], "BLOCKED")
         self.assertEqual(result["reason"], "MANIFEST_INVALID")
         self.assertTrue(any("implementation_state must be one of" in e for e in result["unmet"]))
+
+    def test_validate_protocol_manifest_cli_accepts_r6g_frozen(self):
+        fixture = ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json"
+        buf = StringIO()
+        with redirect_stdout(buf):
+            code = address_cli.main(["--validate-protocol-manifest", str(fixture)])
+        self.assertEqual(code, 0)
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(payload["status"], "MANIFEST_VALID")
+        self.assertEqual(payload["errors"], [])
+
+    def test_validate_protocol_manifest_cli_rejects_unknown_enum(self):
+        manifest = copy.deepcopy(R6G_FROZEN)
+        manifest["evidence_state"] = "UNKNOWN_EVIDENCE"
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "bad_manifest.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            buf = StringIO()
+            with redirect_stdout(buf):
+                code = address_cli.main(["--validate-protocol-manifest", str(path)])
+            self.assertEqual(code, 1)
+            payload = json.loads(buf.getvalue())
+            self.assertEqual(payload["status"], "MANIFEST_INVALID")
+            self.assertTrue(any("evidence_state must be one of" in e for e in payload["errors"]))
+
+    def test_validate_protocol_manifest_rejects_resolve_and_other_standalone_flags(self):
+        fixture = str(ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json")
+        cases = [
+            ["address.json", "evidence.json"],
+            ["--now", "2026-09-06T00:00:00Z"],
+            ["--limitations"],
+            ["--check-contract-only", str(ROOT / "fixtures" / "golden_contract_ok_response.json")],
+            ["--verify-decision-log", str(ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json")],
+            ["--protocol-manifest", "manifest.json"],
+            ["--claim-type", "DESIGN_DESCRIPTION"],
+            ["--independence-audit", "audit.json"],
+            ["--audit", "audit.json"],
+        ]
+        for extra in cases:
+            with self.subTest(extra=extra):
+                buf = StringIO()
+                with redirect_stdout(buf):
+                    code = address_cli.main(["--validate-protocol-manifest", fixture, *extra])
+                self.assertEqual(code, 2)
+                payload = json.loads(buf.getvalue())
+                self.assertEqual(payload["status"], "INVALID_INPUT")
+                self.assertTrue(payload["errors"])
+
+
+
+
+if __name__ == "__main__":
+    unittest.main()
