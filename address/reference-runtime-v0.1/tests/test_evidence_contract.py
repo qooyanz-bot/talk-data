@@ -356,3 +356,16 @@ class EvidenceContractTests(unittest.TestCase):
                 evidence_contract.AUDIT_STATUS_ALLOWED
             )
         )
+
+
+    def test_required_fields_and_axes_exported(self):
+        self.assertIsInstance(evidence_contract.REQUIRED_FIELDS, frozenset)
+        self.assertIsInstance(evidence_contract.INDEPENDENCE_AXES, frozenset)
+        self.assertIsInstance(evidence_contract.AUDITED_INDEPENDENCE_REQUIRED_FIELDS, frozenset)
+        self.assertIn("evidence_id", evidence_contract.REQUIRED_FIELDS)
+        self.assertIn("authority_id", evidence_contract.INDEPENDENCE_AXES)
+        self.assertIn("auditor_id", evidence_contract.AUDITED_INDEPENDENCE_REQUIRED_FIELDS)
+
+
+if __name__ == "__main__":
+    unittest.main()

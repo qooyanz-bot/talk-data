@@ -6,9 +6,9 @@
       "sha256": "sha256:5f0eb9a6f39c570438456d7481f9acdf8ec6a2bb01edf512748077541f7914a4"
     },
     {
-      "bytes": 13122,
+      "bytes": 13440,
       "path": "address_runtime.py",
-      "sha256": "sha256:fd472744b09bdfb59e515f94a03c3163997cec8d1e95658653a1e7a5a18285f4"
+      "sha256": "sha256:9db21337136397fabb54e950528e1d5b584937d86aa66f8243e14992ac89b45d"
     },
     {
       "bytes": 4093,
@@ -26,9 +26,9 @@
       "sha256": "sha256:9c0de983c4aff12bbf9981e4bbe73d44a3e959259b8628a0e723b0b8acc38b78"
     },
     {
-      "bytes": 12795,
+      "bytes": 12858,
       "path": "evidence_contract.py",
-      "sha256": "sha256:e11b94c2467b41f42f81c353265bc205a23358c2dc551adfdf31ace97301532e"
+      "sha256": "sha256:1deab87169f0a6e10cd64cf7aa3955e9d7b6bbfc7d0256a41a5a99f59adddf3f"
     },
     {
       "bytes": 2694,
@@ -61,7 +61,7 @@
       "sha256": "sha256:d682980799c81893ee6f72645fcc0a9ec64a8eec98a2b6bdc593435f2f0f0c42"
     }
   ],
-  "package_digest": "sha256:65085af2de5584044a4eae4501e236c4100b1ed82ddb1b29727c3eec2ce2b3ee",
+  "package_digest": "sha256:948138726f20b4accd0e7d50c84c98e0f7ea818854edfeada379fe4f308609e8",
   "schema_version": "address-runtime-manifest-v1",
   "status": "RUNTIME_MANIFEST"
 }

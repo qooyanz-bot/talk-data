@@ -406,5 +406,27 @@ class AddressRuntimeTests(unittest.TestCase):
 
 
 
+
+    def test_contradiction_policy_closed_enum_accepts_allowed(self):
+        self.assertEqual(address_runtime.CONTRADICTION_POLICY_ALLOWED, frozenset({"STOP_AND_REPORT_CONFLICT"}))
+        address = copy.deepcopy(self.address)
+        address["contradiction_policy"] = "STOP_AND_REPORT_CONFLICT"
+        address["address_id"] = address_runtime.canonical_id(address)
+        self.assertEqual(address_runtime.validate(address), [])
+
+    def test_contradiction_policy_rejects_other_values_without_raising(self):
+        for bad in ("IGNORE_CONFLICT", "AUTO_RESOLVE", "", None, 1, True, ["STOP_AND_REPORT_CONFLICT"]):
+            with self.subTest(bad=bad):
+                address = copy.deepcopy(self.address)
+                if bad is None and "contradiction_policy" in address:
+                    del address["contradiction_policy"]
+                else:
+                    address["contradiction_policy"] = bad
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(errors)
+                self.assertTrue(any("contradiction_policy" in error for error in errors))
+
+
 if __name__ == "__main__":
     unittest.main()

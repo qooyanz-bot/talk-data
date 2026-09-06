@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 (Address contradiction_policy closed enum & evidence_contract frozensets)
+
+- `address_runtime.py`: `CONTRADICTION_POLICY_ALLOWED = frozenset({"STOP_AND_REPORT_CONFLICT"})` を単一正本として export し、`validate()` での閉集合検証を適用。
+- `address_runtime.py`: `REQUIRED_FIELDS`, `DIMENSIONS`, `REAL_CAPABILITIES`, `FORBIDDEN_CAPABILITY_TOKENS` を `frozenset` 定数化。
+- `evidence_contract.py`: `REQUIRED_FIELDS` および `INDEPENDENCE_AXES` を `frozenset` 定数として export（`REQUIRED` はエイリアス維持）。
+
+
 ## 2026-09-06 (Address audit_log closed enum verification & CLI --verify-audit-log)
 
 - `audit_log.py`: `SCHEMA_VERSION = "ADDRESS-AUDIT-1.0"` および `REQUIRED_KEYS` を export。`verify()` で `decision` (`resolution_gate.DECISION_ALLOWED`) および `reason` (`resolution_gate.REASON_ALLOWED`) の閉集合検査を追加し、改ざん・不正語彙の監査ログを厳密に拒否。

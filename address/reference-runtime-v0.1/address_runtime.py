@@ -10,21 +10,26 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-REQUIRED_FIELDS = {
+REQUIRED_FIELDS = frozenset({
     "address_id", "concept", "goal", "unknown", "entities", "relations", "dimensions",
     "time_range", "world_id", "state_constraints", "evidence_requirements",
     "confidence_threshold", "contradiction_policy", "freshness_requirement", "memory_scope",
     "capability_scope", "target_value", "lineage",
-}
-DIMENSIONS = {"concept", "state", "goal", "binding", "relation", "context", "temporal", "owner", "dependency", "provenance"}
+})
+DIMENSIONS = frozenset({
+    "concept", "state", "goal", "binding", "relation", "context", "temporal", "owner",
+    "dependency", "provenance"
+})
 # Schema-documentation subset for real-domain Addresses (architecture); this runtime
 # rejects world:real:* at validate time (world_scope=SYNTHETIC_ONLY). Kept for docs only.
-REAL_CAPABILITIES = {"read:declared-public-data", "read:declared-authorized-data", "verify:declared-schema"}
-FORBIDDEN_CAPABILITY_TOKENS = {"secret", "credential", "password", "private_key", "decrypt", "bypass", "hidden_person", "future_direct"}
+REAL_CAPABILITIES = frozenset({"read:declared-public-data", "read:declared-authorized-data", "verify:declared-schema"})
+FORBIDDEN_CAPABILITY_TOKENS = frozenset({"secret", "credential", "password", "private_key", "decrypt", "bypass", "hidden_person", "future_direct"})
 WORLD_SYNTHETIC_PREFIX = "world:synthetic-"
 WORLD_REAL_PREFIX = "world:real:"
 # Closed enum for Address.evidence_requirements.semantic_independence (validate rejects others).
 SEMANTIC_INDEPENDENCE_ALLOWED = frozenset({"UNVERIFIED", "CONTRACTED", "AUDITED"})
+# Closed enum for Address.contradiction_policy (validate rejects others).
+CONTRADICTION_POLICY_ALLOWED = frozenset({"STOP_AND_REPORT_CONFLICT"})
 # Closed enum for Address.unknown[].status (from architecture / resolution_gate residuals).
 UNKNOWN_STATUS_ALLOWED = frozenset({"NOT_DERIVABLE", "UNRESOLVED", "RESIDUAL", "OPEN"})
 # Canonical serialization for address_id: sorted keys, compact separators, UTF-8.
@@ -144,8 +149,11 @@ def validate(address: Any) -> list[str]:
             minimum_sources = evidence["minimum_sources"]
             if isinstance(minimum_sources, bool) or not isinstance(minimum_sources, int) or minimum_sources < 1:
                 errors.append("evidence_requirements.minimum_sources must be an int >= 1 when present")
-    if address["contradiction_policy"] != "STOP_AND_REPORT_CONFLICT":
-        errors.append("contradiction_policy must stop and report conflict")
+    policy = address.get("contradiction_policy")
+    if not isinstance(policy, str) or policy not in CONTRADICTION_POLICY_ALLOWED:
+        errors.append(
+            f"contradiction_policy must be one of {', '.join(sorted(CONTRADICTION_POLICY_ALLOWED))}"
+        )
     target = address["target_value"]
     if not isinstance(target, dict):
         errors.append("target_value must be a dict")

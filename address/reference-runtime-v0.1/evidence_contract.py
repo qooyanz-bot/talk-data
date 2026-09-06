@@ -6,8 +6,11 @@ from typing import Any
 
 import audit_log
 
-REQUIRED = {"evidence_id", "claim_hash", "path_id", "authority_id", "generator_id", "semantic_law_id", "observed_at"}
-INDEPENDENCE_AXES = ("authority_id", "generator_id", "semantic_law_id")
+REQUIRED_FIELDS = frozenset({
+    "evidence_id", "claim_hash", "path_id", "authority_id", "generator_id", "semantic_law_id", "observed_at",
+})
+REQUIRED = REQUIRED_FIELDS
+INDEPENDENCE_AXES = frozenset({"authority_id", "generator_id", "semantic_law_id"})
 
 # assess() status field: closed vocabulary (single source). Distinct from independence.
 ASSESS_STATUS_INSUFFICIENT = "INSUFFICIENT"
