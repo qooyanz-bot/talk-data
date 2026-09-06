@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-07 (Physical AI Loop arm-mobile fixture)
+
+- `changelog/2026-09-07-physical-ai-loop-arm-mobile-fixture.md` を追加。
+- 実装作業ディレクトリに arm-mobile handover near-miss 合成fixtureを追加し、AMR / vehicle / arm-mobile の3ロボット横断デモに拡張。
+- 検証: `npm test` 12/12 pass、`npm run build` exit 0、既存dev server HTTP 200、HTML内にarm-mobile表示あり。
+
 ## 2026-09-07 (Physical AI Loop newmo fit / CSV / export)
 
 - `changelog/2026-09-07-physical-ai-loop-newmo-fit-csv-export.md` を追加。
