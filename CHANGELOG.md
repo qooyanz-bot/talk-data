@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-06 (Address regenerate_conformance_report helper)
+
+- `tools/regenerate_conformance_report.py`：`run_conformance()` から `fixtures/conformance_report.json` を決定的に再生成（手編集不要）。unittest の fixture 一致検査と対。
+- README に実行例を追記。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address conformance report fixture + CI)
 
 - `fixtures/conformance_report.json` を `limitations.json` と同様に凍結（`run_conformance()` の決定的出力；タイムスタンプなし）。unittest が fixture と live `run_conformance()` の完全一致を検査。
