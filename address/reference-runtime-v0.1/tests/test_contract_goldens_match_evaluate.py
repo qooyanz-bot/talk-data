@@ -12,7 +12,7 @@ import regenerate_contract_goldens as regen  # noqa: E402
 
 
 class ContractGoldensMatchEvaluateTests(unittest.TestCase):
-    def test_ready_abstain_contradiction_stale_unmet_goldens_match_fresh_evaluate(self):
+    def test_ready_abstain_contradiction_stale_unmet_audited_goldens_match_fresh_evaluate(self):
         built = regen.build_goldens()
         for filename, fresh in built.items():
             path = ROOT / "fixtures" / filename

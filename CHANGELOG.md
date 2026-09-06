@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-06 (Address AUDITED_INDEPENDENCE READY golden)
+- 公開応答 READY golden `fixtures/golden_contract_audited_independence_response.json` を追加（Address `semantic_independence=AUDITED` + CONTRACTED証拠 + 有効typed `independence_audit`（`{evidence_id, digest}` が束と一致）→ READY_FOR_VERIFICATION / AUDITED_INDEPENDENCE / value=null・residualあり・audit整合）。SEMANTIC_INDEPENDENCE_UNMET goldenの成功対称。
+- `tools/regenerate_contract_goldens.py` / match-evaluate / `--check-contract-only` 専用unittestに配線。value充填・入れ子 `lineage.result_sha`・reason非AUDITED_INDEPENDENCEで失敗する回帰を凍結。
+- Value発見・R6-G実行・静かな昇格ショートカットは行わない。
+
 ## 2026-09-06 (Address typed independence_audit evidence_digests)
 - `independence_audit.evidence_digests` を常に `{evidence_id, digest}` オブジェクト列に固定（`audit_log.evidence_digest_entries` と同形）。裸の digest 文字列は凍結チェックリストで `UNMET`。
 - evidence 供給時は evidence_id+digest 対が content-addressed 束と完全一致。id または digest の不一致 → `SEMANTIC_INDEPENDENCE_UNMET`；正しいオブジェクト列 → `READY_FOR_VERIFICATION` / `value=null`。

@@ -29,8 +29,8 @@
 
 - assertion_keyがunknown.slot / residualラベルと文字列衝突しても、residualを消さずvalueにassertion_valueを束縛しない。
 - CLI `--check-contract-only RESPONSE.json` で、Gate再実行なしに保存済み公開応答をresponse_contract検証（OK=0、違反は機械可読errorsで非0）。
-- 保存済み公開応答のgolden fixture（`fixtures/golden_contract_ok_response.json` = READY、`fixtures/golden_contract_abstain_response.json` = ABSTAIN / shared-law EVIDENCE_REJECTED、`fixtures/golden_contract_contradiction_response.json` = ABSTAIN / CONTRADICTION・同一assertion_keyで衝突するassertion_value、`fixtures/golden_contract_stale_response.json` = ABSTAIN / EVIDENCE_STALE・observed_atが`--now`とfreshness max_ageに対して古い、`fixtures/golden_contract_semantic_independence_unmet_response.json` = ABSTAIN / SEMANTIC_INDEPENDENCE_UNMET・Address `semantic_independence=AUDITED` + CONTRACTED証拠）で `--check-contract-only` / `response_contract.validate` の構造を凍結。value充填や入れ子`lineage.result_sha`刻印は失敗する。各goldenはdecision・value=null・residualあり・audit整合を固定。
-- `tools/regenerate_contract_goldens.py` が固定入力からevaluate()でREADY/ABSTAIN/CONTRADICTION/EVIDENCE_STALE/SEMANTIC_INDEPENDENCE_UNMET goldenを再生成し、digestの手編集を不要にする。unittestがfixtureとfresh evaluate()の完全一致を検査する。
+- 保存済み公開応答のgolden fixture（`fixtures/golden_contract_ok_response.json` = READY / CONTRACTED_EVIDENCE、`fixtures/golden_contract_abstain_response.json` = ABSTAIN / shared-law EVIDENCE_REJECTED、`fixtures/golden_contract_contradiction_response.json` = ABSTAIN / CONTRADICTION・同一assertion_keyで衝突するassertion_value、`fixtures/golden_contract_stale_response.json` = ABSTAIN / EVIDENCE_STALE・observed_atが`--now`とfreshness max_ageに対して古い、`fixtures/golden_contract_semantic_independence_unmet_response.json` = ABSTAIN / SEMANTIC_INDEPENDENCE_UNMET・Address `semantic_independence=AUDITED` + CONTRACTED証拠（監査欠落）、`fixtures/golden_contract_audited_independence_response.json` = READY / AUDITED_INDEPENDENCE・Address `semantic_independence=AUDITED` + CONTRACTED証拠 + 有効typed `independence_audit`）で `--check-contract-only` / `response_contract.validate` の構造を凍結。value充填や入れ子`lineage.result_sha`刻印は失敗する。各goldenはdecision・value=null・residualあり・audit整合を固定。
+- `tools/regenerate_contract_goldens.py` が固定入力からevaluate()でREADY/ABSTAIN/CONTRADICTION/EVIDENCE_STALE/SEMANTIC_INDEPENDENCE_UNMET/AUDITED_INDEPENDENCE goldenを再生成し、digestの手編集を不要にする。unittestがfixtureとfresh evaluate()の完全一致を検査する。
 - `--check-contract-only` と address/evidence/`--now`/`--audit`/`--protocol-manifest`/`--claim-type` の併用は早期に `INVALID_INPUT`（機械可読JSON・非0）で拒否する。
 
 - LIMITATIONS / synthetic-only conformance surface（`limitations.py` / `fixtures/limitations.json`）。world_scope=SYNTHETIC_ONLY、value_discovery=NOT_IMPLEMENTED、r6g_experiment=NOT_RUN（reference SPEC_ONLY）、real_domain_extrapolation / secret_access / crypto_bypass / future_direct=FORBIDDEN、audited_independence=EXTERNAL_RECORD_REQUIRED（AUDITEDは外部監査記録が必要でランタイム推論しない）を機械可読に宣言。CLI `--limitations` でJSON出力（address/evidence不要）。resolve / `--check-contract-only` と相互排他。
@@ -55,6 +55,7 @@ python address/reference-runtime-v0.1/address_cli.py --check-contract-only addre
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_contradiction_response.json
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_stale_response.json
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_semantic_independence_unmet_response.json
+python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_audited_independence_response.json
 python address/reference-runtime-v0.1/tools/regenerate_contract_goldens.py
 ```
 

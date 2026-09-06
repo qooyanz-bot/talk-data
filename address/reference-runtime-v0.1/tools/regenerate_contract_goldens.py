@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild READY / ABSTAIN / CONTRADICTION / EVIDENCE_STALE / SEMANTIC_INDEPENDENCE_UNMET contract goldens from evaluate().
+"""Rebuild READY / ABSTAIN / CONTRADICTION / EVIDENCE_STALE / SEMANTIC_INDEPENDENCE_UNMET / AUDITED_INDEPENDENCE contract goldens from evaluate().
 
 Fixed Address + evidence + now inputs keep digests reproducible without hand edits.
 Run from repository root:
@@ -24,6 +24,7 @@ sys.path.insert(0, str(ROOT))
 
 import address_cli  # noqa: E402
 import address_runtime  # noqa: E402
+import audit_log  # noqa: E402
 
 NOW = "2026-09-06T00:00:00Z"
 FIXTURES = ROOT / "fixtures"
@@ -53,12 +54,25 @@ def _evidence(index: int, assertion_value: str = "verified", **overrides: Any) -
     return item
 
 
-def golden_specs() -> list[tuple[str, list[dict[str, Any]], str, str, str | None]]:
-    """Return (filename, evidence, expected_decision, expected_reason, semantic_independence_or_None).
+def _valid_independence_audit(evidence: list[dict[str, Any]]) -> dict[str, Any]:
+    """Typed independence_audit whose {evidence_id, digest} pairs match the bundle."""
+    return {
+        "auditor_id": "auditor:synthetic-1",
+        "decision": "PASS",
+        "method": "synthetic-pairwise-review",
+        "evidence_digests": audit_log.evidence_digest_entries(evidence),
+        "audited_at": NOW,
+    }
 
-    None keeps the fixture Address (UNVERIFIED). AUDITED builds the
-    SEMANTIC_INDEPENDENCE_UNMET golden: contracted evidence cannot satisfy an
-    audited independence requirement.
+
+def golden_specs() -> list[tuple[str, list[dict[str, Any]], str, str, str | None, bool]]:
+    """Return (filename, evidence, expected_decision, expected_reason,
+    semantic_independence_or_None, with_valid_independence_audit).
+
+    None keeps the fixture Address (UNVERIFIED). AUDITED without audit builds
+    SEMANTIC_INDEPENDENCE_UNMET: contracted evidence cannot satisfy an audited
+    independence requirement. AUDITED with a valid typed independence_audit
+    builds AUDITED_INDEPENDENCE READY (value=null; no silent promotion).
     """
     return [
         (
@@ -67,6 +81,7 @@ def golden_specs() -> list[tuple[str, list[dict[str, Any]], str, str, str | None
             "READY_FOR_VERIFICATION",
             "CONTRACTED_EVIDENCE",
             None,
+            False,
         ),
         (
             "golden_contract_abstain_response.json",
@@ -74,6 +89,7 @@ def golden_specs() -> list[tuple[str, list[dict[str, Any]], str, str, str | None
             "ABSTAIN",
             "EVIDENCE_REJECTED",
             None,
+            False,
         ),
         (
             "golden_contract_contradiction_response.json",
@@ -81,6 +97,7 @@ def golden_specs() -> list[tuple[str, list[dict[str, Any]], str, str, str | None
             "ABSTAIN",
             "CONTRADICTION",
             None,
+            False,
         ),
         (
             "golden_contract_stale_response.json",
@@ -91,6 +108,7 @@ def golden_specs() -> list[tuple[str, list[dict[str, Any]], str, str, str | None
             "ABSTAIN",
             "EVIDENCE_STALE",
             None,
+            False,
         ),
         (
             "golden_contract_semantic_independence_unmet_response.json",
@@ -98,6 +116,15 @@ def golden_specs() -> list[tuple[str, list[dict[str, Any]], str, str, str | None
             "ABSTAIN",
             "SEMANTIC_INDEPENDENCE_UNMET",
             "AUDITED",
+            False,
+        ),
+        (
+            "golden_contract_audited_independence_response.json",
+            [_evidence(1), _evidence(2)],
+            "READY_FOR_VERIFICATION",
+            "AUDITED_INDEPENDENCE",
+            "AUDITED",
+            True,
         ),
     ]
 
@@ -112,9 +139,21 @@ def _address_for_spec(semantic_independence: str | None) -> dict[str, Any]:
 
 def build_goldens() -> dict[str, dict[str, Any]]:
     built: dict[str, dict[str, Any]] = {}
-    for filename, evidence, decision, reason, semantic_independence in golden_specs():
+    for (
+        filename,
+        evidence,
+        decision,
+        reason,
+        semantic_independence,
+        with_valid_independence_audit,
+    ) in golden_specs():
         address = _address_for_spec(semantic_independence)
-        response = address_cli.evaluate(address, evidence, NOW)
+        independence_audit = (
+            _valid_independence_audit(evidence) if with_valid_independence_audit else None
+        )
+        response = address_cli.evaluate(
+            address, evidence, NOW, independence_audit=independence_audit
+        )
         resolution = response["resolution"]
         if resolution["decision"] != decision or resolution["reason"] != reason:
             raise RuntimeError(
