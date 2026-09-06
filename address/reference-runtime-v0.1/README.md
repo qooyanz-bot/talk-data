@@ -14,6 +14,7 @@
 - content-addressed Audit Log。Valueやassertion本文を保存せず、Address・証拠digest・判定を再検算可能にする。
 - Replay Verifier。保存済み監査ログに対して同じAddress・Evidence・時刻でGateを再実行し、判断と系譜の完全一致を検証する。
 - Protocol Claim Gate。凍結・未実行・監査未完了のProtocolから、実験結果又は能力を主張することを防ぐ。
+- Response Contract。CLIの公開出力で `value=null`、既知の判定状態、Auditとの判断一致を強制する。
 
 ## 非対象
 

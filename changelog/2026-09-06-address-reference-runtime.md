@@ -11,6 +11,7 @@
 - malformed inputの型・時間・scope境界検査を強化。入力不備による例外停止を避け、`INVALID` として明示的に拒否する。
 - Protocol Claim Gateを追加。R6-Gの直接確認済みmanifest状態を基準に、凍結・未実行・監査未完了のProtocolから結果又は能力を主張しないようブロックする。
 - read-only Address CLIを追加。Address JSONとEvidence JSONからResolution、value-free Audit Log、任意のReplay検証までを一貫して実行する。Value導出、外部接続、ファイル書込みは実装しない。
+- Response Contractを追加。公開CLI出力の`value=null`、既知の判定状態、Auditとの判断一致を検証し、出力回帰を拒否する。
 
 ## 自己点検
 

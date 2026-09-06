@@ -10,6 +10,7 @@ from typing import Any
 
 import audit_log
 import replay_verifier
+import response_contract
 import resolution_gate
 
 
@@ -20,6 +21,9 @@ def evaluate(address: dict[str, Any], evidence: list[dict[str, Any]], now: str, 
     result: dict[str, Any] = {"resolution": outcome, "generated_audit": generated_audit}
     if audit is not None:
         result["replay"] = replay_verifier.verify_replay(address, evidence, audit)
+    errors = response_contract.validate(result)
+    if errors:
+        raise RuntimeError("response contract violation: " + "; ".join(errors))
     return result
 
 

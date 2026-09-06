@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-06 (Address response contract)
+- CLI出力のResponse Contractを追加。Value非返却、既知の判定状態、Auditとの判断一致を検証し、将来の出力回帰を防ぐ。
+
 ## 2026-09-06 (Address reference runtime CI)
 - `address/reference-runtime-v0.1/` の変更時に全unittestを実行する最小GitHub Actions CIを追加。外部データ、秘密、実世界Valueの取得は行わない。
 
