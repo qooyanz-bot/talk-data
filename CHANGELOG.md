@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-06 (Address decision_log Response Contract shape)
+- Response Contract が `decision_log` 存在時に機械可読 shape を強制：必須キー（schema_version / protocol_id / claim_type / claim_status / claim_reason / unmet / auditor_handoff / value / 状態4フィールド）、schema_version=`decision_log.SCHEMA_VERSION`、value=null、既知 claim_status、protocol_claim.status 非矛盾、auditor_handoff は厳密に {decision, primary_run_authorized}。
+- unittest で missing schema_version / wrong handoff keys / non-null value / status mismatch を固定。新規 golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address Protocol Claim Decision Log / auditor-handoff)
 - `decision_log.py` を追加。manifest + claim_type + `assess_claim` 結果から value-free な Decision Log（schema_version / protocol_id / claim_type / claim_status / claim_reason / unmet / auditor_handoff の decision・primary_run_authorized のみ / 状態フィールド / value=null）を構築。
 - R6-G SPEC_ONLY + EXPERIMENT_RESULT → BLOCKED を `fixtures/r6g_frozen_decision_log_blocked.json` で凍結。CLI は既存 `--protocol-manifest` / `--claim-type` 経路で `decision_log` を evaluate 応答に付与。

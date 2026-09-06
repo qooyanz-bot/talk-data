@@ -15,10 +15,10 @@
 - content-addressed Audit Log。Valueやassertion本文を保存せず、Address・証拠digest・判定を再検算可能にする。
 - Replay Verifier。保存済み監査ログに対して同じAddress・Evidence・時刻でGateを再実行し、判断と系譜の完全一致を検証する。
 - Protocol Claim Gate。凍結・未実行・監査未完了のProtocolから、実験結果又は能力を主張することを防ぐ。
-- Response Contract。CLIの公開出力で `value=null`、既知の判定状態、Auditとの判断一致、任意の`protocol_claim`を強制する。
+- Response Contract。CLIの公開出力で `value=null`、既知の判定状態、Auditとの判断一致、任意の`protocol_claim` / `decision_log` shapeを強制する。
 - READY_FOR_VERIFICATIONでもunknown slotは`residual`として未充填のまま残す。Valueは埋めない。
 - Protocol Claim GateをCLIの`--protocol-manifest` / `--claim-type`へ接続。
-- Decision Log / auditor-handoff surface（`decision_log.py`）。`--protocol-manifest` + `--claim-type` 使用時に evaluate 応答へ `decision_log` を付与（claim_status / claim_reason / unmet / 状態フィールド / auditor_handoff の decision・primary_run_authorized のみ；`value` は常に null；秘密は含めない）。 Response Contract は decision_log があるとき value=null・既知 claim_status・protocol_claim.status との非矛盾を要求。R6-G SPEC_ONLY+EXPERIMENT_RESULT の BLOCKED log を `fixtures/r6g_frozen_decision_log_blocked.json` で凍結。
+- Decision Log / auditor-handoff surface（`decision_log.py`）。`--protocol-manifest` + `--claim-type` 使用時に evaluate 応答へ `decision_log` を付与（claim_status / claim_reason / unmet / 状態フィールド / auditor_handoff の decision・primary_run_authorized のみ；`value` は常に null；秘密は含めない）。 Response Contract は decision_log があるとき機械可読 shape を強制：必須キー（schema_version / protocol_id / claim_type / claim_status / claim_reason / unmet / auditor_handoff / value / 状態4フィールド）、schema_version=`decision_log.SCHEMA_VERSION`、value=null、既知 claim_status、protocol_claim.status との非矛盾、auditor_handoff は厳密に {decision, primary_run_authorized}（余分な秘密様キー拒否）。R6-G SPEC_ONLY+EXPERIMENT_RESULT の BLOCKED log を `fixtures/r6g_frozen_decision_log_blocked.json` で凍結。
 - golden CLI fixtureによる公開契約の構造回帰検査。
 - `evidence_requirements.semantic_independence` は閉集合 enum: `UNVERIFIED` | `CONTRACTED` | `AUDITED`。 それ以外は `address_runtime.validate` が例外停止せず明確な errors で拒否する。
 - typed `target_value` の機械検査: dict、非空`type`、`value=null`、`residual`はnull又はlist、`no_speculation=true`。

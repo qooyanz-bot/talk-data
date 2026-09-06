@@ -5,10 +5,28 @@ from __future__ import annotations
 from typing import Any
 
 import audit_log
+import decision_log
 
 DECISIONS = {"ABSTAIN", "READY_FOR_VERIFICATION"}
 REPLAY_STATUSES = {"REPLAY_VERIFIED", "REPLAY_MISMATCH", "LINEAGE_MISMATCH", "INVALID_AUDIT"}
 PROTOCOL_CLAIM_STATUSES = {"ALLOWED_AS_DESIGN", "ALLOWED_AS_RESULT", "BLOCKED"}
+
+# Machine-checkable decision_log shape (matches decision_log.build_decision_log output).
+DECISION_LOG_REQUIRED_KEYS = {
+    "schema_version",
+    "protocol_id",
+    "claim_type",
+    "claim_status",
+    "claim_reason",
+    "unmet",
+    "auditor_handoff",
+    "value",
+    "evidence_state",
+    "experiment_state",
+    "implementation_state",
+    "independent_replay_state",
+}
+DECISION_LOG_HANDOFF_KEYS = {"decision", "primary_run_authorized"}
 
 
 def _nested_result_sha_errors(node: Any, path: str = "") -> list[str]:
@@ -72,10 +90,19 @@ def validate(response: Any) -> list[str]:
         if not isinstance(log, dict):
             errors.append("decision_log must be an object")
         else:
+            if DECISION_LOG_REQUIRED_KEYS - set(log):
+                errors.append("decision_log missing required fields")
+            if log.get("schema_version") != decision_log.SCHEMA_VERSION:
+                errors.append("decision_log schema_version is invalid")
             if log.get("value") is not None:
                 errors.append("public decision_log value must be null")
             if log.get("claim_status") not in PROTOCOL_CLAIM_STATUSES:
                 errors.append("decision_log claim_status is invalid")
+            handoff = log.get("auditor_handoff")
+            if not isinstance(handoff, dict):
+                errors.append("decision_log auditor_handoff must be an object")
+            elif set(handoff) != DECISION_LOG_HANDOFF_KEYS:
+                errors.append("decision_log auditor_handoff keys are invalid")
             claim = response.get("protocol_claim")
             if isinstance(claim, dict) and claim.get("status") in PROTOCOL_CLAIM_STATUSES:
                 if log.get("claim_status") != claim.get("status"):

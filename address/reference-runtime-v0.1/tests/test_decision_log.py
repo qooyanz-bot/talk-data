@@ -167,5 +167,47 @@ class DecisionLogTests(unittest.TestCase):
         self.assertIn("decision_log claim_status is invalid", response_contract.validate(result))
 
 
+    def test_response_contract_rejects_missing_decision_log_schema_version(self):
+        result = address_cli.evaluate(
+            self.address,
+            self.bundle,
+            "2026-09-06T00:00:00Z",
+            protocol_manifest=self.manifest,
+            claim_type="EXPERIMENT_RESULT",
+        )
+        del result["decision_log"]["schema_version"]
+        errors = response_contract.validate(result)
+        self.assertTrue(
+            any("missing required fields" in error or "schema_version" in error for error in errors)
+        )
+
+    def test_response_contract_rejects_wrong_decision_log_handoff_keys(self):
+        result = address_cli.evaluate(
+            self.address,
+            self.bundle,
+            "2026-09-06T00:00:00Z",
+            protocol_manifest=self.manifest,
+            claim_type="EXPERIMENT_RESULT",
+        )
+        result["decision_log"]["auditor_handoff"] = {
+            "decision": "PENDING",
+            "primary_run_authorized": False,
+            "secret_token": "must-not-pass-contract",
+        }
+        errors = response_contract.validate(result)
+        self.assertIn("decision_log auditor_handoff keys are invalid", errors)
+
+    def test_response_contract_rejects_wrong_decision_log_schema_version(self):
+        result = address_cli.evaluate(
+            self.address,
+            self.bundle,
+            "2026-09-06T00:00:00Z",
+            protocol_manifest=self.manifest,
+            claim_type="EXPERIMENT_RESULT",
+        )
+        result["decision_log"]["schema_version"] = "address-decision-log-v0-fake"
+        self.assertIn("decision_log schema_version is invalid", response_contract.validate(result))
+
+
 if __name__ == "__main__":
     unittest.main()
