@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-07 (Physical AI Loop newmo role alignment matrix)
+
+- `changelog/2026-09-07-physical-ai-loop-newmo-role-alignment.md` を追加。
+- 実装作業ディレクトリにnewmo公開求人推定のrole alignment matrixを追加し、6領域ごとにscore / demo evidence / reusable Cortext9 functionを表示。
+- 検証: `npm test` 15/15 pass、`npm run build` exit 0、既存dev server HTTP 200、HTML内にRole alignment文言あり。
+
 ## 2026-09-07 (Physical AI Loop demo readiness gate)
 
 - `changelog/2026-09-07-physical-ai-loop-readiness-gate.md` を追加。
