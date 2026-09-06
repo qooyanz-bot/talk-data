@@ -229,6 +229,76 @@ class ResolutionGateTests(unittest.TestCase):
             any("do not match" in str(item) or "different set" in str(item) for item in result["details"])
         )
 
+    def test_audited_requirement_with_bare_string_digests_abstains(self):
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        expected = audit_log.evidence_digest_entries(self.bundle)
+        audit = {
+            "auditor_id": "auditor:synthetic-1",
+            "decision": "PASS",
+            "method": "synthetic-pairwise-review",
+            # Shape-invalid: bare strings even if digest values match content.
+            "evidence_digests": [entry["digest"] for entry in expected],
+            "audited_at": "2026-09-06T00:00:00Z",
+        }
+        result = resolution_gate.resolve(
+            address, self.bundle, "2026-09-06T00:00:00Z", independence_audit=audit
+        )
+        self.assertEqual(result["decision"], "ABSTAIN")
+        self.assertEqual(result["reason"], "SEMANTIC_INDEPENDENCE_UNMET")
+        self.assertIsNone(result["value"])
+        self.assertTrue(
+            any(
+                "bare digest strings" in str(item) or "{evidence_id, digest}" in str(item)
+                for item in result["details"]
+            )
+        )
+
+    def test_audited_requirement_with_wrong_evidence_id_abstains(self):
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        expected = audit_log.evidence_digest_entries(self.bundle)
+        audit = {
+            "auditor_id": "auditor:synthetic-1",
+            "decision": "PASS",
+            "method": "synthetic-pairwise-review",
+            "evidence_digests": [
+                {"evidence_id": "e-wrong", "digest": expected[0]["digest"]},
+                dict(expected[1]),
+            ],
+            "audited_at": "2026-09-06T00:00:00Z",
+        }
+        result = resolution_gate.resolve(
+            address, self.bundle, "2026-09-06T00:00:00Z", independence_audit=audit
+        )
+        self.assertEqual(result["decision"], "ABSTAIN")
+        self.assertEqual(result["reason"], "SEMANTIC_INDEPENDENCE_UNMET")
+        self.assertIsNone(result["value"])
+
+    def test_audited_requirement_with_wrong_digest_value_abstains(self):
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        expected = audit_log.evidence_digest_entries(self.bundle)
+        audit = {
+            "auditor_id": "auditor:synthetic-1",
+            "decision": "PASS",
+            "method": "synthetic-pairwise-review",
+            "evidence_digests": [
+                {"evidence_id": expected[0]["evidence_id"], "digest": "sha256:deadbeef"},
+                dict(expected[1]),
+            ],
+            "audited_at": "2026-09-06T00:00:00Z",
+        }
+        result = resolution_gate.resolve(
+            address, self.bundle, "2026-09-06T00:00:00Z", independence_audit=audit
+        )
+        self.assertEqual(result["decision"], "ABSTAIN")
+        self.assertEqual(result["reason"], "SEMANTIC_INDEPENDENCE_UNMET")
+        self.assertIsNone(result["value"])
+
 
 if __name__ == "__main__":
     unittest.main()

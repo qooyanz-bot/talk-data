@@ -99,10 +99,12 @@ def resolve(
     READY_FOR_VERIFICATION for UNVERIFIED/CONTRACTED requirements needs evidence
     independence == CONTRACTED (metadata separation only). For an Address that
     asks semantic_independence=AUDITED, BOTH CONTRACTED evidence AND a valid
-    external independence_audit record (frozen checklist + evidence_digests
-    matching the supplied evidence bundle) are required. This gate never
-    silently upgrades past CONTRACTED from path IDs or metadata alone, and
-    never claims INDEPENDENT from inference.
+    external independence_audit record (frozen checklist + typed
+    {evidence_id, digest} evidence_digests matching
+    audit_log.evidence_digest_entries for the supplied bundle) are required.
+    Bare digest strings are unmet. This gate never silently upgrades past
+    CONTRACTED from path IDs or metadata alone, and never claims INDEPENDENT
+    from inference.
     """
     address_errors = address_runtime.validate(address)
     residual = _unresolved_residuals(address) if isinstance(address, dict) else []

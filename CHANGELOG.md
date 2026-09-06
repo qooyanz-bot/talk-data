@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-06 (Address typed independence_audit evidence_digests)
+- `independence_audit.evidence_digests` を常に `{evidence_id, digest}` オブジェクト列に固定（`audit_log.evidence_digest_entries` と同形）。裸の digest 文字列は凍結チェックリストで `UNMET`。
+- evidence 供給時は evidence_id+digest 対が content-addressed 束と完全一致。id または digest の不一致 → `SEMANTIC_INDEPENDENCE_UNMET`；正しいオブジェクト列 → `READY_FOR_VERIFICATION` / `value=null`。
+- `assess()` 単体は引き続き決して AUDITED を返さない。Value発見・R6-G実行・静かな AUDITED 昇格は行わない。
+
 ## 2026-09-06 (Address independence_audit evidence_digests binding)
 - `assess_audited_independence(audit_record, evidence=...)` が `evidence_digests` を供給エビデンス束の content-addressed digest（`audit_log.content_digest` / `evidence_digest_entries` と同一アルゴリズム）と完全一致要求。別束への PASS 監査では AUDITED にならない。
 - Resolution Gate は AUDITED 要求時に evidence を監査検査へ渡す。不一致 → `ABSTAIN` / `SEMANTIC_INDEPENDENCE_UNMET`；一致＋チェックリスト通過 → `READY_FOR_VERIFICATION` / `AUDITED_INDEPENDENCE` / `value=null`。

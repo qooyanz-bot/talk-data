@@ -126,6 +126,10 @@ class EvidenceContractTests(unittest.TestCase):
         )
         self.assertEqual(checklist["decision_must_be"], "PASS")
         self.assertTrue(checklist["notes"])
+        notes = " ".join(checklist["notes"])
+        self.assertIn("{evidence_id, digest}", notes)
+        self.assertIn("bare strings rejected", notes)
+        self.assertNotIn("nonempty digest strings or", notes)
 
     def test_assess_audited_independence_valid_shape_is_audited(self):
         result = evidence_contract.assess_audited_independence(valid_independence_audit())
@@ -192,6 +196,68 @@ class EvidenceContractTests(unittest.TestCase):
         self.assertFalse(result["accepted"])
         self.assertEqual(result["independence"], "UNMET")
         self.assertTrue(any("different set" in reason or "do not match" in reason for reason in result["reasons"]))
+
+    def test_assess_audited_bare_string_digests_are_unmet(self):
+        # Typed objects required always; bare strings fail even without evidence binding.
+        audit = valid_independence_audit()
+        audit["evidence_digests"] = ["sha256:aaa", "sha256:bbb"]
+        result = evidence_contract.assess_audited_independence(audit)
+        self.assertFalse(result["accepted"])
+        self.assertEqual(result["independence"], "UNMET")
+        self.assertTrue(
+            any("bare digest strings" in reason or "{evidence_id, digest}" in reason for reason in result["reasons"])
+        )
+
+    def test_assess_audited_bare_string_digests_with_evidence_are_unmet(self):
+        evidence = [record(1), record(2)]
+        expected = audit_log.evidence_digest_entries(evidence)
+        # Even if string values equal content digests, shape must be objects.
+        audit = valid_independence_audit(evidence)
+        audit["evidence_digests"] = [entry["digest"] for entry in expected]
+        result = evidence_contract.assess_audited_independence(audit, evidence=evidence)
+        self.assertFalse(result["accepted"])
+        self.assertEqual(result["independence"], "UNMET")
+        self.assertTrue(
+            any("bare digest strings" in reason or "{evidence_id, digest}" in reason for reason in result["reasons"])
+        )
+
+    def test_assess_audited_mismatched_evidence_id_is_unmet(self):
+        evidence = [record(1), record(2)]
+        audit = valid_independence_audit(evidence)
+        # Same digests, wrong evidence_id on first entry.
+        audit["evidence_digests"] = [
+            {"evidence_id": "e-wrong", "digest": audit["evidence_digests"][0]["digest"]},
+            dict(audit["evidence_digests"][1]),
+        ]
+        result = evidence_contract.assess_audited_independence(audit, evidence=evidence)
+        self.assertFalse(result["accepted"])
+        self.assertEqual(result["independence"], "UNMET")
+        self.assertTrue(
+            any("do not match" in reason or "evidence_id" in reason for reason in result["reasons"])
+        )
+
+    def test_assess_audited_mismatched_digest_value_is_unmet(self):
+        evidence = [record(1), record(2)]
+        audit = valid_independence_audit(evidence)
+        # Correct evidence_id, wrong digest on first entry.
+        audit["evidence_digests"] = [
+            {"evidence_id": audit["evidence_digests"][0]["evidence_id"], "digest": "sha256:deadbeef"},
+            dict(audit["evidence_digests"][1]),
+        ]
+        result = evidence_contract.assess_audited_independence(audit, evidence=evidence)
+        self.assertFalse(result["accepted"])
+        self.assertEqual(result["independence"], "UNMET")
+        self.assertTrue(any("do not match" in reason for reason in result["reasons"]))
+
+    def test_assess_audited_extra_keys_on_digest_entry_are_unmet(self):
+        audit = valid_independence_audit()
+        audit["evidence_digests"] = [
+            {"evidence_id": "e-1", "digest": "sha256:aaa", "extra": "nope"},
+            {"evidence_id": "e-2", "digest": "sha256:bbb"},
+        ]
+        result = evidence_contract.assess_audited_independence(audit)
+        self.assertFalse(result["accepted"])
+        self.assertEqual(result["independence"], "UNMET")
 
     def test_assess_never_audited_even_when_digests_would_match(self):
         evidence = [record(1), record(2)]

@@ -106,11 +106,11 @@ def audited_independence_checklist() -> dict[str, Any]:
             "auditor_id: nonempty string identifying the external auditor",
             "decision: must be exactly PASS",
             "method: nonempty string naming the audit method",
-            "evidence_digests: nonempty list of nonempty digest strings "
-            "or {evidence_id, digest} objects with nonempty strings",
+            "evidence_digests: nonempty list of {evidence_id, digest} objects "
+            "(exactly those two nonempty string keys; bare strings rejected)",
             "when evidence is supplied, evidence_digests must exactly match "
             "audit_log.evidence_digest_entries(evidence) (content-addressed; "
-            "{evidence_id, digest} pairs via content_digest)",
+            "same evidence_id + digest pairs via content_digest)",
             "audited_at: nonempty ISO-8601 timestamp string",
             "assess() alone never returns AUDITED; path diversity never grants AUDITED",
         ],
@@ -127,23 +127,22 @@ def _audit_unmet(reasons: list[str]) -> dict[str, Any]:
 
 
 def _digest_entry_ok(item: Any) -> bool:
-    if isinstance(item, str) and item:
-        return True
-    if isinstance(item, dict):
-        evidence_id = item.get("evidence_id")
-        digest = item.get("digest")
-        return isinstance(evidence_id, str) and bool(evidence_id) and isinstance(digest, str) and bool(digest)
-    return False
+    """True only for audit_log.evidence_digest_entries-shaped objects.
+
+    Bare digest strings are always rejected for the AUDITED checklist.
+    """
+    if not isinstance(item, dict) or set(item) != {"evidence_id", "digest"}:
+        return False
+    evidence_id = item["evidence_id"]
+    digest = item["digest"]
+    return isinstance(evidence_id, str) and bool(evidence_id) and isinstance(digest, str) and bool(digest)
 
 
 def _digest_pair(item: Any) -> tuple[str, str] | None:
-    """Return (evidence_id, digest) for object entries; None for non-bindable shapes."""
-    if isinstance(item, dict):
-        evidence_id = item.get("evidence_id")
-        digest = item.get("digest")
-        if isinstance(evidence_id, str) and evidence_id and isinstance(digest, str) and digest:
-            return (evidence_id, digest)
-    return None
+    """Return (evidence_id, digest) for valid object entries; None otherwise."""
+    if not _digest_entry_ok(item):
+        return None
+    return (item["evidence_id"], item["digest"])
 
 
 def _evidence_digest_pair_set(evidence: Any) -> set[tuple[str, str]]:
@@ -155,11 +154,10 @@ def _evidence_digest_pair_set(evidence: Any) -> set[tuple[str, str]]:
 
 
 def _audit_digest_pair_set(digests: list[Any]) -> set[tuple[str, str]] | None:
-    """Normalize audit evidence_digests to (evidence_id, digest) pairs.
+    """Normalize typed evidence_digests to (evidence_id, digest) pairs.
 
-    Binding requires object entries so a PASS audit for a different evidence
-    set cannot silently satisfy AUDITED. Plain string digests are shape-ok
-    when evidence is omitted, but cannot bind when evidence is supplied.
+    Every entry must already be a {evidence_id, digest} object (bare strings
+    fail shape checks earlier). Returns None if any entry is non-bindable.
     """
     pairs: set[tuple[str, str]] = set()
     for item in digests:
@@ -174,11 +172,12 @@ def assess_audited_independence(audit_record: Any, evidence: Any = None) -> dict
     """Assess an external semantic-independence audit record against the frozen checklist.
 
     Returns independence=AUDITED only when the record passes every required field.
-    When ``evidence`` is supplied, ``evidence_digests`` must exactly equal the
-    content-addressed digests of that evidence bundle (same algorithm as
-    audit_log.evidence_digest_entries). A PASS audit for a different set is
-    unmet, not AUDITED. Never upgrades CONTRACTED evidence from assess() alone;
-    forged or incomplete records are rejected.
+    ``evidence_digests`` must be typed ``{evidence_id, digest}`` objects (same
+    shape as audit_log.evidence_digest_entries); bare strings are unmet. When
+    ``evidence`` is supplied, those pairs must exactly match the
+    content-addressed entries for that bundle. A PASS audit for a different set
+    is unmet, not AUDITED. Never upgrades CONTRACTED evidence from assess()
+    alone; forged or incomplete records are rejected.
     """
     if audit_record is None:
         return _audit_unmet(["independence_audit record is missing"])
@@ -203,8 +202,8 @@ def assess_audited_independence(audit_record: Any, evidence: Any = None) -> dict
         reasons.append("evidence_digests must be a nonempty list")
     elif any(not _digest_entry_ok(item) for item in digests):
         reasons.append(
-            "evidence_digests entries must be nonempty strings or "
-            "{evidence_id, digest} objects with nonempty strings"
+            "evidence_digests entries must be {evidence_id, digest} objects "
+            "with nonempty strings (bare digest strings are rejected)"
         )
     audited_at = audit_record.get("audited_at")
     if not isinstance(audited_at, str) or not audited_at:
@@ -219,15 +218,16 @@ def assess_audited_independence(audit_record: Any, evidence: Any = None) -> dict
             return _audit_unmet(
                 [
                     "evidence_digests must be {evidence_id, digest} objects "
-                    "matching the supplied evidence bundle (content-addressed)"
+                    "matching audit_log.evidence_digest_entries "
+                    "(content-addressed)"
                 ]
             )
         if actual != expected:
             return _audit_unmet(
                 [
-                    "evidence_digests do not match the supplied evidence bundle "
-                    "(content-addressed); a PASS audit for a different set "
-                    "cannot satisfy AUDITED"
+                    "evidence_digests do not match audit_log.evidence_digest_entries "
+                    "for the supplied evidence bundle (evidence_id + digest); "
+                    "a PASS audit for a different set cannot satisfy AUDITED"
                 ]
             )
     return {
