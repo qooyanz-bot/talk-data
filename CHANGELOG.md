@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (newmo Perception drafts)
+
+- K承認により `future-concept/newmo-perception/` を追加（原理・面接ピッチ・Q&A・失敗条件カタログ・E2E入力スキーマ v0.1）。
+- 就業検討・設計転用用。Future Concept 最終版ではない。詳細: `changelog/2026-09-06-newmo-perception-drafts.md`。
+
+
 ## 2026-09-06 (Audit Log malformed-input hardening)
 - Audit Logのevidence digest項目がobjectでない場合も、例外停止せず明示的に拒否するよう修正。
 
