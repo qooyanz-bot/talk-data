@@ -76,16 +76,34 @@ def validate(address: Any) -> list[str]:
     if address["contradiction_policy"] != "STOP_AND_REPORT_CONFLICT":
         errors.append("contradiction_policy must stop and report conflict")
     target = address["target_value"]
-    if not isinstance(target, dict) or target.get("no_speculation") is not True:
-        errors.append("target_value.no_speculation must be true")
+    if not isinstance(target, dict):
+        errors.append("target_value must be a dict")
+    else:
+        if target.get("no_speculation") is not True:
+            errors.append("target_value.no_speculation must be true")
+        tv_type = target.get("type")
+        if not isinstance(tv_type, str) or not tv_type:
+            errors.append("target_value.type must be a non-empty string")
+        if target.get("value") is not None:
+            errors.append("target_value.value must be null")
+        residual = target.get("residual")
+        if residual is not None and not isinstance(residual, list):
+            errors.append("target_value.residual must be null or a list")
+        elif isinstance(residual, list) and residual and target.get("value") is not None:
+            errors.append("target_value.value must be null when residual is non-empty")
     unknown = address["unknown"]
     if not isinstance(unknown, list) or any(not isinstance(item, dict) or item.get("abstain_if_unresolved") is not True for item in unknown):
         errors.append("every unknown slot must require abstention when unresolved")
     lineage = address["lineage"]
-    if not isinstance(lineage, dict) or not isinstance(lineage.get("input_hashes"), list):
+    if not isinstance(lineage, dict):
         errors.append("lineage requires input_hashes")
-    elif not all(isinstance(item, str) and re.fullmatch(r"sha256:[0-9a-f]{64}", item) for item in lineage["input_hashes"]):
-        errors.append("lineage input_hashes must use sha256:<64 lowercase hex>")
+    else:
+        if not isinstance(lineage.get("input_hashes"), list):
+            errors.append("lineage requires input_hashes")
+        elif not all(isinstance(item, str) and re.fullmatch(r"sha256:[0-9a-f]{64}", item) for item in lineage["input_hashes"]):
+            errors.append("lineage input_hashes must use sha256:<64 lowercase hex>")
+        if lineage.get("result_sha") is not None:
+            errors.append("lineage.result_sha must be null")
     memory_scope = address["memory_scope"]
     if not isinstance(memory_scope, str):
         errors.append("memory_scope must be a non-empty string")

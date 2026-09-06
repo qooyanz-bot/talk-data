@@ -19,6 +19,8 @@
 - READY_FOR_VERIFICATIONでもunknown slotは`residual`として未充填のまま残す。Valueは埋めない。
 - Protocol Claim GateをCLIの`--protocol-manifest` / `--claim-type`へ接続。
 - golden CLI fixtureによる公開契約の構造回帰検査。
+- typed `target_value` の機械検査: dict、非空`type`、`value=null`、`residual`はnull又はlist、`no_speculation=true`。
+- 事前検証ランタイムでは`lineage.result_sha`をnullに固定し、非null入力を拒否。
 
 ## 非対象
 

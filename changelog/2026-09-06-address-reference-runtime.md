@@ -18,6 +18,7 @@
 - Address CLIに`--protocol-manifest`と`--claim-type`を接続。SPEC_ONLY/R6-G凍結manifestではEXPERIMENT_RESULTとCAPABILITY_CLAIMをALLOWED_AS_RESULTにできない。Response Contractも任意の`protocol_claim`状態を検証する。
 - CLI公開出力のgolden fixture（`fixtures/golden_cli_output.json`）を追加。必須キー・`value=null`・decision集合の構造検査で契約回帰を検出する。
 - Resolution GateとResponse Contractで、READY_FOR_VERIFICATIONでもunknown slotをresidualのまま残し`value=null`を強制。typed bindingで未解決slotを埋めない。
+- Address runtimeのtyped `target_value`検査を硬化。dict・非空type・value=null・residualはnull/list・no_speculation=trueを機械検証し、事前検証入力の`lineage.result_sha`非nullを拒否。Value発見は行わない。
 
 ## 自己点検
 

@@ -1,3 +1,4 @@
+import copy
 import json
 import sys
 import unittest
@@ -33,6 +34,56 @@ class AddressRuntimeTests(unittest.TestCase):
         self.address["unknown"][0]["abstain_if_unresolved"] = False
         self.address["address_id"] = address_runtime.canonical_id(self.address)
         self.assertTrue(any("unknown slot" in error for error in address_runtime.validate(self.address)))
+
+    def test_filled_target_value_is_rejected_without_raising(self):
+        address = copy.deepcopy(self.address)
+        address["target_value"]["value"] = "discovered"
+        address["address_id"] = address_runtime.canonical_id(address)
+        errors = address_runtime.validate(address)
+        self.assertTrue(errors)
+        self.assertTrue(any("target_value.value must be null" in error for error in errors))
+
+    def test_missing_or_empty_target_value_type_is_rejected(self):
+        for bad_type in ("", None, 12):
+            with self.subTest(bad_type=bad_type):
+                address = copy.deepcopy(self.address)
+                if bad_type is None and "type" in address["target_value"]:
+                    del address["target_value"]["type"]
+                else:
+                    address["target_value"]["type"] = bad_type
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(errors)
+                self.assertTrue(any("target_value.type" in error for error in errors))
+
+    def test_non_null_lineage_result_sha_is_rejected(self):
+        address = copy.deepcopy(self.address)
+        address["lineage"]["result_sha"] = "sha256:" + "b" * 64
+        address["address_id"] = address_runtime.canonical_id(address)
+        errors = address_runtime.validate(address)
+        self.assertTrue(errors)
+        self.assertTrue(any("lineage.result_sha must be null" in error for error in errors))
+
+    def test_valid_fixture_keeps_value_null_and_residual_unfilled(self):
+        errors = address_runtime.validate(self.address)
+        self.assertEqual(errors, [])
+        self.assertIsNone(self.address["target_value"]["value"])
+        residual = self.address["target_value"]["residual"]
+        self.assertTrue(residual is None or residual == [])
+        self.assertIsNone(self.address["lineage"]["result_sha"])
+
+    def test_non_list_target_value_residual_is_rejected(self):
+        address = copy.deepcopy(self.address)
+        address["target_value"]["residual"] = "not-a-list"
+        address["address_id"] = address_runtime.canonical_id(address)
+        errors = address_runtime.validate(address)
+        self.assertTrue(any("target_value.residual" in error for error in errors))
+
+    def test_nonempty_residual_with_null_value_is_accepted(self):
+        address = copy.deepcopy(self.address)
+        address["target_value"]["residual"] = ["continuity"]
+        address["address_id"] = address_runtime.canonical_id(address)
+        self.assertEqual(address_runtime.validate(address), [])
 
 
 if __name__ == "__main__":
