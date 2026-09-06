@@ -17,8 +17,12 @@ REQUIRED_FIELDS = {
     "capability_scope", "target_value", "lineage",
 }
 DIMENSIONS = {"concept", "state", "goal", "binding", "relation", "context", "temporal", "owner", "dependency", "provenance"}
+# Schema-documentation subset for real-domain Addresses (architecture); this runtime
+# rejects world:real:* at validate time (world_scope=SYNTHETIC_ONLY). Kept for docs only.
 REAL_CAPABILITIES = {"read:declared-public-data", "read:declared-authorized-data", "verify:declared-schema"}
 FORBIDDEN_CAPABILITY_TOKENS = {"secret", "credential", "password", "private_key", "decrypt", "bypass", "hidden_person", "future_direct"}
+WORLD_SYNTHETIC_PREFIX = "world:synthetic-"
+WORLD_REAL_PREFIX = "world:real:"
 # Closed enum for Address.evidence_requirements.semantic_independence (validate rejects others).
 SEMANTIC_INDEPENDENCE_ALLOWED = frozenset({"UNVERIFIED", "CONTRACTED", "AUDITED"})
 # Closed enum for Address.unknown[].status (from architecture / resolution_gate residuals).
@@ -69,8 +73,18 @@ def validate(address: Any) -> list[str]:
     concept = address["concept"]
     if not isinstance(concept, dict) or not all(isinstance(concept.get(k), str) and concept[k] for k in ("id", "version", "definition_ref")):
         errors.append("concept requires non-empty id, version, and definition_ref")
-    if not isinstance(address["world_id"], str) or not address["world_id"].startswith(("world:synthetic-", "world:real:")):
-        errors.append("world_id must start with world:synthetic- or world:real:")
+    world_id = address["world_id"]
+    if not isinstance(world_id, str):
+        errors.append("world_id must be a non-empty string starting with world:synthetic-")
+    elif world_id.startswith(WORLD_REAL_PREFIX):
+        errors.append(
+            "world_id world:real:* is INVALID in this runtime "
+            "(world_scope=SYNTHETIC_ONLY; real-domain Addresses are rejected at schema validation)"
+        )
+    elif not world_id.startswith(WORLD_SYNTHETIC_PREFIX):
+        errors.append("world_id must start with world:synthetic-")
+    elif not world_id[len(WORLD_SYNTHETIC_PREFIX):]:
+        errors.append("world_id must include a non-empty suffix after world:synthetic-")
     if isinstance(address["confidence_threshold"], bool) or not isinstance(address["confidence_threshold"], (int, float)) or not 0 <= address["confidence_threshold"] <= 1:
         errors.append("confidence_threshold must be between 0 and 1")
     goal = address["goal"]
@@ -146,8 +160,11 @@ def validate(address: Any) -> list[str]:
         residual = target.get("residual")
         if residual is not None and not isinstance(residual, list):
             errors.append("target_value.residual must be null or a list")
-        elif isinstance(residual, list) and residual and target.get("value") is not None:
-            errors.append("target_value.value must be null when residual is non-empty")
+        elif isinstance(residual, list):
+            if not all(isinstance(item, str) and item for item in residual):
+                errors.append("target_value.residual must be a list of non-empty strings")
+            elif residual and target.get("value") is not None:
+                errors.append("target_value.value must be null when residual is non-empty")
     unknown = address["unknown"]
     if not isinstance(unknown, list) or not all(isinstance(item, dict) for item in unknown):
         errors.append("unknown must be a list of objects")
@@ -194,8 +211,6 @@ def validate(address: Any) -> list[str]:
         lowered = " ".join(capabilities).lower()
         if any(token in lowered for token in FORBIDDEN_CAPABILITY_TOKENS):
             errors.append("capability_scope contains a prohibited secret, bypass, or direct-future operation")
-        if address["world_id"].startswith("world:real:") and not set(capabilities).issubset(REAL_CAPABILITIES):
-            errors.append("real-world Address may use only declared public/authorized read and verify capabilities")
     try:
         if not isinstance(address["address_id"], str) or address["address_id"] != canonical_id(address):
             errors.append("address_id does not match canonical payload hash")

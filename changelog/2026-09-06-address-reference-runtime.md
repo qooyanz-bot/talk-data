@@ -41,6 +41,9 @@
 - `evidence_requirements.semantic_independence` を閉集合 enum（`UNVERIFIED` | `CONTRACTED` | `AUDITED`）として `address_runtime.validate` で強制。他値は例外停止せず明確な errors で拒否。
 - 公開応答 SEMANTIC_INDEPENDENCE_UNMET golden `fixtures/golden_contract_semantic_independence_unmet_response.json` を追加（AUDITED要求 + CONTRACTED証拠の実evaluate出力: ABSTAIN / value=null・residualあり・audit整合）。`tools/regenerate_contract_goldens.py` と match-evaluate unittest に配線。
 
+
+- `address_runtime.validate` が `world_scope=SYNTHETIC_ONLY` を強制: `world:real:*` を schema validation で拒否し、`world:synthetic-<non-empty>` のみ受理。`target_value.residual` list 要素は非空文字列。`REAL_CAPABILITIES` は文書用に残置。新規 golden なし。
+
 ## 自己点検
 
 - E系: 外部接続、秘密読取り、認証回避、個人の隠れた情報、未来値取得を実装していない。

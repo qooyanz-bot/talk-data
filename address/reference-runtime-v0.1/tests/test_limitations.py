@@ -136,6 +136,19 @@ class LimitationsTests(unittest.TestCase):
         self.assertTrue(any("independence-audit" in err for err in payload["errors"]))
 
 
+    def test_validate_enforces_synthetic_only_world_scope(self):
+        """LIMITATIONS world_scope=SYNTHETIC_ONLY is enforced by address_runtime.validate."""
+        self.assertEqual(limitations.limitations()["world_scope"], "SYNTHETIC_ONLY")
+        fixture = ROOT / "fixtures" / "valid_synthetic_address.json"
+        address = json.loads(fixture.read_text(encoding="utf-8"))
+        address["address_id"] = address_runtime.canonical_id(address)
+        self.assertEqual(address_runtime.validate(address), [])
+        address["world_id"] = "world:real:example"
+        address["capability_scope"] = sorted(address_runtime.REAL_CAPABILITIES)
+        address["address_id"] = address_runtime.canonical_id(address)
+        errors = address_runtime.validate(address)
+        self.assertTrue(any("SYNTHETIC_ONLY" in error for error in errors))
+
     def test_protocol_result_claims_remain_gated(self):
         doc = limitations.limitations()
         self.assertEqual(doc["protocol_result_claims"], "GATED")

@@ -2,6 +2,10 @@
 
 Declares what this reference runtime will never claim. It does not run
 experiments, discover Values, or authorize real-domain use.
+
+Enforcement: address_runtime.validate rejects world_id values starting with
+world:real: (and empty world:synthetic- suffixes). Only world:synthetic-<suffix>
+is accepted. REAL_CAPABILITIES in address_runtime remains schema documentation.
 """
 
 from __future__ import annotations

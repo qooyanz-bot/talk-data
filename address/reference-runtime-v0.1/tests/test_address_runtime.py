@@ -22,13 +22,47 @@ class AddressRuntimeTests(unittest.TestCase):
         self.address["goal"]["id"] = "goal:tampered"
         self.assertIn("address_id does not match canonical payload hash", address_runtime.validate(self.address))
 
-    def test_real_secret_capability_is_rejected(self):
-        self.address["world_id"] = "world:real:example"
-        self.address["capability_scope"] = ["read:declared-public-data", "read:secret-vault"]
-        self.address["address_id"] = address_runtime.canonical_id(self.address)
-        errors = address_runtime.validate(self.address)
+    def test_real_world_id_is_invalid_in_this_runtime(self):
+        """LIMITATIONS world_scope=SYNTHETIC_ONLY: world:real:* fails validate (clear error).
+
+        REAL_CAPABILITIES remains for architecture/schema documentation only;
+        capability-subset checks for real world no longer apply because real world
+        is rejected before any real-domain capability path can succeed.
+        """
+        for world_id in ("world:real:example", "world:real:", "world:real:public"):
+            with self.subTest(world_id=world_id):
+                address = copy.deepcopy(self.address)
+                address["world_id"] = world_id
+                # Even with declared public/authorized read+verify only, real world is INVALID.
+                address["capability_scope"] = sorted(address_runtime.REAL_CAPABILITIES)
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(errors)
+                self.assertTrue(
+                    any("world:real" in error and "SYNTHETIC_ONLY" in error for error in errors)
+                )
+
+    def test_forbidden_capability_token_still_rejected_on_synthetic(self):
+        address = copy.deepcopy(self.address)
+        address["capability_scope"] = ["read:declared-public-data", "read:secret-vault"]
+        address["address_id"] = address_runtime.canonical_id(address)
+        errors = address_runtime.validate(address)
         self.assertTrue(any("prohibited" in error for error in errors))
-        self.assertTrue(any("real-world" in error for error in errors))
+
+    def test_synthetic_world_id_requires_nonempty_suffix(self):
+        address = copy.deepcopy(self.address)
+        address["world_id"] = "world:synthetic-"
+        address["address_id"] = address_runtime.canonical_id(address)
+        errors = address_runtime.validate(address)
+        self.assertTrue(any("non-empty suffix" in error for error in errors))
+        # bare / wrong prefixes also rejected
+        for bad in ("world:other", "synthetic-r6g", "", "world:"):
+            with self.subTest(bad=bad):
+                address = copy.deepcopy(self.address)
+                address["world_id"] = bad
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(any("world_id" in error for error in errors))
 
     def test_unknown_without_abstain_is_rejected(self):
         self.address["unknown"][0]["abstain_if_unresolved"] = False
@@ -83,6 +117,33 @@ class AddressRuntimeTests(unittest.TestCase):
     def test_nonempty_residual_with_null_value_is_accepted(self):
         address = copy.deepcopy(self.address)
         address["target_value"]["residual"] = ["continuity"]
+        address["address_id"] = address_runtime.canonical_id(address)
+        self.assertEqual(address_runtime.validate(address), [])
+
+    def test_residual_list_items_must_be_nonempty_strings(self):
+        for bad in ("", None, 1, True, ["nested"]):
+            with self.subTest(item=bad):
+                address = copy.deepcopy(self.address)
+                address["target_value"]["residual"] = [bad]
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(
+                    any(
+                        "target_value.residual must be a list of non-empty strings" in error
+                        for error in errors
+                    )
+                )
+        address = copy.deepcopy(self.address)
+        address["target_value"]["residual"] = ["ok", ""]
+        address["address_id"] = address_runtime.canonical_id(address)
+        self.assertTrue(
+            any(
+                "target_value.residual must be a list of non-empty strings" in error
+                for error in address_runtime.validate(address)
+            )
+        )
+        address = copy.deepcopy(self.address)
+        address["target_value"]["residual"] = []
         address["address_id"] = address_runtime.canonical_id(address)
         self.assertEqual(address_runtime.validate(address), [])
 
@@ -336,7 +397,7 @@ class AddressRuntimeTests(unittest.TestCase):
         self.assertTrue(
             any("capability_scope must be a list of non-empty strings" in error for error in address_runtime.validate(address))
         )
-        # existing forbid-token + real-world subset path still works with non-empty items
+        # synthetic Address with non-empty capability items still validates
         address = copy.deepcopy(self.address)
         address["capability_scope"] = ["read:declared-public-data", "verify:declared-schema"]
         address["address_id"] = address_runtime.canonical_id(address)

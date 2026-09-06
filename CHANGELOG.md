@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address synthetic-only validate enforcement)
+
+- `address_runtime.validate` が LIMITATIONS `world_scope=SYNTHETIC_ONLY` を強制: `world:real:*` は明確な errors で INVALID；`world:synthetic-<non-empty>` のみ受理（空 suffix 拒否）。
+- `target_value.residual` が list のとき要素は非空文字列（機械可読）。
+- `REAL_CAPABILITIES` はスキーマ文書用に残置；real-world capability subset 検査は削除（real world は validate で先に失敗）。unittest / README / LIMITATIONS を整合。新規 golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address check-contract-only decision_log response)
 
 - 公開応答 golden `fixtures/golden_contract_decision_log_blocked_response.json` を追加（evaluate(..., protocol_manifest=R6-G, claim_type=EXPERIMENT_RESULT): READY / CONTRACTED_EVIDENCE + protocol_claim BLOCKED + frozen decision_log；value=null throughout）。regenerator には未配線（golden 増殖を抑制）。
