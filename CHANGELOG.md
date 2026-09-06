@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-07 (Physical AI Loop replay inspector)
+
+- `changelog/2026-09-07-physical-ai-loop-replay-inspector.md` を追加。
+- 実装作業ディレクトリにフレーム単位で raw model action / shielded action / semantic state / risk / violations を確認する Replay inspector panelを追加。
+- 検証: `npm test` 13/13 pass、`npm run build` exit 0、既存dev server HTTP 200、HTML内にReplay inspector文言あり。
+
 ## 2026-09-07 (Physical AI Loop violation breakdown metrics)
 
 - `changelog/2026-09-07-physical-ai-loop-violation-breakdown.md` を追加。
