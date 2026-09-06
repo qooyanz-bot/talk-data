@@ -34,11 +34,11 @@
 
 ## 4. Verification evidence (same day)
 
-- pm test\ twice: 7/7 pass (scratch \loop-unit-tests.log\, \loop-unit-tests-rerun.log\).
-- pm run build\ exit 0 (\uild.log\).
-- pm run dev\ first launch + stop/relaunch both HTTP 200 with Filter OFF/ON, log-select, before/after metrics present.
-- No interactive headless browser MCP; used HTTP + source control presence fallback (\rowser-unavailable.log\, \source-controls-check.log\).
-- Local demo git commit đ4e51\. Private GitHub create via integration returned 403.
+- `npm test` twice: 7/7 pass (scratch `loop-unit-tests.log`, `loop-unit-tests-rerun.log`).
+- `npm run build` exit 0 (`build.log`).
+- `npm run dev` first launch + stop/relaunch both HTTP 200 with Filter OFF/ON, log-select, before/after metrics present.
+- No interactive headless browser MCP; used HTTP + source control presence fallback (`browser-unavailable.log`, `source-controls-check.log`).
+- Local demo git commit `4214e51`. Private GitHub create via integration returned 403.
 
 ---
 記録日: 2026-09-07 JST
