@@ -411,6 +411,7 @@ class DecisionLogTests(unittest.TestCase):
             ["--limitations"],
             ["--check-contract-only", str(ROOT / "fixtures" / "golden_contract_ok_response.json")],
             ["--validate-protocol-manifest", str(ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json")],
+            ["--conformance"],
             ["--independence-audit", "audit.json"],
         ]
         for extra in cases:

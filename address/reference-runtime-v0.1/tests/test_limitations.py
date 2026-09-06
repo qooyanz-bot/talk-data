@@ -85,6 +85,7 @@ class LimitationsTests(unittest.TestCase):
             ["--check-contract-only", str(ROOT / "fixtures" / "golden_contract_ok_response.json")],
             ["--verify-decision-log", str(ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json")],
             ["--validate-protocol-manifest", str(ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json")],
+            ["--conformance"],
         ]
         for extra in cases:
             with self.subTest(extra=extra):

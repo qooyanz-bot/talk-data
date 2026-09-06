@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 (Address conformance runner)
+
+- `conformance.py` / `run_conformance() -> dict`：機械可読適合レポート（`schema_version=address-conformance-v1`、`checks: [{id, status, detail}]`、overall=`CONFORMANT`|`FAIL`）。
+- 集約: LIMITATIONS 文書（status=`LIMITATIONS`、PASS 再解釈なし）；synthetic validate VALID + evaluate READY value=null + shared-law ABSTAIN value=null；R6-G frozen manifest MANIFEST_VALID；EXPERIMENT_RESULT は NOT_RUN|BLOCKED（実行済み主張なし）。
+- CLI `--conformance`（他 standalone / resolve と相互排他）。exit 0=CONFORMANT、FAIL があれば非0。
+- unittest：report shape、synthetic VALID/READY value=null、R6-G 未実行、flag hygiene。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address CLI --validate-protocol-manifest)
 
 - CLI `--validate-protocol-manifest MANIFEST.json` を追加：`protocol_claim_gate.validate_manifest` のみ実行。成功時 exit 0 + `{status: MANIFEST_VALID, errors: []}`；失敗時非0 + `{status: MANIFEST_INVALID, errors: [...]}`（INVALID_INPUT / CONTRACT 系と同形）。

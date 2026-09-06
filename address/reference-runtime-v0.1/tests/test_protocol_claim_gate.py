@@ -133,6 +133,7 @@ class ProtocolClaimGateTests(unittest.TestCase):
             ["--claim-type", "DESIGN_DESCRIPTION"],
             ["--independence-audit", "audit.json"],
             ["--audit", "audit.json"],
+            ["--conformance"],
         ]
         for extra in cases:
             with self.subTest(extra=extra):

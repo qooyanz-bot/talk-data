@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import audit_log
+import conformance
 import decision_log
 import limitations
 import protocol_claim_gate
@@ -90,6 +91,7 @@ def _resolve_flag_conflicts(args: argparse.Namespace, exclusive_flag: str) -> li
         "--check-contract-only": args.check_contract_only is not None,
         "--verify-decision-log": args.verify_decision_log is not None,
         "--validate-protocol-manifest": args.validate_protocol_manifest is not None,
+        "--conformance": args.conformance,
     }
     for flag, active in exclusive_modes.items():
         if flag != exclusive_flag and active:
@@ -132,6 +134,11 @@ def main(argv: list[str] | None = None) -> int:
         "--validate-protocol-manifest",
         metavar="MANIFEST.json",
         help="Validate a protocol manifest JSON via protocol_claim_gate.validate_manifest only (closed enums / handoff shape)",
+    )
+    parser.add_argument(
+        "--conformance",
+        action="store_true",
+        help="Run the machine-readable conformance report (LIMITATIONS + synthetic battery + R6-G manifest/claim; no Value discovery / no R6-G execution)",
     )
     parser.add_argument("address", nargs="?", help="Address JSON path")
     parser.add_argument("evidence", nargs="?", help="Evidence bundle JSON path")
@@ -192,10 +199,22 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 0 if result["status"] == "MANIFEST_VALID" else 1
 
+    if args.conformance:
+        conflicts = _resolve_flag_conflicts(args, "--conformance")
+        if conflicts:
+            print(json.dumps({"status": "INVALID_INPUT", "errors": conflicts}, ensure_ascii=False, sort_keys=True))
+            return 2
+        report = conformance.run_conformance()
+        print(json.dumps(report, ensure_ascii=False, sort_keys=True))
+        return 0 if report.get("status") == "CONFORMANT" and not any(
+            c.get("status") == "FAIL" for c in report.get("checks", [])
+        ) else 1
+
     if args.address is None or args.evidence is None or args.now is None:
         parser.error(
             "address, evidence, and --now are required unless --limitations, "
-            "--check-contract-only, --verify-decision-log, or --validate-protocol-manifest is set"
+            "--check-contract-only, --verify-decision-log, --validate-protocol-manifest, "
+            "or --conformance is set"
         )
 
     try:
