@@ -21,15 +21,22 @@ def _max_age(requirement: Any) -> timedelta | None:
     return timedelta(days=int(match.group(1))) if match else None
 
 
+def _nonempty_string_label(value: Any) -> str | None:
+    """Return value when it is a non-empty str; otherwise None (skip/coerce safely)."""
+    if isinstance(value, str) and value:
+        return value
+    return None
+
+
 def _unresolved_residuals(address: dict[str, Any]) -> list[str]:
     """Union of unresolved unknown slots and target_value.residual labels.
 
     Invariant (pre-verification):
     - Unresolved Address.unknown slots (abstain_if_unresolved / NOT_DERIVABLE /
       UNRESOLVED / RESIDUAL) always appear in resolution.residual.
-    - If target_value.residual is a non-empty list, those labels are also listed
-      (union). target_value.residual is therefore a subset of resolution.residual
-      when both are lists of strings; never invent a filled value from either.
+    - If target_value.residual is a list, only non-empty string labels are mirrored
+      into resolution.residual (union). Empty strings / non-strings are skipped
+      without raising; never invent a filled value from either source.
     - If target_value.residual is null, unknown labels still appear on READY.
     """
     seen: set[str] = set()
@@ -46,7 +53,7 @@ def _unresolved_residuals(address: dict[str, Any]) -> list[str]:
             if not isinstance(item, dict):
                 continue
             slot = item.get("slot")
-            label = slot if isinstance(slot, str) and slot else "<unknown>"
+            label = _nonempty_string_label(slot) or "<unknown>"
             status = item.get("status")
             # Pre-verification never resolves unknowns; abstain-required and open statuses remain residual.
             if item.get("abstain_if_unresolved") is True or status in {"NOT_DERIVABLE", "UNRESOLVED", "RESIDUAL"}:
@@ -57,8 +64,9 @@ def _unresolved_residuals(address: dict[str, Any]) -> list[str]:
         tv_residual = target.get("residual")
         if isinstance(tv_residual, list):
             for item in tv_residual:
-                if isinstance(item, str) and item:
-                    _add(item)
+                label = _nonempty_string_label(item)
+                if label is not None:
+                    _add(label)
         # target_value.residual never supplies a filled value in this runtime.
     return residuals
 

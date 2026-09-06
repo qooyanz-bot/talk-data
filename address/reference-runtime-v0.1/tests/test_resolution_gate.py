@@ -125,6 +125,23 @@ class ResolutionGateTests(unittest.TestCase):
         # Residual labels must not be treated as resolved payloads.
         self.assertNotEqual(result.get("value"), "open-slot")
 
+
+    def test_target_value_residual_skips_invalid_labels(self):
+        """Empty / non-string residual items are skipped; valid labels still appear."""
+        address = copy.deepcopy(self.address)
+        address["target_value"]["residual"] = ["kept-slot", "", None, 3, "another-slot"]
+        # Empty string / None / int must not raise and must not enter residual.
+        address["address_id"] = address_runtime.canonical_id(address)
+        # Invalid residual makes validate fail; resolve must still build residual safely.
+        result = resolution_gate.resolve(address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertIsNone(result["value"])
+        self.assertIn("kept-slot", result["residual"])
+        self.assertIn("another-slot", result["residual"])
+        self.assertNotIn("", result["residual"])
+        self.assertNotIn(None, result["residual"])
+        self.assertNotIn(3, result["residual"])
+        self.assertTrue(all(isinstance(item, str) and item for item in result["residual"]))
+
     def test_assertion_key_collision_with_unknown_slot_does_not_fill_residual(self):
         """assertion_key matching unknown.slot must not clear residual or bind value."""
         address = copy.deepcopy(self.address)

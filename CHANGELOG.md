@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address residual defense in depth)
+
+- Resolution Gate: `target_value.residual` から `resolution.residual` へミラーするとき、非空文字列ラベルのみ emit（空文字・非文字列は例外停止せずスキップ）。
+- Response Contract: `resolution.residual` は非空文字列の list（空文字・非文字列を拒否）；既存の residual+value=null 規則は維持。
+- unittest: 不正 residual 要素の contract 拒否；Gate のスキップ；READY/ABSTAIN happy path は通過。新規 golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address synthetic-only validate enforcement)
 
 - `address_runtime.validate` が LIMITATIONS `world_scope=SYNTHETIC_ONLY` を強制: `world:real:*` は明確な errors で INVALID；`world:synthetic-<non-empty>` のみ受理（空 suffix 拒否）。

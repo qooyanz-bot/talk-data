@@ -65,6 +65,8 @@ def validate(response: Any) -> list[str]:
     residual = resolution.get("residual")
     if not isinstance(residual, list):
         errors.append("resolution residual must be a list")
+    elif not all(isinstance(item, str) and item for item in residual):
+        errors.append("resolution residual must be a list of non-empty strings")
     elif residual and resolution["value"] is not None:
         errors.append("unresolved residual forbids a filled value")
     audit = response.get("generated_audit")

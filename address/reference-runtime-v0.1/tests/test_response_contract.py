@@ -82,3 +82,45 @@ class ResponseContractTests(unittest.TestCase):
         self.assertIn("continuity", response["resolution"]["residual"])
         self.assertIsNone(response["resolution"]["value"])
         self.assertEqual(response_contract.validate(response), [])
+
+    def test_residual_empty_string_item_is_rejected(self):
+        self.response["resolution"]["residual"] = ["continuity", ""]
+        errors = response_contract.validate(self.response)
+        self.assertIn("resolution residual must be a list of non-empty strings", errors)
+
+    def test_residual_non_string_item_is_rejected(self):
+        self.response["resolution"]["residual"] = ["continuity", 1]
+        errors = response_contract.validate(self.response)
+        self.assertIn("resolution residual must be a list of non-empty strings", errors)
+
+    def test_residual_none_item_is_rejected(self):
+        self.response["resolution"]["residual"] = ["continuity", None]
+        errors = response_contract.validate(self.response)
+        self.assertIn("resolution residual must be a list of non-empty strings", errors)
+
+    def test_abstain_response_with_valid_residual_passes_contract(self):
+        # ABSTAIN happy path still requires residual to be list of non-empty strings.
+        response = address_cli.evaluate(
+            self.address,
+            [
+                {
+                    "evidence_id": "e-1", "claim_hash": "claim-1", "path_id": "path-1",
+                    "authority_id": "authority-1", "generator_id": "generator-1",
+                    "semantic_law_id": "shared-law", "observed_at": "2026-09-05T00:00:00Z",
+                    "assertion_key": "target", "assertion_value": "verified",
+                },
+                {
+                    "evidence_id": "e-2", "claim_hash": "claim-2", "path_id": "path-2",
+                    "authority_id": "authority-2", "generator_id": "generator-2",
+                    "semantic_law_id": "shared-law", "observed_at": "2026-09-05T00:00:00Z",
+                    "assertion_key": "target", "assertion_value": "verified",
+                },
+            ],
+            "2026-09-06T00:00:00Z",
+        )
+        self.assertEqual(response["resolution"]["decision"], "ABSTAIN")
+        self.assertIsNone(response["resolution"]["value"])
+        residual = response["resolution"]["residual"]
+        self.assertIsInstance(residual, list)
+        self.assertTrue(all(isinstance(item, str) and item for item in residual))
+        self.assertEqual(response_contract.validate(response), [])

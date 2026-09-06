@@ -25,8 +25,8 @@
 - 機械可読フィールド型の硬化: `entities`は非空`id`/`type`（任意`binding`は非空str）、`relations`は非空`predicate`/`subject`/`object`、`unknown`は非空`slot`＋閉集合status（`NOT_DERIVABLE`|`UNRESOLVED`|`RESIDUAL`|`OPEN`）＋`abstain_if_unresolved=true`、`lineage.protocol_sha`/`schema_sha`/`runtime_sha`はnull又は非空str、`evidence_requirements.minimum_sources`は存在時にint>=1、`goal.id`は非空str、`goal.success_criteria` / `state_constraints` / `capability_scope` / `target_value.residual`（list時）は非空文字列のlist（空要素・非文字列を拒否；capability forbid-tokenは従来どおり；real-world subset検査は `world:real:*` 拒否により不要）。
 - canonical serialization: `canonical_dumps` / `canonical_id` は `sort_keys=True` と `separators=(',', ':')` のみ。キー順・空白差は `address_id` を変えない（unittestで固定）。
 - 事前検証ランタイムでは`lineage.result_sha`をnullに固定し、非null入力を拒否。
-- Resolution Gateの`resolution.residual`は、未解決unknown slotと`target_value.residual`ラベルの和集合。`target_value.residual`がnullでもunknownはREADY時に残す。どちらからもValueを埋めない。
-- Response Contractは公開応答内の入れ子`lineage.result_sha`非nullを拒否し、事前検証で結果SHAを刻印しない。
+- Resolution Gateの`resolution.residual`は、未解決unknown slotと`target_value.residual`の**非空文字列**ラベルの和集合。無効ラベル（空文字・非文字列）は例外停止せずスキップ。`target_value.residual`がnullでもunknownはREADY時に残す。どちらからもValueを埋めない。
+- Response Contractは`resolution.residual`を非空文字列のlistとして強制（空文字・非文字列を拒否）し、既存のresidual+value=null規則を維持。公開応答内の入れ子`lineage.result_sha`非nullを拒否し、事前検証で結果SHAを刻印しない。
 
 - assertion_keyがunknown.slot / residualラベルと文字列衝突しても、residualを消さずvalueにassertion_valueを束縛しない。
 - CLI `--check-contract-only RESPONSE.json` で、Gate再実行なしに保存済み公開応答をresponse_contract検証（OK=0、違反は機械可読errorsで非0）。decision_log 付き応答も検証対象（改ざん id・非null value は失敗）。
