@@ -8,6 +8,7 @@
 - `world_id`、Memory / Capability scope、Evidence / Law contract、残差のabstain表現
 - real worldでの公開・許可済みread/verify scope以外の拒否
 - canonical JSONからの安定した `address_id` 再計算
+- Evidence Contractの共通authority / generator / semantic law検出。path IDだけの相違は独立性と扱わない。
 
 ## 非対象
 
