@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import audit_log
+import decision_log
 import limitations
 import protocol_claim_gate
 import replay_verifier
@@ -36,7 +37,14 @@ def evaluate(
             address, evidence, audit, independence_audit=independence_audit
         )
     if protocol_manifest is not None or claim_type is not None:
-        result["protocol_claim"] = protocol_claim_gate.assess_claim(protocol_manifest, claim_type if isinstance(claim_type, str) else "")
+        claim_type_str = claim_type if isinstance(claim_type, str) else ""
+        assessment = protocol_claim_gate.assess_claim(protocol_manifest, claim_type_str)
+        claim = dict(assessment)
+        claim["value"] = None
+        result["protocol_claim"] = claim
+        result["decision_log"] = decision_log.build_decision_log(
+            protocol_manifest, claim_type_str, assessment
+        )
     errors = response_contract.validate(result)
     if errors:
         raise RuntimeError("response contract violation: " + "; ".join(errors))

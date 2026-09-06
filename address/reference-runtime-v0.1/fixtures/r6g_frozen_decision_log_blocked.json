@@ -1,0 +1,23 @@
+{
+  "auditor_handoff": {
+    "decision": "PENDING",
+    "primary_run_authorized": false
+  },
+  "claim_reason": "EVIDENCE_GATES_UNMET",
+  "claim_status": "BLOCKED",
+  "claim_type": "EXPERIMENT_RESULT",
+  "evidence_state": "SPEC_ONLY",
+  "experiment_state": "NOT_RUN",
+  "implementation_state": "NOT_IMPLEMENTED",
+  "independent_replay_state": "NOT_RUN",
+  "protocol_id": "R6-G",
+  "schema_version": "address-decision-log-v1",
+  "unmet": [
+    "implementation_state!=IMPLEMENTED",
+    "experiment_state!=COMPLETED",
+    "independent_replay_state!=REPLICATED",
+    "auditor_handoff.decision!=PASS",
+    "primary_run_authorized!=true"
+  ],
+  "value": null
+}

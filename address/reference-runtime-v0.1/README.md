@@ -18,6 +18,7 @@
 - Response Contract。CLIの公開出力で `value=null`、既知の判定状態、Auditとの判断一致、任意の`protocol_claim`を強制する。
 - READY_FOR_VERIFICATIONでもunknown slotは`residual`として未充填のまま残す。Valueは埋めない。
 - Protocol Claim GateをCLIの`--protocol-manifest` / `--claim-type`へ接続。
+- Decision Log / auditor-handoff surface（`decision_log.py`）。`--protocol-manifest` + `--claim-type` 使用時に evaluate 応答へ `decision_log` を付与（claim_status / claim_reason / unmet / 状態フィールド / auditor_handoff の decision・primary_run_authorized のみ；`value` は常に null；秘密は含めない）。 Response Contract は decision_log があるとき value=null・既知 claim_status・protocol_claim.status との非矛盾を要求。R6-G SPEC_ONLY+EXPERIMENT_RESULT の BLOCKED log を `fixtures/r6g_frozen_decision_log_blocked.json` で凍結。
 - golden CLI fixtureによる公開契約の構造回帰検査。
 - `evidence_requirements.semantic_independence` は閉集合 enum: `UNVERIFIED` | `CONTRACTED` | `AUDITED`。 それ以外は `address_runtime.validate` が例外停止せず明確な errors で拒否する。
 - typed `target_value` の機械検査: dict、非空`type`、`value=null`、`residual`はnull又はlist、`no_speculation=true`。
@@ -33,7 +34,7 @@
 - `tools/regenerate_contract_goldens.py` が固定入力からevaluate()でREADY/ABSTAIN/CONTRADICTION/EVIDENCE_STALE/SEMANTIC_INDEPENDENCE_UNMET/AUDITED_INDEPENDENCE goldenを再生成し、digestの手編集を不要にする。unittestがfixtureとfresh evaluate()の完全一致を検査する。
 - `--check-contract-only` と address/evidence/`--now`/`--audit`/`--protocol-manifest`/`--claim-type` の併用は早期に `INVALID_INPUT`（機械可読JSON・非0）で拒否する。
 
-- LIMITATIONS / synthetic-only conformance surface（`limitations.py` / `fixtures/limitations.json`）。world_scope=SYNTHETIC_ONLY、value_discovery=NOT_IMPLEMENTED、r6g_experiment=NOT_RUN（reference SPEC_ONLY）、real_domain_extrapolation / secret_access / crypto_bypass / future_direct=FORBIDDEN、audited_independence=EXTERNAL_RECORD_REQUIRED（AUDITEDは外部監査記録が必要でランタイム推論しない）を機械可読に宣言。CLI `--limitations` でJSON出力（address/evidence不要）。resolve / `--check-contract-only` と相互排他。
+- LIMITATIONS / synthetic-only conformance surface（`limitations.py` / `fixtures/limitations.json`）。world_scope=SYNTHETIC_ONLY、value_discovery=NOT_IMPLEMENTED、r6g_experiment=NOT_RUN（reference SPEC_ONLY）、real_domain_extrapolation / secret_access / crypto_bypass / future_direct=FORBIDDEN、audited_independence=EXTERNAL_RECORD_REQUIRED（AUDITEDは外部監査記録が必要でランタイム推論しない）、protocol_result_claims=GATED（結果／能力主張は Protocol Claim Gate + Decision Log でゲート）を機械可読に宣言。CLI `--limitations` でJSON出力（address/evidence不要）。resolve / `--check-contract-only` と相互排他。
 
 ## 非対象
 

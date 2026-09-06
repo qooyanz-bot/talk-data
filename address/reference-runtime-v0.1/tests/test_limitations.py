@@ -24,6 +24,7 @@ REQUIRED_KEYS = {
     "crypto_bypass",
     "future_direct",
     "audited_independence",
+    "protocol_result_claims",
 }
 
 FORBIDDEN_STATUSES = {
@@ -133,6 +134,11 @@ class LimitationsTests(unittest.TestCase):
         self.assertEqual(payload["status"], "INVALID_INPUT")
         self.assertTrue(any("independence-audit" in err for err in payload["errors"]))
 
+
+    def test_protocol_result_claims_remain_gated(self):
+        doc = limitations.limitations()
+        self.assertEqual(doc["protocol_result_claims"], "GATED")
+        self.assertFalse(limitations.is_claiming_status(doc["protocol_result_claims"]))
 
 
 if __name__ == "__main__":

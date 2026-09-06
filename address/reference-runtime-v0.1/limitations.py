@@ -18,6 +18,7 @@ _SYNTHETIC_ONLY = "SYNTHETIC_ONLY"
 _SPEC_ONLY = "SPEC_ONLY"
 _LIMITATIONS = "LIMITATIONS"
 _EXTERNAL_RECORD_REQUIRED = "EXTERNAL_RECORD_REQUIRED"
+_GATED = "GATED"
 
 
 def limitations() -> dict[str, Any]:
@@ -40,6 +41,9 @@ def limitations() -> dict[str, Any]:
         # AUDITED semantic independence requires an external audit record;
         # the runtime never infers AUDITED from path diversity or metadata alone.
         "audited_independence": _EXTERNAL_RECORD_REQUIRED,
+        # Protocol result / capability claims remain gated; SPEC_ONLY / NOT_RUN
+        # manifests cannot claim experiment results via Decision Log.
+        "protocol_result_claims": _GATED,
     }
 
 

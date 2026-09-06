@@ -2,6 +2,7 @@
   "audited_independence": "EXTERNAL_RECORD_REQUIRED",
   "crypto_bypass": "FORBIDDEN",
   "future_direct": "FORBIDDEN",
+  "protocol_result_claims": "GATED",
   "r6g_experiment": "NOT_RUN",
   "r6g_reference": "SPEC_ONLY",
   "real_domain_extrapolation": "FORBIDDEN",

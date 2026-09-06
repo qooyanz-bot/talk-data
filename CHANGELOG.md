@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address Protocol Claim Decision Log / auditor-handoff)
+- `decision_log.py` を追加。manifest + claim_type + `assess_claim` 結果から value-free な Decision Log（schema_version / protocol_id / claim_type / claim_status / claim_reason / unmet / auditor_handoff の decision・primary_run_authorized のみ / 状態フィールド / value=null）を構築。
+- R6-G SPEC_ONLY + EXPERIMENT_RESULT → BLOCKED を `fixtures/r6g_frozen_decision_log_blocked.json` で凍結。CLI は既存 `--protocol-manifest` / `--claim-type` 経路で `decision_log` を evaluate 応答に付与。
+- Response Contract は decision_log があるとき value=null・既知 claim_status・protocol_claim.status 非矛盾を要求。LIMITATIONS に `protocol_result_claims=GATED`。Value発見・R6-G実行は行わない。
+
+
 ## 2026-09-06 (Address AUDITED_INDEPENDENCE READY golden)
 - 公開応答 READY golden `fixtures/golden_contract_audited_independence_response.json` を追加（Address `semantic_independence=AUDITED` + CONTRACTED証拠 + 有効typed `independence_audit`（`{evidence_id, digest}` が束と一致）→ READY_FOR_VERIFICATION / AUDITED_INDEPENDENCE / value=null・residualあり・audit整合）。SEMANTIC_INDEPENDENCE_UNMET goldenの成功対称。
 - `tools/regenerate_contract_goldens.py` / match-evaluate / `--check-contract-only` 専用unittestに配線。value充填・入れ子 `lineage.result_sha`・reason非AUDITED_INDEPENDENCEで失敗する回帰を凍結。

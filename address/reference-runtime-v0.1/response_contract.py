@@ -67,6 +67,19 @@ def validate(response: Any) -> list[str]:
             errors.append("protocol_claim status is invalid")
         elif claim.get("value") is not None:
             errors.append("public protocol_claim value must be null")
+    if "decision_log" in response:
+        log = response["decision_log"]
+        if not isinstance(log, dict):
+            errors.append("decision_log must be an object")
+        else:
+            if log.get("value") is not None:
+                errors.append("public decision_log value must be null")
+            if log.get("claim_status") not in PROTOCOL_CLAIM_STATUSES:
+                errors.append("decision_log claim_status is invalid")
+            claim = response.get("protocol_claim")
+            if isinstance(claim, dict) and claim.get("status") in PROTOCOL_CLAIM_STATUSES:
+                if log.get("claim_status") != claim.get("status"):
+                    errors.append("decision_log claim_status contradicts protocol_claim.status")
     # Shape-based: forbid stamping lineage.result_sha anywhere in the public object.
     errors.extend(_nested_result_sha_errors(response))
     return errors
