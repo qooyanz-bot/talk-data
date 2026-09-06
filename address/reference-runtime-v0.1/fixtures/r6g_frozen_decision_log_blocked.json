@@ -6,6 +6,7 @@
   "claim_reason": "EVIDENCE_GATES_UNMET",
   "claim_status": "BLOCKED",
   "claim_type": "EXPERIMENT_RESULT",
+  "decision_log_id": "decision_log:dd709c7bfe1b5e2310f365bff8041eebb1db819e31e110cacf24e6651f96fd6c",
   "evidence_state": "SPEC_ONLY",
   "experiment_state": "NOT_RUN",
   "implementation_state": "NOT_IMPLEMENTED",

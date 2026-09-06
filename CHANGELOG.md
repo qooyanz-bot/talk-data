@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address content-addressed decision_log_id)
+
+- `decision_log.build_decision_log` / `create` が `decision_log_id` = `decision_log:` + sha256（`audit_log.content_digest` と同じ canonical dumps）を id 除外 payload から付与。`verify()` で必須 shape と自己アドレス整合を検査。
+- Response Contract は decision_log 存在時に `decision_log_id` 必須＋`decision_log.verify` を要求（改ざん・欠落を拒否）。
+- 凍結 fixture `r6g_frozen_decision_log_blocked.json` を再生成（正しい decision_log_id）。unittest：同一入力で id 安定・改ざん検出・contract が有効 id を要求。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address decision_log claim_reason / unmet align)
 
 - Response Contract：`decision_log` と `protocol_claim` が両方あるとき、`claim_reason` を `protocol_claim.reason`（reason がある場合）と一致要求；`unmet` は null 又は文字列 list；`protocol_claim.unmet` があるときは sorted 等価（multiset）で一致要求。

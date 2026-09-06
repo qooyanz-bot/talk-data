@@ -25,6 +25,7 @@ DECISION_LOG_REQUIRED_KEYS = {
     "experiment_state",
     "implementation_state",
     "independent_replay_state",
+    "decision_log_id",
 }
 DECISION_LOG_HANDOFF_KEYS = {"decision", "primary_run_authorized"}
 
@@ -92,6 +93,7 @@ def validate(response: Any) -> list[str]:
         else:
             if DECISION_LOG_REQUIRED_KEYS - set(log):
                 errors.append("decision_log missing required fields")
+            errors.extend("decision_log: " + error for error in decision_log.verify(log))
             if log.get("schema_version") != decision_log.SCHEMA_VERSION:
                 errors.append("decision_log schema_version is invalid")
             if log.get("value") is not None:

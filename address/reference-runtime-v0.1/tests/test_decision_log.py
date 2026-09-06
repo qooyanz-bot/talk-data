@@ -253,6 +253,59 @@ class DecisionLogTests(unittest.TestCase):
                 self.assertIsInstance(log["unmet"], list)
                 self.assertTrue(all(isinstance(item, str) for item in log["unmet"]))
 
+    def test_decision_log_id_stable_for_same_inputs(self):
+        assessment = protocol_claim_gate.assess_claim(self.manifest, "EXPERIMENT_RESULT")
+        first = decision_log.build_decision_log(self.manifest, "EXPERIMENT_RESULT", assessment)
+        second = decision_log.build_decision_log(self.manifest, "EXPERIMENT_RESULT", assessment)
+        self.assertEqual(first["decision_log_id"], second["decision_log_id"])
+        self.assertTrue(first["decision_log_id"].startswith("decision_log:"))
+        self.assertEqual(decision_log.verify(first), [])
+        self.assertEqual(first, decision_log.create(self.manifest, "EXPERIMENT_RESULT", assessment))
+
+    def test_decision_log_tampering_is_detected(self):
+        assessment = protocol_claim_gate.assess_claim(self.manifest, "EXPERIMENT_RESULT")
+        log = decision_log.build_decision_log(self.manifest, "EXPERIMENT_RESULT", assessment)
+        log["claim_reason"] = "TAMPERED"
+        errors = decision_log.verify(log)
+        self.assertTrue(errors)
+        self.assertIn("decision_log_id does not match", errors[0])
+
+    def test_response_contract_requires_valid_decision_log_id(self):
+        result = address_cli.evaluate(
+            self.address,
+            self.bundle,
+            "2026-09-06T00:00:00Z",
+            protocol_manifest=self.manifest,
+            claim_type="EXPERIMENT_RESULT",
+        )
+        self.assertEqual(response_contract.validate(result), [])
+        del result["decision_log"]["decision_log_id"]
+        errors = response_contract.validate(result)
+        self.assertTrue(
+            any("missing required fields" in error or "decision_log_id" in error for error in errors)
+        )
+
+    def test_response_contract_rejects_tampered_decision_log_id(self):
+        result = address_cli.evaluate(
+            self.address,
+            self.bundle,
+            "2026-09-06T00:00:00Z",
+            protocol_manifest=self.manifest,
+            claim_type="EXPERIMENT_RESULT",
+        )
+        result["decision_log"]["decision_log_id"] = "decision_log:" + ("0" * 64)
+        errors = response_contract.validate(result)
+        self.assertTrue(any("decision_log_id does not match" in error for error in errors))
+
+    def test_r6g_frozen_decision_log_verifies(self):
+        fixture = json.loads(
+            (ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(decision_log.verify(fixture), [])
+        self.assertTrue(fixture["decision_log_id"].startswith("decision_log:"))
+
+
+
 
 if __name__ == "__main__":
     unittest.main()
