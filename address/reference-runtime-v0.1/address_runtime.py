@@ -74,8 +74,14 @@ def validate(address: Any) -> list[str]:
     if isinstance(address["confidence_threshold"], bool) or not isinstance(address["confidence_threshold"], (int, float)) or not 0 <= address["confidence_threshold"] <= 1:
         errors.append("confidence_threshold must be between 0 and 1")
     goal = address["goal"]
-    if not isinstance(goal, dict) or not isinstance(goal.get("id"), str) or not isinstance(goal.get("success_criteria"), list):
-        errors.append("goal requires string id and success_criteria list")
+    if not isinstance(goal, dict):
+        errors.append("goal requires non-empty string id and success_criteria list of non-empty strings")
+    else:
+        if not isinstance(goal.get("id"), str) or not goal["id"]:
+            errors.append("goal.id must be a non-empty string")
+        criteria = goal.get("success_criteria")
+        if not isinstance(criteria, list) or not all(isinstance(item, str) and item for item in criteria):
+            errors.append("goal.success_criteria must be a list of non-empty strings")
     entities = address["entities"]
     if not isinstance(entities, list) or not all(isinstance(item, dict) for item in entities):
         errors.append("entities must be a list of objects")
@@ -105,8 +111,9 @@ def validate(address: Any) -> list[str]:
             errors.append("time_range start must not be after end")
     except ValueError:
         errors.append("time_range requires ISO-8601 start and end")
-    if not isinstance(address["state_constraints"], list) or not all(isinstance(item, str) for item in address["state_constraints"]):
-        errors.append("state_constraints must be a list of strings")
+    constraints = address["state_constraints"]
+    if not isinstance(constraints, list) or not all(isinstance(item, str) and item for item in constraints):
+        errors.append("state_constraints must be a list of non-empty strings")
     evidence = address["evidence_requirements"]
     if not isinstance(evidence, dict) or not isinstance(evidence.get("law_assumption"), str) or not evidence["law_assumption"]:
         errors.append("evidence_requirements.law_assumption must be explicit")
@@ -181,8 +188,8 @@ def validate(address: Any) -> list[str]:
     if not isinstance(freshness, dict) or not isinstance(freshness.get("max_age"), str) or not re.fullmatch(r"P\d+D", freshness["max_age"]):
         errors.append("freshness_requirement.max_age must use P<n>D")
     capabilities = address["capability_scope"]
-    if not isinstance(capabilities, list) or not all(isinstance(x, str) for x in capabilities):
-        errors.append("capability_scope must be a list of strings")
+    if not isinstance(capabilities, list) or not all(isinstance(x, str) and x for x in capabilities):
+        errors.append("capability_scope must be a list of non-empty strings")
     else:
         lowered = " ".join(capabilities).lower()
         if any(token in lowered for token in FORBIDDEN_CAPABILITY_TOKENS):

@@ -246,6 +246,104 @@ class AddressRuntimeTests(unittest.TestCase):
         self.assertEqual(address_runtime.validate(self.address), [])
 
 
+    def test_goal_id_must_be_nonempty_string(self):
+        for bad in ("", None, 1, True, []):
+            with self.subTest(bad=bad):
+                address = copy.deepcopy(self.address)
+                if bad is None:
+                    del address["goal"]["id"]
+                else:
+                    address["goal"]["id"] = bad
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(errors)
+                self.assertTrue(any("goal.id" in error for error in errors))
+
+    def test_goal_success_criteria_must_be_list_of_nonempty_strings(self):
+        for bad in ("", None, 1, True):
+            with self.subTest(item=bad):
+                address = copy.deepcopy(self.address)
+                address["goal"]["success_criteria"] = [bad]
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(
+                    any("goal.success_criteria" in error for error in errors)
+                )
+        for bad_list in ("not-a-list", None, 3, {"a": 1}):
+            with self.subTest(list=bad_list):
+                address = copy.deepcopy(self.address)
+                address["goal"]["success_criteria"] = bad_list
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(
+                    any("goal.success_criteria" in error for error in errors)
+                )
+        # empty list is allowed (no empty-string items); mixed empty rejected
+        address = copy.deepcopy(self.address)
+        address["goal"]["success_criteria"] = []
+        address["address_id"] = address_runtime.canonical_id(address)
+        self.assertEqual(address_runtime.validate(address), [])
+        address = copy.deepcopy(self.address)
+        address["goal"]["success_criteria"] = ["ok", ""]
+        address["address_id"] = address_runtime.canonical_id(address)
+        self.assertTrue(
+            any("goal.success_criteria" in error for error in address_runtime.validate(address))
+        )
+
+    def test_state_constraints_must_be_list_of_nonempty_strings(self):
+        for bad in ("", None, 1, True):
+            with self.subTest(item=bad):
+                address = copy.deepcopy(self.address)
+                address["state_constraints"] = [bad]
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(
+                    any("state_constraints must be a list of non-empty strings" in error for error in errors)
+                )
+        for bad_list in ("x", None, 2):
+            with self.subTest(list=bad_list):
+                address = copy.deepcopy(self.address)
+                address["state_constraints"] = bad_list
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(
+                    any("state_constraints must be a list of non-empty strings" in error for error in errors)
+                )
+        address = copy.deepcopy(self.address)
+        address["state_constraints"] = []
+        address["address_id"] = address_runtime.canonical_id(address)
+        self.assertEqual(address_runtime.validate(address), [])
+        address = copy.deepcopy(self.address)
+        address["state_constraints"] = ["schema-valid", ""]
+        address["address_id"] = address_runtime.canonical_id(address)
+        self.assertTrue(
+            any("state_constraints" in error for error in address_runtime.validate(address))
+        )
+
+    def test_capability_scope_items_must_be_nonempty_strings(self):
+        for bad in ("", None, 1, True):
+            with self.subTest(item=bad):
+                address = copy.deepcopy(self.address)
+                address["capability_scope"] = [bad]
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(
+                    any("capability_scope must be a list of non-empty strings" in error for error in errors)
+                )
+        address = copy.deepcopy(self.address)
+        address["capability_scope"] = ["read:declared-public-data", ""]
+        address["address_id"] = address_runtime.canonical_id(address)
+        self.assertTrue(
+            any("capability_scope must be a list of non-empty strings" in error for error in address_runtime.validate(address))
+        )
+        # existing forbid-token + real-world subset path still works with non-empty items
+        address = copy.deepcopy(self.address)
+        address["capability_scope"] = ["read:declared-public-data", "verify:declared-schema"]
+        address["address_id"] = address_runtime.canonical_id(address)
+        self.assertEqual(address_runtime.validate(address), [])
+
+
+
 
 if __name__ == "__main__":
     unittest.main()

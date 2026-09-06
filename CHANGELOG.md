@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-06 (Address remaining machine-checkable string-list types)
+- `address_runtime.validate` に `goal.id`（非空文字列）、`goal.success_criteria` / `state_constraints` / `capability_scope`（非空文字列の list；空要素・非文字列拒否）を追加。`capability_scope` の forbid-token / real-world subset は維持。
+- `valid_synthetic_address.json` は VALID のまま（address_id 非書換）。各拒否を unittest で固定。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address machine-checkable field types / canonical serialization)
 - `address_runtime.validate` に entities / relations / unknown / lineage sha / minimum_sources の機械可読型検査を追加。例外停止せず errors リストで拒否。valid_synthetic_address.json は VALID のまま。
 - `canonical_dumps` を明示し、`canonical_id` が `sort_keys=True` + `separators=(',', ':')` のみを使うことを文書化・unittest固定（キー順・空白は address_id 不変）。
