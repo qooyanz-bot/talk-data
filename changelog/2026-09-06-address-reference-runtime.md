@@ -16,6 +16,7 @@
 - Audit Logのevidence digest項目が壊れている場合にも、例外停止せず明示的に拒否するよう修正。
 - Audit Logの`create`が、非list evidenceや欠落／非文字列`evidence_id`でも例外停止せず、digest省略で明示拒否するよう硬化。CLIも同様に落ちないよう整合。
 - Address CLIに`--protocol-manifest`と`--claim-type`を接続。SPEC_ONLY/R6-G凍結manifestではEXPERIMENT_RESULTとCAPABILITY_CLAIMをALLOWED_AS_RESULTにできない。Response Contractも任意の`protocol_claim`状態を検証する。
+- CLI公開出力のgolden fixture（`fixtures/golden_cli_output.json`）を追加。必須キー・`value=null`・decision集合の構造検査で契約回帰を検出する。
 
 ## 自己点検
 

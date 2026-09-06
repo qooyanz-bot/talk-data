@@ -1,0 +1,47 @@
+{
+  "schema": "ADDRESS-CLI-GOLDEN-1.0",
+  "inputs": {
+    "address_fixture": "valid_synthetic_address.json",
+    "evidence_fixture": "valid_evidence_bundle.json",
+    "now": "2026-09-06T00:00:00Z"
+  },
+  "required_top_level_keys": [
+    "resolution",
+    "generated_audit"
+  ],
+  "resolution": {
+    "required_keys": [
+      "decision",
+      "reason",
+      "details",
+      "value"
+    ],
+    "decision_set": [
+      "ABSTAIN",
+      "READY_FOR_VERIFICATION"
+    ],
+    "expected_decision": "READY_FOR_VERIFICATION",
+    "expected_reason": "CONTRACTED_EVIDENCE",
+    "value_must_be_null": true
+  },
+  "generated_audit": {
+    "required_keys": [
+      "schema_version",
+      "address_id",
+      "evaluated_at",
+      "decision",
+      "reason",
+      "detail_digest",
+      "evidence_digests",
+      "audit_id"
+    ],
+    "schema_version": "ADDRESS-AUDIT-1.0",
+    "decision_must_match_resolution": true,
+    "reason_must_match_resolution": true
+  },
+  "forbidden_public_fields": [
+    "value_filled",
+    "secret",
+    "target_value_payload"
+  ]
+}
