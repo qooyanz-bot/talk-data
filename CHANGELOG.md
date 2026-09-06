@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address claim_reason closed enum)
+
+- `protocol_claim_gate.CLAIM_REASON_ALLOWED` = {NO_RESULT_CLAIM, EVIDENCE_GATES_UNMET, MANIFEST_INVALID, CLAIM_TYPE_UNKNOWN, CAPABILITY_EVIDENCE_NOT_RESULT_BACKED, RECORDED_EVIDENCE_GATES_PASS} を単一正本（assess_claim が実際に emit する全 reason）。
+- `decision_log.verify` が claim_reason（非 null）閉集合を強制。非 dict assessment の fallback は `ASSESSMENT_INVALID` をやめ `MANIFEST_INVALID`（gate reason のみ）。
+- Response Contract は既存どおり `decision_log.verify` 経由で同一検査。unittest：未知 reason は verify/contract 失敗；happy path / R6-G frozen fixture は通過。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address claim_type closed enum)
 
 - `protocol_claim_gate.CLAIM_TYPE_ALLOWED` = {DESIGN_DESCRIPTION, EXPERIMENT_RESULT, CAPABILITY_CLAIM} を単一正本；`assess_claim` が未知を BLOCKED / CLAIM_TYPE_UNKNOWN。

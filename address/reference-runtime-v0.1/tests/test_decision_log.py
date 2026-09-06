@@ -269,10 +269,10 @@ class DecisionLogTests(unittest.TestCase):
     def test_decision_log_tampering_is_detected(self):
         assessment = protocol_claim_gate.assess_claim(self.manifest, "EXPERIMENT_RESULT")
         log = decision_log.build_decision_log(self.manifest, "EXPERIMENT_RESULT", assessment)
-        log["claim_reason"] = "TAMPERED"
+        log["unmet"] = list(log["unmet"]) + ["tampered_gate!=true"]
         errors = decision_log.verify(log)
         self.assertTrue(errors)
-        self.assertIn("decision_log_id does not match", errors[0])
+        self.assertTrue(any("decision_log_id does not match" in e for e in errors))
 
     def test_response_contract_requires_valid_decision_log_id(self):
         result = address_cli.evaluate(
@@ -446,6 +446,75 @@ class DecisionLogTests(unittest.TestCase):
             frozenset({"DESIGN_DESCRIPTION", "EXPERIMENT_RESULT", "CAPABILITY_CLAIM"}),
         )
 
+    def test_verify_rejects_unknown_claim_reason(self):
+        assessment = protocol_claim_gate.assess_claim(self.manifest, "EXPERIMENT_RESULT")
+        log = decision_log.build_decision_log(self.manifest, "EXPERIMENT_RESULT", assessment)
+        log["claim_reason"] = "OTHER_REASON"
+        errors = decision_log.verify(log)
+        self.assertTrue(any("claim_reason must be one of" in e for e in errors))
+
+    def test_response_contract_rejects_unknown_claim_reason(self):
+        result = address_cli.evaluate(
+            self.address,
+            self.bundle,
+            "2026-09-06T00:00:00Z",
+            protocol_manifest=self.manifest,
+            claim_type="EXPERIMENT_RESULT",
+        )
+        result["decision_log"]["claim_reason"] = "OTHER_REASON"
+        # Keep protocol_claim.reason in sync so contradiction is not the only failure.
+        result["protocol_claim"]["reason"] = "OTHER_REASON"
+        errors = response_contract.validate(result)
+        self.assertTrue(
+            any("claim_reason must be one of" in e for e in errors),
+            errors,
+        )
+
+    def test_claim_reason_allowed_shared_from_protocol_claim_gate(self):
+        self.assertEqual(
+            protocol_claim_gate.CLAIM_REASON_ALLOWED,
+            frozenset(
+                {
+                    "NO_RESULT_CLAIM",
+                    "EVIDENCE_GATES_UNMET",
+                    "MANIFEST_INVALID",
+                    "CLAIM_TYPE_UNKNOWN",
+                    "CAPABILITY_EVIDENCE_NOT_RESULT_BACKED",
+                    "RECORDED_EVIDENCE_GATES_PASS",
+                }
+            ),
+        )
+
+    def test_happy_path_claim_reasons_verify(self):
+        # DESIGN -> NO_RESULT_CLAIM; EXPERIMENT on R6-G -> EVIDENCE_GATES_UNMET
+        for claim_type, expected_reason in (
+            ("DESIGN_DESCRIPTION", "NO_RESULT_CLAIM"),
+            ("EXPERIMENT_RESULT", "EVIDENCE_GATES_UNMET"),
+            ("CAPABILITY_CLAIM", "EVIDENCE_GATES_UNMET"),
+            ("UNKNOWN", "CLAIM_TYPE_UNKNOWN"),
+        ):
+            with self.subTest(claim_type=claim_type):
+                assessment = protocol_claim_gate.assess_claim(self.manifest, claim_type)
+                self.assertEqual(assessment.get("reason"), expected_reason)
+                # UNKNOWN claim_type fails claim_type verify; use a valid type with same reason
+                log_type = claim_type if claim_type in protocol_claim_gate.CLAIM_TYPE_ALLOWED else "EXPERIMENT_RESULT"
+                if claim_type == "UNKNOWN":
+                    log = decision_log.build_decision_log(self.manifest, log_type, assessment)
+                    # assessment reason is CLAIM_TYPE_UNKNOWN which is allowed
+                    self.assertEqual(log["claim_reason"], "CLAIM_TYPE_UNKNOWN")
+                    self.assertEqual(decision_log.verify(log), [])
+                else:
+                    log = decision_log.build_decision_log(self.manifest, claim_type, assessment)
+                    self.assertEqual(log["claim_reason"], expected_reason)
+                    self.assertEqual(decision_log.verify(log), [])
+
+    def test_r6g_frozen_fixture_claim_reason_still_valid(self):
+        frozen = json.loads(
+            (ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(frozen["claim_reason"], "EVIDENCE_GATES_UNMET")
+        self.assertIn(frozen["claim_reason"], protocol_claim_gate.CLAIM_REASON_ALLOWED)
+        self.assertEqual(decision_log.verify(frozen), [])
 
 
 if __name__ == "__main__":

@@ -67,7 +67,12 @@ def build_decision_log(
     hash (excluding the id field). Does not authorize runs or invent evidence.
     """
     if not isinstance(assessment, dict):
-        assessment = {"status": "BLOCKED", "reason": "ASSESSMENT_INVALID"}
+        # Gate-only reasons: non-dict assessment is treated as structural failure.
+        assessment = {
+            "status": "BLOCKED",
+            "reason": "MANIFEST_INVALID",
+            "unmet": ["assessment must be an object"],
+        }
     protocol_id = None
     if isinstance(manifest, dict) and isinstance(manifest.get("protocol_id"), str):
         protocol_id = manifest["protocol_id"]
@@ -95,7 +100,9 @@ create = build_decision_log
 def verify(record: Any) -> list[str]:
     """Verify required shape, closed-enum states, handoff keys, and self-addressed integrity.
 
-    claim_type must be in protocol_claim_gate.CLAIM_TYPE_ALLOWED. State fields present (not None) must be in protocol_claim_gate closed sets.
+    claim_type must be in protocol_claim_gate.CLAIM_TYPE_ALLOWED.
+    claim_reason when present (not None) must be in protocol_claim_gate.CLAIM_REASON_ALLOWED.
+    State fields present (not None) must be in protocol_claim_gate closed sets.
     auditor_handoff.decision when not None must be PENDING|PASS.
     Handoff keys must be exactly {decision, primary_run_authorized}.
     """
@@ -112,6 +119,15 @@ def verify(record: Any) -> list[str]:
         errors.append(
             "claim_type must be one of "
             + protocol_claim_gate.format_allowed(protocol_claim_gate.CLAIM_TYPE_ALLOWED)
+        )
+    claim_reason = record.get("claim_reason")
+    if claim_reason is not None and (
+        not isinstance(claim_reason, str)
+        or claim_reason not in protocol_claim_gate.CLAIM_REASON_ALLOWED
+    ):
+        errors.append(
+            "claim_reason must be one of "
+            + protocol_claim_gate.format_allowed(protocol_claim_gate.CLAIM_REASON_ALLOWED)
         )
     for field, allowed in protocol_claim_gate.STATE_ENUMS:
         value = record.get(field)

@@ -17,6 +17,17 @@ AUDITOR_HANDOFF_KEYS = frozenset({"decision", "primary_run_authorized"})
 CLAIM_TYPE_ALLOWED = frozenset(
     {"DESIGN_DESCRIPTION", "EXPERIMENT_RESULT", "CAPABILITY_CLAIM"}
 )
+# Closed claim_reason vocabulary (assess_claim emitters; decision_log / contract single source).
+CLAIM_REASON_ALLOWED = frozenset(
+    {
+        "NO_RESULT_CLAIM",
+        "EVIDENCE_GATES_UNMET",
+        "MANIFEST_INVALID",
+        "CLAIM_TYPE_UNKNOWN",
+        "CAPABILITY_EVIDENCE_NOT_RESULT_BACKED",
+        "RECORDED_EVIDENCE_GATES_PASS",
+    }
+)
 
 STATE_ENUMS = (
     ("evidence_state", EVIDENCE_STATE_ALLOWED),
