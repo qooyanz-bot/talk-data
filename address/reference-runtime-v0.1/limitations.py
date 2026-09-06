@@ -17,6 +17,7 @@ _NOT_RUN = "NOT_RUN"
 _SYNTHETIC_ONLY = "SYNTHETIC_ONLY"
 _SPEC_ONLY = "SPEC_ONLY"
 _LIMITATIONS = "LIMITATIONS"
+_EXTERNAL_RECORD_REQUIRED = "EXTERNAL_RECORD_REQUIRED"
 
 
 def limitations() -> dict[str, Any]:
@@ -36,6 +37,9 @@ def limitations() -> dict[str, Any]:
         "secret_access": _FORBIDDEN,
         "crypto_bypass": _FORBIDDEN,
         "future_direct": _FORBIDDEN,
+        # AUDITED semantic independence requires an external audit record;
+        # the runtime never infers AUDITED from path diversity or metadata alone.
+        "audited_independence": _EXTERNAL_RECORD_REQUIRED,
     }
 
 

@@ -23,6 +23,7 @@ REQUIRED_KEYS = {
     "secret_access",
     "crypto_bypass",
     "future_direct",
+    "audited_independence",
 }
 
 FORBIDDEN_STATUSES = {
@@ -117,6 +118,21 @@ class LimitationsTests(unittest.TestCase):
         self.assertEqual(doc["r6g_reference"], "SPEC_ONLY")
         self.assertNotEqual(doc["r6g_experiment"], "COMPLETED")
         self.assertFalse(limitations.is_claiming_status(doc["r6g_experiment"]))
+
+    def test_audited_independence_requires_external_record(self):
+        doc = limitations.limitations()
+        self.assertEqual(doc["audited_independence"], "EXTERNAL_RECORD_REQUIRED")
+        self.assertFalse(limitations.is_claiming_status(doc["audited_independence"]))
+
+    def test_cli_limitations_rejects_independence_audit_flag(self):
+        buf = StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = address_cli.main(["--limitations", "--independence-audit", "audit.json"])
+        self.assertEqual(code, 2)
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(payload["status"], "INVALID_INPUT")
+        self.assertTrue(any("independence-audit" in err for err in payload["errors"]))
+
 
 
 if __name__ == "__main__":

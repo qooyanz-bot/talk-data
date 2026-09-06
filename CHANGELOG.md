@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address AUDITED path requires external independence_audit)
+- Evidence Contract に凍結チェックリスト（`auditor_id` / `decision=PASS` / `method` / `evidence_digests` / `audited_at`）と `assess_audited_independence()` を追加。通過時のみ `independence=AUDITED`；`assess()` は引き続き決して AUDITED/INDEPENDENT を返さない（path多様性・metadata分離だけでは昇格しない）。
+- Resolution Gate / `evaluate` / CLI `--independence-audit` を配線。Address が `semantic_independence=AUDITED` のとき CONTRACTED証拠 **かつ** 有効監査記録が必要。欠落・不完全・偽造 → `ABSTAIN` / `SEMANTIC_INDEPENDENCE_UNMET`；有効 → `READY_FOR_VERIFICATION` / `AUDITED_INDEPENDENCE` でも `value=null`。
+- LIMITATIONS に `audited_independence=EXTERNAL_RECORD_REQUIRED` を追加。Value発見・R6-G実行は行わない。
+
+
 ## 2026-09-06 (Address remaining machine-checkable string-list types)
 - `address_runtime.validate` に `goal.id`（非空文字列）、`goal.success_criteria` / `state_constraints` / `capability_scope`（非空文字列の list；空要素・非文字列拒否）を追加。`capability_scope` の forbid-token / real-world subset は維持。
 - `valid_synthetic_address.json` は VALID のまま（address_id 非書換）。各拒否を unittest で固定。Value発見・R6-G実行は行わない。

@@ -23,13 +23,18 @@ def evaluate(
     audit: dict[str, Any] | None = None,
     protocol_manifest: dict[str, Any] | None = None,
     claim_type: str | None = None,
+    independence_audit: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Return a resolution plus a value-free generated audit record."""
-    outcome = resolution_gate.resolve(address, evidence, now)
+    outcome = resolution_gate.resolve(
+        address, evidence, now, independence_audit=independence_audit
+    )
     generated_audit = audit_log.create(address, evidence, outcome, now) if isinstance(address, dict) and isinstance(outcome, dict) else None
     result: dict[str, Any] = {"resolution": outcome, "generated_audit": generated_audit}
     if audit is not None:
-        result["replay"] = replay_verifier.verify_replay(address, evidence, audit)
+        result["replay"] = replay_verifier.verify_replay(
+            address, evidence, audit, independence_audit=independence_audit
+        )
     if protocol_manifest is not None or claim_type is not None:
         result["protocol_claim"] = protocol_claim_gate.assess_claim(protocol_manifest, claim_type if isinstance(claim_type, str) else "")
     errors = response_contract.validate(result)
@@ -70,6 +75,8 @@ def _resolve_flag_conflicts(args: argparse.Namespace, exclusive_flag: str) -> li
         conflicts.append(f"--protocol-manifest must not be supplied with {exclusive_flag}")
     if args.claim_type is not None:
         conflicts.append(f"--claim-type must not be supplied with {exclusive_flag}")
+    if args.independence_audit is not None:
+        conflicts.append(f"--independence-audit must not be supplied with {exclusive_flag}")
     return conflicts
 
 
@@ -89,6 +96,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("evidence", nargs="?", help="Evidence bundle JSON path")
     parser.add_argument("--now", help="Evaluation time in ISO-8601 UTC")
     parser.add_argument("--audit", help="Optional prior audit JSON to replay")
+    parser.add_argument(
+        "--independence-audit",
+        help="Optional external semantic-independence audit JSON (required shape for AUDITED Addresses)",
+    )
     parser.add_argument("--protocol-manifest", help="Optional protocol manifest JSON for claim gating")
     parser.add_argument("--claim-type", help="Claim type to assess against the protocol manifest")
     args = parser.parse_args(argv)
@@ -125,6 +136,7 @@ def main(argv: list[str] | None = None) -> int:
             _load(args.audit) if args.audit else None,
             _load(args.protocol_manifest) if args.protocol_manifest else None,
             args.claim_type,
+            _load(args.independence_audit) if args.independence_audit else None,
         )
     except (OSError, ValueError, json.JSONDecodeError, KeyError, TypeError) as exc:
         print(json.dumps({"status": "INVALID_INPUT", "errors": [str(exc)]}, ensure_ascii=False))

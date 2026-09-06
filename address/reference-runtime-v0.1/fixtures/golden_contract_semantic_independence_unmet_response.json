@@ -1,9 +1,9 @@
 {
   "generated_audit": {
     "address_id": "addr:sha256:5c5c99e408d4af0f03b35879f270c01bb1d74b867b18b7a0bf87ca70bcc2f719",
-    "audit_id": "audit:e1b4c9af24967892b65c66ac8cbf659113c02af2f4ee39994084d71c88808a95",
+    "audit_id": "audit:210cbefbd9798cc5aad8d8700a245ccf018c6b5a9d4b562af9b41366262daf2a",
     "decision": "ABSTAIN",
-    "detail_digest": "sha256:7f7c0c9b7f0d06a1f1255d513547bc631f30c98e8a54877c37b3aa06d8e84c57",
+    "detail_digest": "sha256:5d05786d55ce86b3a2411ffd356c3f4efa9dd02f6c03c76f6affec4aa548b803",
     "evaluated_at": "2026-09-06T00:00:00Z",
     "evidence_digests": [
       {
@@ -21,8 +21,9 @@
   "resolution": {
     "decision": "ABSTAIN",
     "details": [
-      "Address.evidence_requirements.semantic_independence is AUDITED but evidence independence is only CONTRACTED; audited independence unmet",
-      "independence=CONTRACTED"
+      "Address.evidence_requirements.semantic_independence is AUDITED but a valid external independence_audit record is required; CONTRACTED evidence alone is insufficient",
+      "independence=CONTRACTED",
+      "independence_audit record is missing"
     ],
     "reason": "SEMANTIC_INDEPENDENCE_UNMET",
     "residual": [

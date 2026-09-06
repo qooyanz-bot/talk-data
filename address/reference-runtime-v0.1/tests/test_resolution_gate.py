@@ -141,6 +141,72 @@ class ResolutionGateTests(unittest.TestCase):
         colliding = evidence_contract.assertion_key_set(self.bundle) & set(result["residual"])
         self.assertIn("continuity", colliding)
 
+    def test_audited_requirement_without_independence_audit_abstains(self):
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        result = resolution_gate.resolve(address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertEqual(result["decision"], "ABSTAIN")
+        self.assertEqual(result["reason"], "SEMANTIC_INDEPENDENCE_UNMET")
+        self.assertIsNone(result["value"])
+        self.assertTrue(any("independence_audit" in str(item) or "missing" in str(item) for item in result["details"]))
+
+    def test_audited_requirement_with_incomplete_audit_abstains(self):
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        incomplete = {"auditor_id": "auditor:x", "decision": "PASS"}
+        result = resolution_gate.resolve(
+            address, self.bundle, "2026-09-06T00:00:00Z", independence_audit=incomplete
+        )
+        self.assertEqual(result["decision"], "ABSTAIN")
+        self.assertEqual(result["reason"], "SEMANTIC_INDEPENDENCE_UNMET")
+        self.assertIsNone(result["value"])
+
+    def test_audited_requirement_with_forged_audit_abstains(self):
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        forged = {
+            "auditor_id": "auditor:synthetic-1",
+            "decision": "FAIL",
+            "method": "synthetic-pairwise-review",
+            "evidence_digests": [{"evidence_id": "e-1", "digest": "sha256:aaa"}],
+            "audited_at": "2026-09-06T00:00:00Z",
+        }
+        result = resolution_gate.resolve(
+            address, self.bundle, "2026-09-06T00:00:00Z", independence_audit=forged
+        )
+        self.assertEqual(result["decision"], "ABSTAIN")
+        self.assertEqual(result["reason"], "SEMANTIC_INDEPENDENCE_UNMET")
+        self.assertIsNone(result["value"])
+
+    def test_audited_requirement_with_valid_audit_is_ready_value_null(self):
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        audit = {
+            "auditor_id": "auditor:synthetic-1",
+            "decision": "PASS",
+            "method": "synthetic-pairwise-review",
+            "evidence_digests": [
+                {"evidence_id": "e-1", "digest": "sha256:aaa"},
+                {"evidence_id": "e-2", "digest": "sha256:bbb"},
+            ],
+            "audited_at": "2026-09-06T00:00:00Z",
+        }
+        result = resolution_gate.resolve(
+            address, self.bundle, "2026-09-06T00:00:00Z", independence_audit=audit
+        )
+        self.assertEqual(result["decision"], "READY_FOR_VERIFICATION")
+        self.assertEqual(result["reason"], "AUDITED_INDEPENDENCE")
+        self.assertIsNone(result["value"])
+        self.assertIn("continuity", result["residual"])
+        # assess() alone still CONTRACTED; READY here is verification gate only.
+        contract = evidence_contract.assess(self.bundle, address["evidence_requirements"]["minimum_sources"])
+        self.assertEqual(contract["independence"], "CONTRACTED")
+
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -158,6 +158,87 @@ class AddressCliTests(unittest.TestCase):
                 self.assertEqual(payload["status"], "INVALID_INPUT")
                 self.assertTrue(payload["errors"])
 
+    def test_evaluate_audited_with_valid_independence_audit_ready(self):
+        import copy
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        audit = {
+            "auditor_id": "auditor:synthetic-1",
+            "decision": "PASS",
+            "method": "synthetic-pairwise-review",
+            "evidence_digests": [
+                {"evidence_id": "e-1", "digest": "sha256:aaa"},
+                {"evidence_id": "e-2", "digest": "sha256:bbb"},
+            ],
+            "audited_at": "2026-09-06T00:00:00Z",
+        }
+        result = address_cli.evaluate(
+            address, self.bundle, "2026-09-06T00:00:00Z", independence_audit=audit
+        )
+        self.assertEqual(result["resolution"]["decision"], "READY_FOR_VERIFICATION")
+        self.assertEqual(result["resolution"]["reason"], "AUDITED_INDEPENDENCE")
+        self.assertIsNone(result["resolution"]["value"])
+
+    def test_evaluate_audited_without_independence_audit_abstains(self):
+        import copy
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        result = address_cli.evaluate(address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertEqual(result["resolution"]["decision"], "ABSTAIN")
+        self.assertEqual(result["resolution"]["reason"], "SEMANTIC_INDEPENDENCE_UNMET")
+        self.assertIsNone(result["resolution"]["value"])
+
+    def test_cli_independence_audit_flag_loads_json(self):
+        import copy
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        audit = {
+            "auditor_id": "auditor:synthetic-1",
+            "decision": "PASS",
+            "method": "synthetic-pairwise-review",
+            "evidence_digests": [
+                {"evidence_id": "e-1", "digest": "sha256:aaa"},
+                {"evidence_id": "e-2", "digest": "sha256:bbb"},
+            ],
+            "audited_at": "2026-09-06T00:00:00Z",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            address_path = Path(directory) / "address.json"
+            evidence_path = Path(directory) / "evidence.json"
+            audit_path = Path(directory) / "independence_audit.json"
+            address_path.write_text(json.dumps(address), encoding="utf-8")
+            evidence_path.write_text(json.dumps(self.bundle), encoding="utf-8")
+            audit_path.write_text(json.dumps(audit), encoding="utf-8")
+            buf = StringIO()
+            with contextlib.redirect_stdout(buf):
+                code = address_cli.main([
+                    str(address_path), str(evidence_path),
+                    "--now", "2026-09-06T00:00:00Z",
+                    "--independence-audit", str(audit_path),
+                ])
+            self.assertEqual(code, 0)
+            payload = json.loads(buf.getvalue())
+            self.assertEqual(payload["resolution"]["decision"], "READY_FOR_VERIFICATION")
+            self.assertEqual(payload["resolution"]["reason"], "AUDITED_INDEPENDENCE")
+            self.assertIsNone(payload["resolution"]["value"])
+
+    def test_check_contract_only_rejects_independence_audit_combo(self):
+        fixture = ROOT / "fixtures" / "golden_contract_ok_response.json"
+        buf = StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = address_cli.main([
+                "--check-contract-only", str(fixture),
+                "--independence-audit", "audit.json",
+            ])
+        self.assertEqual(code, 2)
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(payload["status"], "INVALID_INPUT")
+        self.assertTrue(any("independence-audit" in err for err in payload["errors"]))
+
+
 
 if __name__ == "__main__":
     unittest.main()

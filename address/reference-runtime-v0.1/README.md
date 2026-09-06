@@ -10,8 +10,8 @@
 - `world_id`、Memory / Capability scope、Evidence / Law contract、残差のabstain表現
 - real worldでの公開・許可済みread/verify scope以外の拒否
 - canonical JSONからの安定した `address_id` 再計算
-- Evidence Contractの共通authority / generator / semantic law検出。path IDだけの相違は独立性と扱わない。 `assess()` は明示的な `independence` 判定を返す: 共有軸は `COMMON_CAUSE_SUSPECT`（status CONFLICT / accepted=False）、 metadata分離通過は `CONTRACTED`（accepted=True）、 不足・不正は `UNVERIFIED`。 このランタイム単体では `INDEPENDENT` / `AUDITED` を決して返さない。
-- Resolution Gateによる `READY_FOR_VERIFICATION` / `ABSTAIN` 判定。 READYは `independence=CONTRACTED` のときのみ。 Addressが `semantic_independence: AUDITED` を要求しても証拠がCONTRACTED止まりなら `ABSTAIN` / `SEMANTIC_INDEPENDENCE_UNMET`（静かに昇格しない）。 fixtureの `UNVERIFIED` 要求はCONTRACTED証拠でREADY可。証拠不足、共通原因、鮮度切れ、矛盾ではValueを返さない。
+- Evidence Contractの共通authority / generator / semantic law検出。path IDだけの相違は独立性と扱わない。 `assess()` は明示的な `independence` 判定を返す: 共有軸は `COMMON_CAUSE_SUSPECT`（status CONFLICT / accepted=False）、 metadata分離通過は `CONTRACTED`（accepted=True）、 不足・不正は `UNVERIFIED`。 `assess()` は決して `INDEPENDENT` / `AUDITED` を返さない。 AUDITEDへ進むには外部の意味的独立性監査記録が必要で、`assess_audited_independence(audit_record)` が凍結チェックリスト（`auditor_id` / `decision=PASS` / `method` / `evidence_digests` / `audited_at`）を機械検査する。 チェックリスト通過時のみ `independence=AUDITED`；不完全・偽造は `UNMET`。
+- Resolution Gateによる `READY_FOR_VERIFICATION` / `ABSTAIN` 判定。 UNVERIFIED/CONTRACTED要求のREADYは `independence=CONTRACTED` のときのみ。 Addressが `semantic_independence: AUDITED` を要求する場合は CONTRACTED証拠 **かつ** 有効な外部 `independence_audit`（`resolve`/`evaluate` の任意引数、CLI `--independence-audit`）が必要。 欠落・不完全・偽造は `ABSTAIN` / `SEMANTIC_INDEPENDENCE_UNMET`（静かに昇格しない）。 有効監査付きは `READY_FOR_VERIFICATION` / `AUDITED_INDEPENDENCE` でも `value=null`（検証ゲートでありValue発見ではない）。 fixtureの `UNVERIFIED` 要求はCONTRACTED証拠でREADY可。証拠不足、共通原因、鮮度切れ、矛盾ではValueを返さない。
 - content-addressed Audit Log。Valueやassertion本文を保存せず、Address・証拠digest・判定を再検算可能にする。
 - Replay Verifier。保存済み監査ログに対して同じAddress・Evidence・時刻でGateを再実行し、判断と系譜の完全一致を検証する。
 - Protocol Claim Gate。凍結・未実行・監査未完了のProtocolから、実験結果又は能力を主張することを防ぐ。
@@ -33,7 +33,7 @@
 - `tools/regenerate_contract_goldens.py` が固定入力からevaluate()でREADY/ABSTAIN/CONTRADICTION/EVIDENCE_STALE/SEMANTIC_INDEPENDENCE_UNMET goldenを再生成し、digestの手編集を不要にする。unittestがfixtureとfresh evaluate()の完全一致を検査する。
 - `--check-contract-only` と address/evidence/`--now`/`--audit`/`--protocol-manifest`/`--claim-type` の併用は早期に `INVALID_INPUT`（機械可読JSON・非0）で拒否する。
 
-- LIMITATIONS / synthetic-only conformance surface（`limitations.py` / `fixtures/limitations.json`）。world_scope=SYNTHETIC_ONLY、value_discovery=NOT_IMPLEMENTED、r6g_experiment=NOT_RUN（reference SPEC_ONLY）、real_domain_extrapolation / secret_access / crypto_bypass / future_direct=FORBIDDEN を機械可読に宣言。CLI `--limitations` でJSON出力（address/evidence不要）。resolve / `--check-contract-only` と相互排他。
+- LIMITATIONS / synthetic-only conformance surface（`limitations.py` / `fixtures/limitations.json`）。world_scope=SYNTHETIC_ONLY、value_discovery=NOT_IMPLEMENTED、r6g_experiment=NOT_RUN（reference SPEC_ONLY）、real_domain_extrapolation / secret_access / crypto_bypass / future_direct=FORBIDDEN、audited_independence=EXTERNAL_RECORD_REQUIRED（AUDITEDは外部監査記録が必要でランタイム推論しない）を機械可読に宣言。CLI `--limitations` でJSON出力（address/evidence不要）。resolve / `--check-contract-only` と相互排他。
 
 ## 非対象
 
@@ -47,6 +47,7 @@
 python -m unittest discover -s address/reference-runtime-v0.1/tests -v
 python address/reference-runtime-v0.1/address_runtime.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json
 python address/reference-runtime-v0.1/address_cli.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json address/reference-runtime-v0.1/fixtures/valid_evidence_bundle.json --now 2026-09-06T00:00:00Z
+python address/reference-runtime-v0.1/address_cli.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json address/reference-runtime-v0.1/fixtures/valid_evidence_bundle.json --now 2026-09-06T00:00:00Z --independence-audit path/to/independence_audit.json
 python address/reference-runtime-v0.1/address_cli.py --limitations
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only path/to/saved_response.json
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_ok_response.json
@@ -59,4 +60,4 @@ python address/reference-runtime-v0.1/tools/regenerate_contract_goldens.py
 
 契約goldenの再生成は `python address/reference-runtime-v0.1/tools/regenerate_contract_goldens.py` （固定Address・Evidence・`--now`相当時刻からevaluate()出力を書き戻す）。手編集しない。
 
-結果は `VALID`、又は機械可読な `INVALID` と違反一覧で返す。統合CLIはResolutionとvalue-free Audit Logを返し、`--audit` 指定時はReplayも検証する。`--limitations` はAddress/EvidenceなしでLIMITATIONS文書をJSON出力する（exit 0）。`--check-contract-only` はGateを再実行せず、保存済み公開応答の契約だけを検査する（`CONTRACT_OK` / `CONTRACT_INVALID`）。`--limitations` / `--check-contract-only` と address/evidence/`--now` など解決用引数の併用、又は両モードの併用は早期に `INVALID_INPUT` JSONで非0終了する。外部接続・ファイル書込み・Value導出はしない。R6-G実行や現実ドメイン外挿は主張しない。
+結果は `VALID`、又は機械可読な `INVALID` と違反一覧で返す。統合CLIはResolutionとvalue-free Audit Logを返し、`--audit` 指定時はReplayも検証する。`--limitations` はAddress/EvidenceなしでLIMITATIONS文書をJSON出力する（exit 0）。`--check-contract-only` はGateを再実行せず、保存済み公開応答の契約だけを検査する（`CONTRACT_OK` / `CONTRACT_INVALID`）。`--limitations` / `--check-contract-only` と address/evidence/`--now`/`--independence-audit` など解決用引数の併用、又は両モードの併用は早期に `INVALID_INPUT` JSONで非0終了する。外部接続・ファイル書込み・Value導出はしない。R6-G実行や現実ドメイン外挿は主張しない。

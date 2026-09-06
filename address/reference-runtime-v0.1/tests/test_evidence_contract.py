@@ -15,6 +15,19 @@ def record(index: int) -> dict:
     }
 
 
+def valid_independence_audit() -> dict:
+    return {
+        "auditor_id": "auditor:synthetic-1",
+        "decision": "PASS",
+        "method": "synthetic-pairwise-review",
+        "evidence_digests": [
+            {"evidence_id": "e-1", "digest": "sha256:aaa"},
+            {"evidence_id": "e-2", "digest": "sha256:bbb"},
+        ],
+        "audited_at": "2026-09-06T00:00:00Z",
+    }
+
+
 class EvidenceContractTests(unittest.TestCase):
     def test_separated_metadata_is_contracted_not_audited(self):
         result = evidence_contract.assess([record(1), record(2)])
@@ -84,6 +97,12 @@ class EvidenceContractTests(unittest.TestCase):
                 ("COMMON_CAUSE_SUSPECT", "CONTRACTED", "UNVERIFIED"),
             )
 
+    def test_path_diversity_alone_never_audited(self):
+        # Distinct path_ids with full metadata separation still stop at CONTRACTED.
+        result = evidence_contract.assess([record(1), record(2)])
+        self.assertEqual(result["independence"], "CONTRACTED")
+        self.assertNotEqual(result["independence"], "AUDITED")
+
     def test_assertion_key_set_extracts_keys_without_implying_fill(self):
         records = [record(1), record(2)]
         records[0]["assertion_key"] = "continuity"
@@ -92,3 +111,48 @@ class EvidenceContractTests(unittest.TestCase):
         self.assertEqual(keys, {"continuity", "other"})
         # Helper documents keys for contradiction only; does not resolve slots.
         self.assertNotIn("filled", evidence_contract.assess(records))
+
+    def test_audited_checklist_documents_required_fields(self):
+        checklist = evidence_contract.audited_independence_checklist()
+        self.assertEqual(
+            set(checklist["required_fields"]),
+            evidence_contract.AUDITED_INDEPENDENCE_REQUIRED_FIELDS,
+        )
+        self.assertEqual(checklist["decision_must_be"], "PASS")
+        self.assertTrue(checklist["notes"])
+
+    def test_assess_audited_independence_valid_shape_is_audited(self):
+        result = evidence_contract.assess_audited_independence(valid_independence_audit())
+        self.assertTrue(result["accepted"])
+        self.assertEqual(result["independence"], "AUDITED")
+        self.assertEqual(result["status"], "AUDITED")
+
+    def test_assess_audited_independence_missing_record_is_unmet(self):
+        result = evidence_contract.assess_audited_independence(None)
+        self.assertFalse(result["accepted"])
+        self.assertEqual(result["independence"], "UNMET")
+        self.assertTrue(any("missing" in reason for reason in result["reasons"]))
+
+    def test_assess_audited_independence_incomplete_is_unmet(self):
+        incomplete = {"auditor_id": "auditor:x", "decision": "PASS"}
+        result = evidence_contract.assess_audited_independence(incomplete)
+        self.assertFalse(result["accepted"])
+        self.assertEqual(result["independence"], "UNMET")
+        self.assertTrue(any("missing required fields" in reason for reason in result["reasons"]))
+
+    def test_assess_audited_independence_forged_decision_is_unmet(self):
+        forged = valid_independence_audit()
+        forged["decision"] = "FAIL"
+        result = evidence_contract.assess_audited_independence(forged)
+        self.assertFalse(result["accepted"])
+        self.assertEqual(result["independence"], "UNMET")
+        self.assertTrue(any("PASS" in reason for reason in result["reasons"]))
+
+    def test_assess_alone_never_returns_audited_even_with_valid_audit_nearby(self):
+        # Regression: assess() must not silently promote via any side channel.
+        result = evidence_contract.assess([record(1), record(2)])
+        self.assertEqual(result["independence"], "CONTRACTED")
+        self.assertNotEqual(result["independence"], "AUDITED")
+        # Only the dedicated assessor may return AUDITED.
+        audit = evidence_contract.assess_audited_independence(valid_independence_audit())
+        self.assertEqual(audit["independence"], "AUDITED")
