@@ -57,6 +57,13 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 - 出力は2D bboxのみとし、未校正の3D geometryはNaN・invalidのまま保持。合成出力で重複抑制とclass分離を検証。
 - 検証: 全 206 テスト成功。未完成: 実ONNX重みとの接続、実webcam条件の精度/速度評価、学習済みtracking。
 
+## detector ID assignment
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/0d2581d`
+- `BboxTrackAssigner` を追加し、multi-class bboxのclass一致・中心距離・bounded missed framesでフレーム間IDを再割当。
+- YOLO parserの `yolo-pending-*` を downstream の temporal tracking に接続可能な安定IDへ変換。appearance re-IDや本格的遮蔽復帰は未実装。
+- lineageへ `track_assigner=nearest_center_v0` を追加し、全 207 テスト成功。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
