@@ -1,0 +1,11 @@
+﻿{
+    "conversations":  380,
+    "messages":  17957,
+    "source_sha256":  "8A93A44214E91CE12FFC36BDDFD899E495291E144BF40F0DF10B550347ED9E9C",
+    "archive_sha256":  "90799A12F2CF1F6441F23388A30DF058A416EB0D612507174354F90DCAA9B226",
+    "redactions":  {
+                       "email":  49,
+                       "phone":  7,
+                       "openai_or_generic_secret":  23
+                   }
+}
