@@ -287,5 +287,51 @@ class AddressCliTests(unittest.TestCase):
                 self.assertTrue(payload["errors"])
 
 
+
+    def test_standalone_modes_mutually_exclusive_matrix(self):
+        """Every standalone mode rejects every other standalone mode and resolve flags."""
+        fixture = lambda name: str(ROOT / "fixtures" / name)
+        standalone = {
+            "--limitations": [],
+            "--runtime-manifest": [],
+            "--conformance": [],
+            "--check-contract-only": fixture("golden_contract_ok_response.json"),
+            "--verify-decision-log": fixture("r6g_frozen_decision_log_blocked.json"),
+            "--verify-audit-log": "audit.json",
+            "--validate-protocol-manifest": fixture("r6g_frozen_protocol_manifest.json"),
+        }
+        resolve_flags = [
+            ["address.json", "evidence.json"],
+            ["--now", "2026-09-06T00:00:00Z"],
+            ["--audit", "audit.json"],
+            ["--independence-audit", "independence.json"],
+            ["--protocol-manifest", "manifest.json"],
+            ["--claim-type", "DESIGN_DESCRIPTION"],
+        ]
+        mode_args = {}
+        for flag, arg in standalone.items():
+            mode_args[flag] = [flag] + ([arg] if arg else [])
+        for primary, primary_args in mode_args.items():
+            for other, other_args in mode_args.items():
+                if other == primary:
+                    continue
+                with self.subTest(primary=primary, other=other):
+                    buf = StringIO()
+                    with contextlib.redirect_stdout(buf):
+                        code = address_cli.main([*primary_args, *other_args])
+                    self.assertEqual(code, 2)
+                    payload = json.loads(buf.getvalue())
+                    self.assertEqual(payload["status"], "INVALID_INPUT")
+                    self.assertTrue(any(other in err for err in payload["errors"]))
+            for extra in resolve_flags:
+                with self.subTest(primary=primary, extra=extra):
+                    buf = StringIO()
+                    with contextlib.redirect_stdout(buf):
+                        code = address_cli.main([*primary_args, *extra])
+                    self.assertEqual(code, 2)
+                    payload = json.loads(buf.getvalue())
+                    self.assertEqual(payload["status"], "INVALID_INPUT")
+                    self.assertTrue(payload["errors"])
+
 if __name__ == "__main__":
     unittest.main()
