@@ -19,6 +19,7 @@ H1 / Future Concept の**正本**リポジトリ。
 | `archives/` | 監査可能な会話アーカイブ（秘密・不要な識別子を除去） |
 | `meta/` | 正本運用ルールなどメタ文書 |
 | `changelog/` | 版・訂正履歴 |
+| `.github/workflows/` | Address reference runtimeの依存なし回帰テストCI |
 
 Concept ≠ Dimension。CLEAR ≠ 全目的達成。
 

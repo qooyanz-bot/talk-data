@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-06 (Address reference runtime CI)
+- `address/reference-runtime-v0.1/` の変更時に全unittestを実行する最小GitHub Actions CIを追加。外部データ、秘密、実世界Valueの取得は行わない。
+
 ## 2026-09-06 (Historical Raw Archive documentation)
 - READMEに `archives/md-original/` の目的、利用上の正本性区分、安全な参照手順を追加。
 - Raw Archiveを承認済み判断・再現可能なEvidence・未検証仮説と混同しないこと、秘密情報の再記録・復元をしないことを明記。
