@@ -9,6 +9,7 @@
 - real worldでの公開・許可済みread/verify scope以外の拒否
 - canonical JSONからの安定した `address_id` 再計算
 - Evidence Contractの共通authority / generator / semantic law検出。path IDだけの相違は独立性と扱わない。
+- Resolution Gateによる `READY_FOR_VERIFICATION` / `ABSTAIN` 判定。証拠不足、共通原因、鮮度切れ、矛盾ではValueを返さない。
 
 ## 非対象
 
