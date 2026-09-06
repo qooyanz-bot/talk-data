@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import audit_log
+
 REQUIRED = {"evidence_id", "claim_hash", "path_id", "authority_id", "generator_id", "semantic_law_id", "observed_at"}
 INDEPENDENCE_AXES = ("authority_id", "generator_id", "semantic_law_id")
 
@@ -106,6 +108,9 @@ def audited_independence_checklist() -> dict[str, Any]:
             "method: nonempty string naming the audit method",
             "evidence_digests: nonempty list of nonempty digest strings "
             "or {evidence_id, digest} objects with nonempty strings",
+            "when evidence is supplied, evidence_digests must exactly match "
+            "audit_log.evidence_digest_entries(evidence) (content-addressed; "
+            "{evidence_id, digest} pairs via content_digest)",
             "audited_at: nonempty ISO-8601 timestamp string",
             "assess() alone never returns AUDITED; path diversity never grants AUDITED",
         ],
@@ -131,12 +136,49 @@ def _digest_entry_ok(item: Any) -> bool:
     return False
 
 
-def assess_audited_independence(audit_record: Any) -> dict[str, Any]:
+def _digest_pair(item: Any) -> tuple[str, str] | None:
+    """Return (evidence_id, digest) for object entries; None for non-bindable shapes."""
+    if isinstance(item, dict):
+        evidence_id = item.get("evidence_id")
+        digest = item.get("digest")
+        if isinstance(evidence_id, str) and evidence_id and isinstance(digest, str) and digest:
+            return (evidence_id, digest)
+    return None
+
+
+def _evidence_digest_pair_set(evidence: Any) -> set[tuple[str, str]]:
+    """Content-addressed (evidence_id, digest) set via shared audit_log helper."""
+    return {
+        (entry["evidence_id"], entry["digest"])
+        for entry in audit_log.evidence_digest_entries(evidence)
+    }
+
+
+def _audit_digest_pair_set(digests: list[Any]) -> set[tuple[str, str]] | None:
+    """Normalize audit evidence_digests to (evidence_id, digest) pairs.
+
+    Binding requires object entries so a PASS audit for a different evidence
+    set cannot silently satisfy AUDITED. Plain string digests are shape-ok
+    when evidence is omitted, but cannot bind when evidence is supplied.
+    """
+    pairs: set[tuple[str, str]] = set()
+    for item in digests:
+        pair = _digest_pair(item)
+        if pair is None:
+            return None
+        pairs.add(pair)
+    return pairs
+
+
+def assess_audited_independence(audit_record: Any, evidence: Any = None) -> dict[str, Any]:
     """Assess an external semantic-independence audit record against the frozen checklist.
 
     Returns independence=AUDITED only when the record passes every required field.
-    Otherwise returns unmet reasons. Never upgrades CONTRACTED evidence from
-    assess() alone; forged or incomplete records are rejected.
+    When ``evidence`` is supplied, ``evidence_digests`` must exactly equal the
+    content-addressed digests of that evidence bundle (same algorithm as
+    audit_log.evidence_digest_entries). A PASS audit for a different set is
+    unmet, not AUDITED. Never upgrades CONTRACTED evidence from assess() alone;
+    forged or incomplete records are rejected.
     """
     if audit_record is None:
         return _audit_unmet(["independence_audit record is missing"])
@@ -169,12 +211,36 @@ def assess_audited_independence(audit_record: Any) -> dict[str, Any]:
         reasons.append("audited_at must be a nonempty string")
     if reasons:
         return _audit_unmet(reasons)
+    # Content-addressed binding: audit digests must match the supplied evidence.
+    if evidence is not None:
+        expected = _evidence_digest_pair_set(evidence)
+        actual = _audit_digest_pair_set(digests)
+        if actual is None:
+            return _audit_unmet(
+                [
+                    "evidence_digests must be {evidence_id, digest} objects "
+                    "matching the supplied evidence bundle (content-addressed)"
+                ]
+            )
+        if actual != expected:
+            return _audit_unmet(
+                [
+                    "evidence_digests do not match the supplied evidence bundle "
+                    "(content-addressed); a PASS audit for a different set "
+                    "cannot satisfy AUDITED"
+                ]
+            )
     return {
         "status": "AUDITED",
         "accepted": True,
         "independence": INDEPENDENCE_AUDITED,
         "reasons": [
             "external semantic-independence audit record passed frozen checklist"
+            + (
+                " and evidence_digests match the supplied evidence bundle"
+                if evidence is not None
+                else ""
+            )
         ],
     }
 

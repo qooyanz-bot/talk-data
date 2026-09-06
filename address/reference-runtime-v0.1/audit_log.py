@@ -7,13 +7,26 @@ import json
 from typing import Any
 
 
-def _digest(value: Any) -> str:
+def content_digest(value: Any) -> str:
+    """Canonical content-addressed digest (sha256 of sorted-key JSON).
+
+    Shared by Audit Log records and independence_audit evidence binding so
+    digests never diverge across modules.
+    """
     encoded = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return "sha256:" + hashlib.sha256(encoded).hexdigest()
 
 
-def _evidence_digest_entries(evidence: Any) -> list[dict[str, str]]:
-    """Build sorted digest entries; malformed evidence never raises."""
+# Backward-compatible private alias (same algorithm).
+_digest = content_digest
+
+
+def evidence_digest_entries(evidence: Any) -> list[dict[str, str]]:
+    """Build sorted {evidence_id, digest} entries; malformed evidence never raises.
+
+    Digests use content_digest() over each full evidence object. Used by Audit
+    Log create() and independence_audit binding in evidence_contract.
+    """
     if not isinstance(evidence, list):
         return []
     entries: list[dict[str, str]] = []
@@ -23,8 +36,12 @@ def _evidence_digest_entries(evidence: Any) -> list[dict[str, str]]:
         evidence_id = item.get("evidence_id")
         if not isinstance(evidence_id, str):
             continue
-        entries.append({"evidence_id": evidence_id, "digest": _digest(item)})
+        entries.append({"evidence_id": evidence_id, "digest": content_digest(item)})
     return sorted(entries, key=lambda item: (item["evidence_id"], item["digest"]))
+
+
+# Backward-compatible private alias.
+_evidence_digest_entries = evidence_digest_entries
 
 
 def create(address: dict[str, Any], evidence: list[dict[str, Any]], outcome: dict[str, Any], evaluated_at: str) -> dict[str, Any]:

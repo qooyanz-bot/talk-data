@@ -4,6 +4,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+import audit_log  # noqa: E402
 import evidence_contract  # noqa: E402
 
 
@@ -15,15 +16,20 @@ def record(index: int) -> dict:
     }
 
 
-def valid_independence_audit() -> dict:
+def valid_independence_audit(evidence=None) -> dict:
+    """Build a checklist-valid audit; digests match evidence when provided."""
+    if evidence is None:
+        digests = [
+            {"evidence_id": "e-1", "digest": "sha256:aaa"},
+            {"evidence_id": "e-2", "digest": "sha256:bbb"},
+        ]
+    else:
+        digests = audit_log.evidence_digest_entries(evidence)
     return {
         "auditor_id": "auditor:synthetic-1",
         "decision": "PASS",
         "method": "synthetic-pairwise-review",
-        "evidence_digests": [
-            {"evidence_id": "e-1", "digest": "sha256:aaa"},
-            {"evidence_id": "e-2", "digest": "sha256:bbb"},
-        ],
+        "evidence_digests": digests,
         "audited_at": "2026-09-06T00:00:00Z",
     }
 
@@ -154,5 +160,42 @@ class EvidenceContractTests(unittest.TestCase):
         self.assertEqual(result["independence"], "CONTRACTED")
         self.assertNotEqual(result["independence"], "AUDITED")
         # Only the dedicated assessor may return AUDITED.
-        audit = evidence_contract.assess_audited_independence(valid_independence_audit())
+        evidence = [record(1), record(2)]
+        audit = evidence_contract.assess_audited_independence(
+            valid_independence_audit(evidence), evidence=evidence
+        )
         self.assertEqual(audit["independence"], "AUDITED")
+
+    def test_assess_audited_matching_digests_is_audited(self):
+        evidence = [record(1), record(2)]
+        audit = valid_independence_audit(evidence)
+        result = evidence_contract.assess_audited_independence(audit, evidence=evidence)
+        self.assertTrue(result["accepted"])
+        self.assertEqual(result["independence"], "AUDITED")
+        self.assertTrue(any("match" in reason for reason in result["reasons"]))
+
+    def test_assess_audited_mismatched_digests_is_unmet(self):
+        evidence = [record(1), record(2)]
+        # Checklist-valid PASS audit whose digests belong to a different set.
+        audit = valid_independence_audit()  # placeholder digests, not content-addressed
+        result = evidence_contract.assess_audited_independence(audit, evidence=evidence)
+        self.assertFalse(result["accepted"])
+        self.assertEqual(result["independence"], "UNMET")
+        self.assertTrue(any("do not match" in reason for reason in result["reasons"]))
+
+    def test_assess_audited_pass_for_other_bundle_cannot_satisfy(self):
+        evidence_a = [record(1), record(2)]
+        evidence_b = [record(3), record(4)]
+        audit_for_b = valid_independence_audit(evidence_b)
+        # Valid PASS for B must not AUDITED when evidence is A.
+        result = evidence_contract.assess_audited_independence(audit_for_b, evidence=evidence_a)
+        self.assertFalse(result["accepted"])
+        self.assertEqual(result["independence"], "UNMET")
+        self.assertTrue(any("different set" in reason or "do not match" in reason for reason in result["reasons"]))
+
+    def test_assess_never_audited_even_when_digests_would_match(self):
+        evidence = [record(1), record(2)]
+        _ = valid_independence_audit(evidence)
+        result = evidence_contract.assess(evidence)
+        self.assertEqual(result["independence"], "CONTRACTED")
+        self.assertNotEqual(result["independence"], "AUDITED")

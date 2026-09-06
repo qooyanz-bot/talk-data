@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import address_cli  # noqa: E402
 import address_runtime  # noqa: E402
+import audit_log  # noqa: E402
 
 
 def evidence(index: int) -> dict:
@@ -167,10 +168,7 @@ class AddressCliTests(unittest.TestCase):
             "auditor_id": "auditor:synthetic-1",
             "decision": "PASS",
             "method": "synthetic-pairwise-review",
-            "evidence_digests": [
-                {"evidence_id": "e-1", "digest": "sha256:aaa"},
-                {"evidence_id": "e-2", "digest": "sha256:bbb"},
-            ],
+            "evidence_digests": audit_log.evidence_digest_entries(self.bundle),
             "audited_at": "2026-09-06T00:00:00Z",
         }
         result = address_cli.evaluate(
@@ -199,10 +197,7 @@ class AddressCliTests(unittest.TestCase):
             "auditor_id": "auditor:synthetic-1",
             "decision": "PASS",
             "method": "synthetic-pairwise-review",
-            "evidence_digests": [
-                {"evidence_id": "e-1", "digest": "sha256:aaa"},
-                {"evidence_id": "e-2", "digest": "sha256:bbb"},
-            ],
+            "evidence_digests": audit_log.evidence_digest_entries(self.bundle),
             "audited_at": "2026-09-06T00:00:00Z",
         }
         with tempfile.TemporaryDirectory() as directory:

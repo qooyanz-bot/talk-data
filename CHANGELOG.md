@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-06 (Address independence_audit evidence_digests binding)
+- `assess_audited_independence(audit_record, evidence=...)` が `evidence_digests` を供給エビデンス束の content-addressed digest（`audit_log.content_digest` / `evidence_digest_entries` と同一アルゴリズム）と完全一致要求。別束への PASS 監査では AUDITED にならない。
+- Resolution Gate は AUDITED 要求時に evidence を監査検査へ渡す。不一致 → `ABSTAIN` / `SEMANTIC_INDEPENDENCE_UNMET`；一致＋チェックリスト通過 → `READY_FOR_VERIFICATION` / `AUDITED_INDEPENDENCE` / `value=null`。
+- `assess()` 単体は引き続き決して AUDITED を返さない。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address AUDITED path requires external independence_audit)
 - Evidence Contract に凍結チェックリスト（`auditor_id` / `decision=PASS` / `method` / `evidence_digests` / `audited_at`）と `assess_audited_independence()` を追加。通過時のみ `independence=AUDITED`；`assess()` は引き続き決して AUDITED/INDEPENDENT を返さない（path多様性・metadata分離だけでは昇格しない）。
 - Resolution Gate / `evaluate` / CLI `--independence-audit` を配線。Address が `semantic_independence=AUDITED` のとき CONTRACTED証拠 **かつ** 有効監査記録が必要。欠落・不完全・偽造 → `ABSTAIN` / `SEMANTIC_INDEPENDENCE_UNMET`；有効 → `READY_FOR_VERIFICATION` / `AUDITED_INDEPENDENCE` でも `value=null`。

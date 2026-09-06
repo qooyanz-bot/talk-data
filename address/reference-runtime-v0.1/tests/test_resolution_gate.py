@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import address_runtime  # noqa: E402
+import audit_log  # noqa: E402
 import evidence_contract  # noqa: E402
 import resolution_gate  # noqa: E402
 
@@ -189,10 +190,7 @@ class ResolutionGateTests(unittest.TestCase):
             "auditor_id": "auditor:synthetic-1",
             "decision": "PASS",
             "method": "synthetic-pairwise-review",
-            "evidence_digests": [
-                {"evidence_id": "e-1", "digest": "sha256:aaa"},
-                {"evidence_id": "e-2", "digest": "sha256:bbb"},
-            ],
+            "evidence_digests": audit_log.evidence_digest_entries(self.bundle),
             "audited_at": "2026-09-06T00:00:00Z",
         }
         result = resolution_gate.resolve(
@@ -206,6 +204,30 @@ class ResolutionGateTests(unittest.TestCase):
         contract = evidence_contract.assess(self.bundle, address["evidence_requirements"]["minimum_sources"])
         self.assertEqual(contract["independence"], "CONTRACTED")
 
+    def test_audited_requirement_with_mismatched_digests_abstains(self):
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        # Checklist-valid PASS whose digests do not match the supplied bundle.
+        audit = {
+            "auditor_id": "auditor:synthetic-1",
+            "decision": "PASS",
+            "method": "synthetic-pairwise-review",
+            "evidence_digests": [
+                {"evidence_id": "e-1", "digest": "sha256:aaa"},
+                {"evidence_id": "e-2", "digest": "sha256:bbb"},
+            ],
+            "audited_at": "2026-09-06T00:00:00Z",
+        }
+        result = resolution_gate.resolve(
+            address, self.bundle, "2026-09-06T00:00:00Z", independence_audit=audit
+        )
+        self.assertEqual(result["decision"], "ABSTAIN")
+        self.assertEqual(result["reason"], "SEMANTIC_INDEPENDENCE_UNMET")
+        self.assertIsNone(result["value"])
+        self.assertTrue(
+            any("do not match" in str(item) or "different set" in str(item) for item in result["details"])
+        )
 
 
 if __name__ == "__main__":
