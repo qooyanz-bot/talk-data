@@ -17,6 +17,7 @@ H1 / Future Concept の**正本**リポジトリ。
 | `address/` | 失敗条件・閾値・Dimensionメモ |
 | `address/reference-runtime-v0.1/` | Address Schemaの依存なし参照検証器（synthetic / 許可済みデータのみ） |
 | `archives/` | 監査可能な会話アーカイブ（秘密・不要な識別子を除去） |
+| `future-concept/newmo-perception/` | newmo Perception 就業・設計草案（面接・失敗条件・E2E入力） |
 | `meta/` | 正本運用ルールなどメタ文書 |
 | `changelog/` | 版・訂正履歴 |
 | `.github/workflows/` | Address reference runtimeの依存なし回帰テストCI |
