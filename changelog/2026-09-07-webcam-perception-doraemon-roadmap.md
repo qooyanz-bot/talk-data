@@ -33,6 +33,14 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 - `EventSemanticsEngine` へ任意接続し、初回検出を含む `action:*` eventをtrack/timestamp evidence付きで出力。
 - 検証: 全 200 テスト成功。これは動画モデルの実環境精度を意味せず、学習済みaction認識へ置換・評価するための測定可能な接続点である。
 
+## 実 detector 接続
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/1318d8b`
+- `OpenCVHOGPersonDetector` を追加。JPEG bytesをOpenCVでdecodeし、既成HOG person detectorから人物bbox・confidence・簡易ID継続を返す。
+- 2D pixel bboxを3D metricとして偽装しないため、`geometry_valid=false` と NaN metric値を使用。既存の geometry/sync gate により train-eligible にはならない。
+- OpenCVは任意依存で、backend境界に分離。fake moduleによる実経路テストを含む全 202 テスト成功。
+- 未完成: multi-class learned detector、実機条件での精度評価、モデル重みlineage、遮蔽復帰。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
