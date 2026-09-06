@@ -24,6 +24,8 @@
 
 - Evidence assertion_keyがunknown.slot / residualラベルと衝突しても、resolution.residualから消さず、assertion_valueをvalueへ束縛しない。READY_FOR_VERIFICATIONでもvalue=nullを維持。
 - Address CLIに`--check-contract-only RESPONSE.json`を追加。Gate再実行なしで保存済み公開応答をresponse_contract検証。契約OKでexit 0、違反は機械可読errorsで非0。address/evidence/--nowは不要。
+- 公開応答golden fixture `fixtures/golden_contract_ok_response.json`（evaluate出力形: value=null・residualあり・audit整合）を追加。`--check-contract-only` / `response_contract.validate` で通過し、value充填や入れ子`lineage.result_sha`刻印では失敗するunittestを凍結。
+- `--check-contract-only` と address/evidence/`--now`/`--audit`/`--protocol-manifest`/`--claim-type` の併用を早期拒否。既存`INVALID_INPUT`スタイルの機械可読JSONで非0終了するようargparseを硬化。
 
 ## 自己点検
 

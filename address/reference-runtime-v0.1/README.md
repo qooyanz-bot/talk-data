@@ -26,6 +26,8 @@
 
 - assertion_keyがunknown.slot / residualラベルと文字列衝突しても、residualを消さずvalueにassertion_valueを束縛しない。
 - CLI `--check-contract-only RESPONSE.json` で、Gate再実行なしに保存済み公開応答をresponse_contract検証（OK=0、違反は機械可読errorsで非0）。
+- 保存済み公開応答のgolden fixture（`fixtures/golden_contract_ok_response.json`）で `--check-contract-only` / `response_contract.validate` の構造を凍結。value充填や入れ子`lineage.result_sha`刻印は失敗する。
+- `--check-contract-only` と address/evidence/`--now`/`--audit`/`--protocol-manifest`/`--claim-type` の併用は早期に `INVALID_INPUT`（機械可読JSON・非0）で拒否する。
 
 ## 非対象
 
@@ -40,6 +42,7 @@ python -m unittest discover -s address/reference-runtime-v0.1/tests -v
 python address/reference-runtime-v0.1/address_runtime.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json
 python address/reference-runtime-v0.1/address_cli.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json address/reference-runtime-v0.1/fixtures/valid_evidence_bundle.json --now 2026-09-06T00:00:00Z
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only path/to/saved_response.json
+python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_ok_response.json
 ```
 
-結果は `VALID`、又は機械可読な `INVALID` と違反一覧で返す。統合CLIはResolutionとvalue-free Audit Logを返し、`--audit` 指定時はReplayも検証する。`--check-contract-only` はGateを再実行せず、保存済み公開応答の契約だけを検査する（`CONTRACT_OK` / `CONTRACT_INVALID`）。外部接続・ファイル書込み・Value導出はしない。
+結果は `VALID`、又は機械可読な `INVALID` と違反一覧で返す。統合CLIはResolutionとvalue-free Audit Logを返し、`--audit` 指定時はReplayも検証する。`--check-contract-only` はGateを再実行せず、保存済み公開応答の契約だけを検査する（`CONTRACT_OK` / `CONTRACT_INVALID`）。address/evidence/`--now` など解決用引数と併用すると早期に `INVALID_INPUT` JSONで非0終了する。外部接続・ファイル書込み・Value導出はしない。

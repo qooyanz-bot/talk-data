@@ -66,10 +66,22 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.check_contract_only is not None:
-        if args.address is not None or args.evidence is not None:
-            parser.error("address/evidence must not be supplied with --check-contract-only")
-        if args.now is not None or args.audit is not None or args.protocol_manifest is not None or args.claim_type is not None:
-            parser.error("resolve options must not be supplied with --check-contract-only")
+        conflicts: list[str] = []
+        if args.address is not None:
+            conflicts.append("address positional must not be supplied with --check-contract-only")
+        if args.evidence is not None:
+            conflicts.append("evidence positional must not be supplied with --check-contract-only")
+        if args.now is not None:
+            conflicts.append("--now must not be supplied with --check-contract-only")
+        if args.audit is not None:
+            conflicts.append("--audit must not be supplied with --check-contract-only")
+        if args.protocol_manifest is not None:
+            conflicts.append("--protocol-manifest must not be supplied with --check-contract-only")
+        if args.claim_type is not None:
+            conflicts.append("--claim-type must not be supplied with --check-contract-only")
+        if conflicts:
+            print(json.dumps({"status": "INVALID_INPUT", "errors": conflicts}, ensure_ascii=False, sort_keys=True))
+            return 2
         try:
             result = check_contract_only(args.check_contract_only)
         except (OSError, ValueError, json.JSONDecodeError, TypeError) as exc:

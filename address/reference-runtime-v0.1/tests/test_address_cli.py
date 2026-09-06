@@ -125,6 +125,39 @@ class AddressCliTests(unittest.TestCase):
                 code = address_cli.main(["--check-contract-only", str(path)])
             self.assertEqual(code, 0)
 
+    def test_check_contract_only_rejects_address_evidence_combo(self):
+        fixture = ROOT / "fixtures" / "golden_contract_ok_response.json"
+        buf = StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = address_cli.main([
+                "--check-contract-only", str(fixture),
+                "address.json", "evidence.json",
+            ])
+        self.assertEqual(code, 2)
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(payload["status"], "INVALID_INPUT")
+        joined = " ".join(payload["errors"])
+        self.assertIn("address", joined)
+        self.assertIn("evidence", joined)
+
+    def test_check_contract_only_rejects_now_and_resolve_flags(self):
+        fixture = ROOT / "fixtures" / "golden_contract_ok_response.json"
+        cases = [
+            ["--now", "2026-09-06T00:00:00Z"],
+            ["--audit", "audit.json"],
+            ["--protocol-manifest", "manifest.json"],
+            ["--claim-type", "DESIGN_DESCRIPTION"],
+        ]
+        for extra in cases:
+            with self.subTest(extra=extra):
+                buf = StringIO()
+                with contextlib.redirect_stdout(buf):
+                    code = address_cli.main(["--check-contract-only", str(fixture), *extra])
+                self.assertEqual(code, 2)
+                payload = json.loads(buf.getvalue())
+                self.assertEqual(payload["status"], "INVALID_INPUT")
+                self.assertTrue(payload["errors"])
+
 
 if __name__ == "__main__":
     unittest.main()

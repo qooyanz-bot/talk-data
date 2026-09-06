@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-06 (Address contract-only golden fixture + argparse harden)
+- 公開応答golden fixture `fixtures/golden_contract_ok_response.json` を追加（value=null・residualあり・audit整合）。`--check-contract-only` / validate で通過し、value充填や入れ子 `lineage.result_sha` 刻印で失敗する回帰を凍結。
+- `--check-contract-only` と address/evidence/`--now`/resolve系フラグの併用を早期 `INVALID_INPUT` JSON で拒否。
+
 ## 2026-09-06 (Address assertion/residual collision + contract-only CLI)
 - Evidence `assertion_key` が unknown.slot / residual ラベルと衝突しても residual を解消せず、`assertion_value` を value に束縛しない（READYでも value=null）。
 - Address CLI に `--check-contract-only RESPONSE.json` を追加。Gate再実行なしで公開応答の response_contract を検証（OK=0、違反は機械可読 errors で非0）。

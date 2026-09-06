@@ -1,0 +1,32 @@
+{
+  "generated_audit": {
+    "address_id": "addr:sha256:35db9ba1578f7586bf08939fd499e4c71015ea21e018b7b4cc34062fb605b0dc",
+    "audit_id": "audit:1390f358fd9057a6ef3aadc36dcc8119dfd34e53e2b75909e8377ec0a4fe8403",
+    "decision": "READY_FOR_VERIFICATION",
+    "detail_digest": "sha256:7fbb5fda8a5ef6e579f939a3c2788927e980862e06eeb18d60e0ba9a4432a128",
+    "evaluated_at": "2026-09-06T00:00:00Z",
+    "evidence_digests": [
+      {
+        "digest": "sha256:70d6503b34257def879da34d99cfb40c8e8804538b25023d8778860b3168d213",
+        "evidence_id": "e-1"
+      },
+      {
+        "digest": "sha256:a7d2ac85578d84fb73e16d4107b49c87528f63ed6b72e9cf68ed9e4af1c33c2d",
+        "evidence_id": "e-2"
+      }
+    ],
+    "reason": "CONTRACTED_EVIDENCE",
+    "schema_version": "ADDRESS-AUDIT-1.0"
+  },
+  "resolution": {
+    "decision": "READY_FOR_VERIFICATION",
+    "details": [
+      "metadata separation passed; semantic independence remains unaudited"
+    ],
+    "reason": "CONTRACTED_EVIDENCE",
+    "residual": [
+      "continuity"
+    ],
+    "value": null
+  }
+}
