@@ -71,6 +71,13 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 - live source の health serializer を dataclass/dict両対応に修正し、実際のsession成果物まで回帰。
 - 検証: 全 209 テスト成功。これはappearance re-IDや完全な遮蔽理解ではなく、距離ベース復帰のbaselineである。
 
+## temporal action baseline
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/d8998e4`
+- trackerのbounded historyから速度系列を公開し、平均・最大・初終差・age・missedをtemporal featureとしてaction recognizerへ接続。
+- feature schemaを明示した場合だけ `EventSemanticsEngine` が時間窓を使用。従来の単フレーム動作は維持。
+- 検証: 全 211 テスト成功。現状はprototype baselineであり、RGB clip encoderや実動画データでの一般化は未検証。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
