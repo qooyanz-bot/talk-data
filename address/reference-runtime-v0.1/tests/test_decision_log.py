@@ -425,5 +425,28 @@ class DecisionLogTests(unittest.TestCase):
                 self.assertTrue(payload["errors"])
 
 
+    def test_verify_rejects_unknown_claim_type(self):
+        assessment = protocol_claim_gate.assess_claim(self.manifest, "EXPERIMENT_RESULT")
+        log = decision_log.build_decision_log(self.manifest, "EXPERIMENT_RESULT", assessment)
+        log["claim_type"] = "UNKNOWN"
+        # id no longer matches after mutation; either error is sufficient
+        errors = decision_log.verify(log)
+        self.assertTrue(any("claim_type must be one of" in e for e in errors))
+
+    def test_verify_rejects_empty_claim_type(self):
+        assessment = protocol_claim_gate.assess_claim(self.manifest, "EXPERIMENT_RESULT")
+        log = decision_log.build_decision_log(self.manifest, "EXPERIMENT_RESULT", assessment)
+        log["claim_type"] = ""
+        errors = decision_log.verify(log)
+        self.assertTrue(any("claim_type must be one of" in e for e in errors))
+
+    def test_claim_type_allowed_shared_from_protocol_claim_gate(self):
+        self.assertEqual(
+            protocol_claim_gate.CLAIM_TYPE_ALLOWED,
+            frozenset({"DESIGN_DESCRIPTION", "EXPERIMENT_RESULT", "CAPABILITY_CLAIM"}),
+        )
+
+
+
 if __name__ == "__main__":
     unittest.main()

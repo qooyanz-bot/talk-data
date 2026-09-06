@@ -95,7 +95,7 @@ create = build_decision_log
 def verify(record: Any) -> list[str]:
     """Verify required shape, closed-enum states, handoff keys, and self-addressed integrity.
 
-    State fields present (not None) must be in protocol_claim_gate closed sets.
+    claim_type must be in protocol_claim_gate.CLAIM_TYPE_ALLOWED. State fields present (not None) must be in protocol_claim_gate closed sets.
     auditor_handoff.decision when not None must be PENDING|PASS.
     Handoff keys must be exactly {decision, primary_run_authorized}.
     """
@@ -107,6 +107,12 @@ def verify(record: Any) -> list[str]:
     if record["schema_version"] != SCHEMA_VERSION:
         return ["unsupported decision_log schema version"]
     errors: list[str] = []
+    claim_type = record.get("claim_type")
+    if not isinstance(claim_type, str) or claim_type not in protocol_claim_gate.CLAIM_TYPE_ALLOWED:
+        errors.append(
+            "claim_type must be one of "
+            + protocol_claim_gate.format_allowed(protocol_claim_gate.CLAIM_TYPE_ALLOWED)
+        )
     for field, allowed in protocol_claim_gate.STATE_ENUMS:
         value = record.get(field)
         if value is not None and (not isinstance(value, str) or value not in allowed):

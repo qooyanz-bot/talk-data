@@ -148,5 +148,60 @@ class ProtocolClaimGateTests(unittest.TestCase):
 
 
 
+    def test_unknown_claim_type_blocked(self):
+        result = protocol_claim_gate.assess_claim(R6G_FROZEN, "UNKNOWN")
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["reason"], "CLAIM_TYPE_UNKNOWN")
+        self.assertEqual(
+            protocol_claim_gate.CLAIM_TYPE_ALLOWED,
+            frozenset({"DESIGN_DESCRIPTION", "EXPERIMENT_RESULT", "CAPABILITY_CLAIM"}),
+        )
+
+    def test_cli_rejects_unknown_claim_type(self):
+        address = ROOT / "fixtures" / "valid_synthetic_address.json"
+        evidence = ROOT / "fixtures" / "valid_evidence_bundle.json"
+        manifest = ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json"
+        buf = StringIO()
+        with redirect_stdout(buf):
+            code = address_cli.main(
+                [
+                    str(address),
+                    str(evidence),
+                    "--now",
+                    "2026-09-06T00:00:00Z",
+                    "--protocol-manifest",
+                    str(manifest),
+                    "--claim-type",
+                    "UNKNOWN",
+                ]
+            )
+        self.assertEqual(code, 2)
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(payload["status"], "INVALID_INPUT")
+        self.assertTrue(any("claim_type must be one of" in e for e in payload["errors"]))
+
+    def test_cli_requires_claim_type_with_protocol_manifest(self):
+        address = ROOT / "fixtures" / "valid_synthetic_address.json"
+        evidence = ROOT / "fixtures" / "valid_evidence_bundle.json"
+        manifest = ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json"
+        buf = StringIO()
+        with redirect_stdout(buf):
+            code = address_cli.main(
+                [
+                    str(address),
+                    str(evidence),
+                    "--now",
+                    "2026-09-06T00:00:00Z",
+                    "--protocol-manifest",
+                    str(manifest),
+                ]
+            )
+        self.assertEqual(code, 2)
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(payload["status"], "INVALID_INPUT")
+        self.assertTrue(any("claim-type is required" in e for e in payload["errors"]))
+
+
+
 if __name__ == "__main__":
     unittest.main()

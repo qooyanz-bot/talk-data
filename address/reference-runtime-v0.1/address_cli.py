@@ -149,7 +149,13 @@ def main(argv: list[str] | None = None) -> int:
         help="Optional external semantic-independence audit JSON (required shape for AUDITED Addresses)",
     )
     parser.add_argument("--protocol-manifest", help="Optional protocol manifest JSON for claim gating")
-    parser.add_argument("--claim-type", help="Claim type to assess against the protocol manifest")
+    parser.add_argument(
+        "--claim-type",
+        help=(
+            "Claim type to assess against the protocol manifest "
+            "(closed enum: DESIGN_DESCRIPTION | EXPERIMENT_RESULT | CAPABILITY_CLAIM)"
+        ),
+    )
     args = parser.parse_args(argv)
 
     if args.limitations:
@@ -216,6 +222,24 @@ def main(argv: list[str] | None = None) -> int:
             "--check-contract-only, --verify-decision-log, --validate-protocol-manifest, "
             "or --conformance is set"
         )
+
+    claim_type_errors: list[str] = []
+    if args.protocol_manifest is not None and args.claim_type is None:
+        claim_type_errors.append("--claim-type is required with --protocol-manifest")
+    if args.claim_type is not None and args.claim_type not in protocol_claim_gate.CLAIM_TYPE_ALLOWED:
+        claim_type_errors.append(
+            "claim_type must be one of "
+            + protocol_claim_gate.format_allowed(protocol_claim_gate.CLAIM_TYPE_ALLOWED)
+        )
+    if claim_type_errors:
+        print(
+            json.dumps(
+                {"status": "INVALID_INPUT", "errors": claim_type_errors},
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+        )
+        return 2
 
     try:
         result = evaluate(

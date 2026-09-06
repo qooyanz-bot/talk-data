@@ -13,6 +13,10 @@ EXPERIMENT_STATE_ALLOWED = frozenset({"NOT_RUN", "COMPLETED"})
 INDEPENDENT_REPLAY_STATE_ALLOWED = frozenset({"NOT_RUN", "REPLICATED"})
 AUDITOR_HANDOFF_DECISION_ALLOWED = frozenset({"PENDING", "PASS"})
 AUDITOR_HANDOFF_KEYS = frozenset({"decision", "primary_run_authorized"})
+# Closed claim_type vocabulary (CLI / decision_log / assess_claim single source).
+CLAIM_TYPE_ALLOWED = frozenset(
+    {"DESIGN_DESCRIPTION", "EXPERIMENT_RESULT", "CAPABILITY_CLAIM"}
+)
 
 STATE_ENUMS = (
     ("evidence_state", EVIDENCE_STATE_ALLOWED),
@@ -79,10 +83,10 @@ def assess_claim(manifest: Any, claim_type: str) -> dict[str, Any]:
     errors = validate_manifest(manifest)
     if errors:
         return {"status": "BLOCKED", "reason": "MANIFEST_INVALID", "unmet": errors}
+    if not isinstance(claim_type, str) or claim_type not in CLAIM_TYPE_ALLOWED:
+        return {"status": "BLOCKED", "reason": "CLAIM_TYPE_UNKNOWN"}
     if claim_type == "DESIGN_DESCRIPTION":
         return {"status": "ALLOWED_AS_DESIGN", "reason": "NO_RESULT_CLAIM"}
-    if claim_type not in {"EXPERIMENT_RESULT", "CAPABILITY_CLAIM"}:
-        return {"status": "BLOCKED", "reason": "CLAIM_TYPE_UNKNOWN"}
     gates = {
         "implementation_state": "IMPLEMENTED",
         "experiment_state": "COMPLETED",

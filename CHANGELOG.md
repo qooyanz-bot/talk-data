@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address claim_type closed enum)
+
+- `protocol_claim_gate.CLAIM_TYPE_ALLOWED` = {DESIGN_DESCRIPTION, EXPERIMENT_RESULT, CAPABILITY_CLAIM} を単一正本；`assess_claim` が未知を BLOCKED / CLAIM_TYPE_UNKNOWN。
+- `decision_log.verify` が claim_type 閉集合を強制（空・UNKNOWN 拒否）。CLI は `--protocol-manifest` に `--claim-type` 必須、未知は INVALID_INPUT。
+- unittest：verify 拒否、CLI 拒否、共有定数。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address regenerator --check + CI drift)
 
 - `tools/regenerate_limitations.py` / `regenerate_conformance_report.py` / `regenerate_all_frozen_docs.py` に `--check`：dry-run；on-disk fixture が生成内容と一致すれば exit 0、書き換えが必要なら非0（書込みなし）。
