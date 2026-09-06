@@ -317,5 +317,17 @@ class ResolutionGateTests(unittest.TestCase):
         self.assertIsNone(result["value"])
 
 
+    def test_decision_allowed_covers_emitters(self):
+        self.assertEqual(
+            resolution_gate.DECISION_ALLOWED,
+            frozenset({"ABSTAIN", "READY_FOR_VERIFICATION"}),
+        )
+        ready = resolution_gate.resolve(self.address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertIn(ready["decision"], resolution_gate.DECISION_ALLOWED)
+        stale = resolution_gate.resolve(self.address, self.bundle, "2026-10-07T00:00:00Z")
+        self.assertEqual(stale["decision"], "ABSTAIN")
+        self.assertIn(stale["decision"], resolution_gate.DECISION_ALLOWED)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -7,9 +7,13 @@ from typing import Any
 import audit_log
 import decision_log
 import protocol_claim_gate
+import replay_verifier
+import resolution_gate
 
-DECISIONS = {"ABSTAIN", "READY_FOR_VERIFICATION"}
-REPLAY_STATUSES = {"REPLAY_VERIFIED", "REPLAY_MISMATCH", "LINEAGE_MISMATCH", "INVALID_AUDIT"}
+# Single source: resolution_gate.DECISION_ALLOWED
+DECISIONS = resolution_gate.DECISION_ALLOWED
+# Single source: replay_verifier.REPLAY_STATUS_ALLOWED
+REPLAY_STATUSES = replay_verifier.REPLAY_STATUS_ALLOWED
 # Single source: protocol_claim_gate.CLAIM_STATUS_ALLOWED
 PROTOCOL_CLAIM_STATUSES = protocol_claim_gate.CLAIM_STATUS_ALLOWED
 

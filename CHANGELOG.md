@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-06 (Address DECISIONS + REPLAY_STATUSES single-source)
+
+- `resolution_gate.DECISION_ALLOWED` = {ABSTAIN, READY_FOR_VERIFICATION} を単一正本（resolve emitters）。`_result` が軽量 assert。
+- `replay_verifier.REPLAY_STATUS_ALLOWED` = {REPLAY_VERIFIED, REPLAY_MISMATCH, LINEAGE_MISMATCH, INVALID_AUDIT} を単一正本（verify_replay emitters）。`_status_result` が軽量 assert。
+- `response_contract.DECISIONS` / `REPLAY_STATUSES` は同一 frozenset エイリアス（ローカル set 廃止）。
+- unittest：未知 decision/replay status は contract 拒否；共有 identity（`is`）；happy path 通過。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
+
 ## 2026-09-06 (Address claim_status closed enum)
 
 - `protocol_claim_gate.CLAIM_STATUS_ALLOWED` = {ALLOWED_AS_DESIGN, ALLOWED_AS_RESULT, BLOCKED} を単一正本（assess_claim status emitters）。

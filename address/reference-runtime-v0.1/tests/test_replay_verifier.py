@@ -48,5 +48,23 @@ class ReplayVerifierTests(unittest.TestCase):
         self.assertEqual(result["status"], "LINEAGE_MISMATCH")
 
 
+    def test_invalid_audit_status(self):
+        broken = dict(self.record)
+        broken["audit_id"] = "tampered"
+        result = replay_verifier.verify_replay(self.address, self.evidence, broken)
+        self.assertEqual(result["status"], "INVALID_AUDIT")
+        self.assertIn(result["status"], replay_verifier.REPLAY_STATUS_ALLOWED)
+
+    def test_replay_status_allowed_covers_emitters(self):
+        self.assertEqual(
+            replay_verifier.REPLAY_STATUS_ALLOWED,
+            frozenset(
+                {"REPLAY_VERIFIED", "REPLAY_MISMATCH", "LINEAGE_MISMATCH", "INVALID_AUDIT"}
+            ),
+        )
+        verified = replay_verifier.verify_replay(self.address, self.evidence, self.record)
+        self.assertIn(verified["status"], replay_verifier.REPLAY_STATUS_ALLOWED)
+
+
 if __name__ == "__main__":
     unittest.main()

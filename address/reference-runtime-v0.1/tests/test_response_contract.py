@@ -8,6 +8,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import address_cli  # noqa: E402
 import address_runtime  # noqa: E402
+import replay_verifier  # noqa: E402
+import resolution_gate  # noqa: E402
 import response_contract  # noqa: E402
 
 
@@ -124,3 +126,31 @@ class ResponseContractTests(unittest.TestCase):
         self.assertIsInstance(residual, list)
         self.assertTrue(all(isinstance(item, str) and item for item in residual))
         self.assertEqual(response_contract.validate(response), [])
+
+    def test_unknown_resolution_decision_is_rejected(self):
+        self.response["resolution"]["decision"] = "FAKE_DECISION"
+        # Keep audit in sync so the failure is the unknown-decision rule, not audit mismatch.
+        self.response["generated_audit"]["decision"] = "FAKE_DECISION"
+        self.assertIn("resolution decision is unknown", response_contract.validate(self.response))
+
+    def test_unknown_replay_status_is_rejected(self):
+        self.response["replay"] = {"status": "FAKE_REPLAY", "errors": [], "value": None}
+        self.assertIn("replay status is invalid", response_contract.validate(self.response))
+
+    def test_decisions_and_replay_statuses_shared_from_emitters(self):
+        self.assertEqual(
+            resolution_gate.DECISION_ALLOWED,
+            frozenset({"ABSTAIN", "READY_FOR_VERIFICATION"}),
+        )
+        self.assertIs(response_contract.DECISIONS, resolution_gate.DECISION_ALLOWED)
+        self.assertEqual(
+            replay_verifier.REPLAY_STATUS_ALLOWED,
+            frozenset(
+                {"REPLAY_VERIFIED", "REPLAY_MISMATCH", "LINEAGE_MISMATCH", "INVALID_AUDIT"}
+            ),
+        )
+        self.assertIs(response_contract.REPLAY_STATUSES, replay_verifier.REPLAY_STATUS_ALLOWED)
+
+    def test_ready_and_abstain_decisions_in_allowed(self):
+        self.assertIn(self.response["resolution"]["decision"], resolution_gate.DECISION_ALLOWED)
+        self.assertEqual(response_contract.validate(self.response), [])

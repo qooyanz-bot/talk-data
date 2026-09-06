@@ -9,6 +9,9 @@ from typing import Any
 import address_runtime
 import evidence_contract
 
+# Closed resolution.decision vocabulary (resolve emitters; response_contract single source).
+DECISION_ALLOWED = frozenset({"ABSTAIN", "READY_FOR_VERIFICATION"})
+
 
 def _parse_time(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
@@ -87,6 +90,7 @@ def _residual_ignoring_assertion_collisions(residual: list[str], evidence: Any) 
 
 def _result(decision: str, reason: str, details: list[Any], residual: list[str]) -> dict[str, Any]:
     # Typed binding: success stays READY_FOR_VERIFICATION with value=null; residuals stay unfilled.
+    assert decision in DECISION_ALLOWED, f"decision not in DECISION_ALLOWED: {decision!r}"
     return {
         "decision": decision,
         "reason": reason,
