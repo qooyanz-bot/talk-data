@@ -97,10 +97,10 @@ class EvidenceContractTests(unittest.TestCase):
         shared[1]["authority_id"] = shared[0]["authority_id"]
         samples.append(evidence_contract.assess(shared))
         for result in samples:
-            self.assertNotIn(result["independence"], ("INDEPENDENT", "AUDITED"))
+            self.assertNotIn(result["independence"], evidence_contract._FORBIDDEN_INDEPENDENCE_CLAIMS)
             self.assertIn(
                 result["independence"],
-                ("COMMON_CAUSE_SUSPECT", "CONTRACTED", "UNVERIFIED"),
+                evidence_contract.INDEPENDENCE_ASSESS_ALLOWED,
             )
 
     def test_path_diversity_alone_never_audited(self):
@@ -265,3 +265,50 @@ class EvidenceContractTests(unittest.TestCase):
         result = evidence_contract.assess(evidence)
         self.assertEqual(result["independence"], "CONTRACTED")
         self.assertNotEqual(result["independence"], "AUDITED")
+
+    def test_independence_assess_allowed_covers_emitters(self):
+        self.assertEqual(
+            evidence_contract.INDEPENDENCE_ASSESS_ALLOWED,
+            frozenset({"COMMON_CAUSE_SUSPECT", "CONTRACTED", "UNVERIFIED"}),
+        )
+        self.assertTrue(
+            evidence_contract.INDEPENDENCE_ASSESS_ALLOWED.isdisjoint(
+                evidence_contract._FORBIDDEN_INDEPENDENCE_CLAIMS
+            )
+        )
+        contracted = evidence_contract.assess([record(1), record(2)])
+        self.assertEqual(contracted["independence"], evidence_contract.INDEPENDENCE_CONTRACTED)
+        self.assertIn(contracted["independence"], evidence_contract.INDEPENDENCE_ASSESS_ALLOWED)
+        unverified = evidence_contract.assess([record(1)])
+        self.assertEqual(unverified["independence"], evidence_contract.INDEPENDENCE_UNVERIFIED)
+        self.assertIn(unverified["independence"], evidence_contract.INDEPENDENCE_ASSESS_ALLOWED)
+        shared = [record(1), record(2)]
+        shared[1]["authority_id"] = shared[0]["authority_id"]
+        suspect = evidence_contract.assess(shared)
+        self.assertEqual(
+            suspect["independence"], evidence_contract.INDEPENDENCE_COMMON_CAUSE_SUSPECT
+        )
+        self.assertIn(suspect["independence"], evidence_contract.INDEPENDENCE_ASSESS_ALLOWED)
+        # assess() alone never emits INDEPENDENT (no audit path).
+        self.assertNotEqual(contracted["independence"], "INDEPENDENT")
+
+    def test_independence_audit_allowed_covers_emitters(self):
+        self.assertEqual(
+            evidence_contract.INDEPENDENCE_AUDIT_ALLOWED,
+            frozenset({"AUDITED", "UNMET"}),
+        )
+        evidence = [record(1), record(2)]
+        audited = evidence_contract.assess_audited_independence(
+            valid_independence_audit(evidence), evidence=evidence
+        )
+        self.assertEqual(audited["independence"], evidence_contract.INDEPENDENCE_AUDITED)
+        self.assertIn(audited["independence"], evidence_contract.INDEPENDENCE_AUDIT_ALLOWED)
+        unmet = evidence_contract.assess_audited_independence(None)
+        self.assertEqual(unmet["independence"], evidence_contract.INDEPENDENCE_AUDIT_UNMET)
+        self.assertIn(unmet["independence"], evidence_contract.INDEPENDENCE_AUDIT_ALLOWED)
+        # Audit path may emit AUDITED; assess path frozenset must not include it.
+        self.assertNotIn(
+            evidence_contract.INDEPENDENCE_AUDITED,
+            evidence_contract.INDEPENDENCE_ASSESS_ALLOWED,
+        )
+

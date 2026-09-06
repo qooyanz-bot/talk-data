@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 (Address independence verdict closed enum single-source)
+
+- `evidence_contract.INDEPENDENCE_ASSESS_ALLOWED` = {COMMON_CAUSE_SUSPECT, CONTRACTED, UNVERIFIED} を単一正本（assess emitters）。`_result` が軽量 assert。決して INDEPENDENT / AUDITED を含まない。
+- `evidence_contract.INDEPENDENCE_AUDIT_ALLOWED` = {AUDITED, UNMET} を単一正本（assess_audited_independence emitters）。`_audit_result` が軽量 assert。
+- response_contract / resolution_gate は independence を公開フィールドとして検証しない（export + emitter tests のみ）。unittest：emitters が閉集合内；assess は INDEPENDENT なし。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
+
 ## 2026-09-06 (Cortext9 Reception runtime v0)
 - Reception＋535単位の実装リポジトリを作成・初回実装: https://github.com/qooyanz-bot/cortext9-reception (`3fec520`)
 - カタログ v0.4 全535登録、`/v0/invoke`・`/v0/reception/chat`、Gate0、優先ハンドラ43（N18/N03/N06/N12系ほか）。残りはスタブ。

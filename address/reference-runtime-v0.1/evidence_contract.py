@@ -14,6 +14,14 @@ INDEPENDENCE_AXES = ("authority_id", "generator_id", "semantic_law_id")
 INDEPENDENCE_COMMON_CAUSE_SUSPECT = "COMMON_CAUSE_SUSPECT"
 INDEPENDENCE_CONTRACTED = "CONTRACTED"
 INDEPENDENCE_UNVERIFIED = "UNVERIFIED"
+# Closed independence vocabulary for assess() emitters (single source).
+INDEPENDENCE_ASSESS_ALLOWED = frozenset(
+    {
+        INDEPENDENCE_COMMON_CAUSE_SUSPECT,
+        INDEPENDENCE_CONTRACTED,
+        INDEPENDENCE_UNVERIFIED,
+    }
+)
 _FORBIDDEN_INDEPENDENCE_CLAIMS = frozenset({"INDEPENDENT", "AUDITED"})
 
 # External semantic-independence audit record (AUDITED path). Frozen machine-checkable
@@ -25,11 +33,17 @@ AUDITED_INDEPENDENCE_REQUIRED_FIELDS = frozenset(
 AUDITED_INDEPENDENCE_DECISION_PASS = "PASS"
 INDEPENDENCE_AUDITED = "AUDITED"
 INDEPENDENCE_AUDIT_UNMET = "UNMET"
+# Closed independence vocabulary for assess_audited_independence() emitters (single source).
+INDEPENDENCE_AUDIT_ALLOWED = frozenset(
+    {INDEPENDENCE_AUDITED, INDEPENDENCE_AUDIT_UNMET}
+)
 
 
 def _result(status: str, accepted: bool, independence: str, reasons: list[str]) -> dict[str, Any]:
-    if independence in _FORBIDDEN_INDEPENDENCE_CLAIMS:
-        raise AssertionError("assess() must never emit INDEPENDENT or AUDITED")
+    # Closed assess() independence only; never INDEPENDENT / AUDITED here.
+    assert independence in INDEPENDENCE_ASSESS_ALLOWED, (
+        f"independence not in INDEPENDENCE_ASSESS_ALLOWED: {independence!r}"
+    )
     return {
         "status": status,
         "accepted": accepted,
@@ -117,13 +131,22 @@ def audited_independence_checklist() -> dict[str, Any]:
     }
 
 
-def _audit_unmet(reasons: list[str]) -> dict[str, Any]:
+def _audit_result(
+    status: str, accepted: bool, independence: str, reasons: list[str]
+) -> dict[str, Any]:
+    assert independence in INDEPENDENCE_AUDIT_ALLOWED, (
+        f"independence not in INDEPENDENCE_AUDIT_ALLOWED: {independence!r}"
+    )
     return {
-        "status": "UNMET",
-        "accepted": False,
-        "independence": INDEPENDENCE_AUDIT_UNMET,
+        "status": status,
+        "accepted": accepted,
+        "independence": independence,
         "reasons": reasons,
     }
+
+
+def _audit_unmet(reasons: list[str]) -> dict[str, Any]:
+    return _audit_result("UNMET", False, INDEPENDENCE_AUDIT_UNMET, reasons)
 
 
 def _digest_entry_ok(item: Any) -> bool:
@@ -230,11 +253,11 @@ def assess_audited_independence(audit_record: Any, evidence: Any = None) -> dict
                     "a PASS audit for a different set cannot satisfy AUDITED"
                 ]
             )
-    return {
-        "status": "AUDITED",
-        "accepted": True,
-        "independence": INDEPENDENCE_AUDITED,
-        "reasons": [
+    return _audit_result(
+        "AUDITED",
+        True,
+        INDEPENDENCE_AUDITED,
+        [
             "external semantic-independence audit record passed frozen checklist"
             + (
                 " and evidence_digests match the supplied evidence bundle"
@@ -242,7 +265,7 @@ def assess_audited_independence(audit_record: Any, evidence: Any = None) -> dict
                 else ""
             )
         ],
-    }
+    )
 
 
 def assertion_key_set(evidence: Any) -> set[str]:
