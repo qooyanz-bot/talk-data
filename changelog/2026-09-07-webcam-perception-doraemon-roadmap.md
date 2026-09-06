@@ -64,6 +64,13 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 - YOLO parserの `yolo-pending-*` を downstream の temporal tracking に接続可能な安定IDへ変換。appearance re-IDや本格的遮蔽復帰は未実装。
 - lineageへ `track_assigner=nearest_center_v0` を追加し、全 207 テスト成功。
 
+## 遮蔽復帰 telemetry
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/b726fa9`
+- bbox ID assigner が欠落後の同一ID復帰を `occluded=true` として出力し、`occlusion_recoveries`、`track_expirations`、`active_tracks` を health に記録。
+- live source の health serializer を dataclass/dict両対応に修正し、実際のsession成果物まで回帰。
+- 検証: 全 209 テスト成功。これはappearance re-IDや完全な遮蔽理解ではなく、距離ベース復帰のbaselineである。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
