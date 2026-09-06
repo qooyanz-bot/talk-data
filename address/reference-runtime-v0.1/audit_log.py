@@ -12,12 +12,28 @@ def _digest(value: Any) -> str:
     return "sha256:" + hashlib.sha256(encoded).hexdigest()
 
 
+def _evidence_digest_entries(evidence: Any) -> list[dict[str, str]]:
+    """Build sorted digest entries; malformed evidence never raises."""
+    if not isinstance(evidence, list):
+        return []
+    entries: list[dict[str, str]] = []
+    for item in evidence:
+        if not isinstance(item, dict):
+            continue
+        evidence_id = item.get("evidence_id")
+        if not isinstance(evidence_id, str):
+            continue
+        entries.append({"evidence_id": evidence_id, "digest": _digest(item)})
+    return sorted(entries, key=lambda item: (item["evidence_id"], item["digest"]))
+
+
 def create(address: dict[str, Any], evidence: list[dict[str, Any]], outcome: dict[str, Any], evaluated_at: str) -> dict[str, Any]:
-    """Create a reproducible audit record without storing target or assertion values."""
-    evidence_digests = sorted(
-        ({"evidence_id": item["evidence_id"], "digest": _digest(item)} for item in evidence),
-        key=lambda item: (item["evidence_id"], item["digest"]),
-    )
+    """Create a reproducible audit record without storing target or assertion values.
+
+    Malformed evidence (non-list, non-dict items, missing/non-str evidence_id) is
+    rejected by omission rather than raising KeyError/TypeError.
+    """
+    evidence_digests = _evidence_digest_entries(evidence)
     record = {
         "schema_version": "ADDRESS-AUDIT-1.0",
         "address_id": address["address_id"],

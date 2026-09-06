@@ -14,6 +14,7 @@
 - Response Contractを追加。公開CLI出力の`value=null`、既知の判定状態、Auditとの判断一致を検証し、出力回帰を拒否する。
 - Memory scopeをauthorized/versioned/revocableへ固定し、Lineageの入力参照をSHA-256形式に制限。未許可・追跡不能な記憶／入力参照を拒否する。
 - Audit Logのevidence digest項目が壊れている場合にも、例外停止せず明示的に拒否するよう修正。
+- Audit Logの`create`が、非list evidenceや欠落／非文字列`evidence_id`でも例外停止せず、digest省略で明示拒否するよう硬化。CLIも同様に落ちないよう整合。
 
 ## 自己点検
 

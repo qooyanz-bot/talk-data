@@ -17,7 +17,7 @@ import resolution_gate
 def evaluate(address: dict[str, Any], evidence: list[dict[str, Any]], now: str, audit: dict[str, Any] | None = None) -> dict[str, Any]:
     """Return a resolution plus a value-free generated audit record."""
     outcome = resolution_gate.resolve(address, evidence, now)
-    generated_audit = audit_log.create(address, evidence, outcome, now) if isinstance(address, dict) and isinstance(evidence, list) else None
+    generated_audit = audit_log.create(address, evidence, outcome, now) if isinstance(address, dict) and isinstance(outcome, dict) else None
     result: dict[str, Any] = {"resolution": outcome, "generated_audit": generated_audit}
     if audit is not None:
         result["replay"] = replay_verifier.verify_replay(address, evidence, audit)

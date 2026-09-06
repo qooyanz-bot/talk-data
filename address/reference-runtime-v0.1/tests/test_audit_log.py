@@ -48,6 +48,23 @@ class AuditLogTests(unittest.TestCase):
         record["evidence_digests"] = ["not-an-object"]
         self.assertEqual(audit_log.verify(record), ["invalid evidence digest list"])
 
+    def test_create_skips_missing_evidence_id_without_raising(self):
+        malformed = [self.evidence[0], {"claim_hash": "orphan", "path_id": "p"}, self.evidence[1]]
+        record = audit_log.create(self.address, malformed, self.outcome, "2026-09-06T00:00:00Z")
+        self.assertEqual(audit_log.verify(record), [])
+        self.assertEqual([item["evidence_id"] for item in record["evidence_digests"]], ["e-1", "e-2"])
+
+    def test_create_treats_non_list_evidence_as_empty(self):
+        record = audit_log.create(self.address, {"not": "a list"}, self.outcome, "2026-09-06T00:00:00Z")
+        self.assertEqual(audit_log.verify(record), [])
+        self.assertEqual(record["evidence_digests"], [])
+
+    def test_create_skips_non_dict_and_non_str_evidence_id(self):
+        malformed = [self.evidence[0], "string-item", {"evidence_id": 7, "claim_hash": "x"}, None]
+        record = audit_log.create(self.address, malformed, self.outcome, "2026-09-06T00:00:00Z")
+        self.assertEqual(audit_log.verify(record), [])
+        self.assertEqual([item["evidence_id"] for item in record["evidence_digests"]], ["e-1"])
+
 
 if __name__ == "__main__":
     unittest.main()

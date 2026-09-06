@@ -45,6 +45,13 @@ class AddressCliTests(unittest.TestCase):
             result = address_cli.evaluate(json.loads(address_path.read_text()), json.loads(evidence_path.read_text()), "2026-09-06T00:00:00Z")
             self.assertEqual(result["resolution"]["decision"], "READY_FOR_VERIFICATION")
 
+    def test_evaluate_non_list_evidence_does_not_crash(self):
+        result = address_cli.evaluate(self.address, {"not": "a list"}, "2026-09-06T00:00:00Z")
+        self.assertEqual(result["resolution"]["decision"], "ABSTAIN")
+        self.assertIsNone(result["resolution"]["value"])
+        self.assertIsInstance(result["generated_audit"], dict)
+        self.assertEqual(result["generated_audit"]["evidence_digests"], [])
+
 
 if __name__ == "__main__":
     unittest.main()
