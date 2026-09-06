@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-06 (Address reference runtime v0.1)
+- Addressable Concept Architecture v0.1 の最小安全不変条件を検査する依存なしの参照実装、fixture、unittestを `address/reference-runtime-v0.1/` に追加。秘密・認証回避・直接未来取得を含むscope、hash不整合、abstain不備を拒否する。
+
 ## 2026-09-06 (Addressable Concept Architecture v0.1)
 - K承認により、検証可能なAddress SchemaとEvidence境界を `address/addressable-concept-architecture-v0.1.md` に追加。R6-G未実行、既存結果のsynthetic限定性、Law不確実時のabstain要件を明記。
 
