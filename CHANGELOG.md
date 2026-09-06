@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-07 (Physical AI Loop demo controls)
+
+- `changelog/2026-09-07-physical-ai-loop-demo-controls.md` を追加。
+- 実装作業ディレクトリに constraint strictness slider、RobotLog JSON貼り付け解析、Markdown incident report生成を追加。
+- 検証: `npm test` 10/10 pass、`npm run build` exit 0、既存dev server HTTP 200、HTML内に新パネル文言あり。
+
 ## 2026-09-07 (Physical AI Loop P1/P2 expanded)
 
 - `changelog/2026-09-07-physical-ai-loop-p1-p2-expanded.md` を追加。
