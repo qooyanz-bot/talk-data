@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-07 (Physical AI Loop P1/P2 expanded)
+
+- `changelog/2026-09-07-physical-ai-loop-p1-p2-expanded.md` を追加。
+- 実装作業ディレクトリに Data Quality Autopilot、Semantic Perception Layer、Human-Readable Autonomy Debugger、Edge-to-Lab Fleet Pipeline の純関数モジュールとUIパネルを追加。
+- 検証: `npm test` 8/8 pass、`npm run build` exit 0、既存dev server HTTP 200、HTML内に新P1/P2パネル文言あり。
+
 ## 2026-09-07 (Physical AI Loop P0 demo implemented)
 
 - `changelog/2026-09-07-physical-ai-loop-p0-demo-implemented.md` を追加。
