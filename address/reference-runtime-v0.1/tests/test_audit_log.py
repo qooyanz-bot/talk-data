@@ -27,6 +27,12 @@ class AuditLogTests(unittest.TestCase):
         self.evidence = [evidence(1), evidence(2)]
         self.outcome = resolution_gate.resolve(self.address, self.evidence, "2026-09-06T00:00:00Z")
 
+    def test_schema_version_and_required_keys_exported(self):
+        self.assertEqual(audit_log.SCHEMA_VERSION, "ADDRESS-AUDIT-1.0")
+        self.assertIsInstance(audit_log.REQUIRED_KEYS, frozenset)
+        self.assertIn("audit_id", audit_log.REQUIRED_KEYS)
+        self.assertIn("detail_digest", audit_log.REQUIRED_KEYS)
+
     def test_audit_record_verifies(self):
         record = audit_log.create(self.address, self.evidence, self.outcome, "2026-09-06T00:00:00Z")
         self.assertEqual(audit_log.verify(record), [])
@@ -40,13 +46,33 @@ class AuditLogTests(unittest.TestCase):
 
     def test_tampering_is_detected(self):
         record = audit_log.create(self.address, self.evidence, self.outcome, "2026-09-06T00:00:00Z")
-        record["reason"] = "TAMPERED"
-        self.assertIn("audit_id does not match", audit_log.verify(record)[0])
+        record["reason"] = "AUDITED_INDEPENDENCE"
+        # reason changed to another valid reason without updating audit_id -> hash mismatch
+        errors = audit_log.verify(record)
+        self.assertTrue(any("audit_id does not match" in err for err in errors))
+
+    def test_verify_rejects_unknown_decision(self):
+        record = audit_log.create(self.address, self.evidence, self.outcome, "2026-09-06T00:00:00Z")
+        record["decision"] = "FORGED_DECISION"
+        errors = audit_log.verify(record)
+        self.assertTrue(any("decision must be one of" in err for err in errors))
+
+    def test_verify_rejects_unknown_reason(self):
+        record = audit_log.create(self.address, self.evidence, self.outcome, "2026-09-06T00:00:00Z")
+        record["reason"] = "UNKNOWN_REASON"
+        errors = audit_log.verify(record)
+        self.assertTrue(any("reason must be one of" in err for err in errors))
+
+    def test_verify_rejects_unsupported_schema_version(self):
+        record = audit_log.create(self.address, self.evidence, self.outcome, "2026-09-06T00:00:00Z")
+        record["schema_version"] = "OLD-VERSION"
+        errors = audit_log.verify(record)
+        self.assertEqual(errors, ["unsupported audit schema version"])
 
     def test_malformed_digest_item_is_rejected_without_raising(self):
         record = audit_log.create(self.address, self.evidence, self.outcome, "2026-09-06T00:00:00Z")
         record["evidence_digests"] = ["not-an-object"]
-        self.assertEqual(audit_log.verify(record), ["invalid evidence digest list"])
+        self.assertTrue(any("invalid evidence digest list" in err for err in audit_log.verify(record)))
 
     def test_create_skips_missing_evidence_id_without_raising(self):
         malformed = [self.evidence[0], {"claim_hash": "orphan", "path_id": "p"}, self.evidence[1]]

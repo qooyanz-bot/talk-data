@@ -75,6 +75,15 @@ def verify_decision_log_only(decision_log_path: str) -> dict[str, Any]:
     return {"status": "DECISION_LOG_OK", "errors": []}
 
 
+def verify_audit_log_only(audit_log_path: str) -> dict[str, Any]:
+    """Verify a saved Audit Log JSON via audit_log.verify (shape, closed enums, and content-address)."""
+    record = _load(audit_log_path)
+    errors = audit_log.verify(record)
+    if errors:
+        return {"status": "AUDIT_LOG_INVALID", "errors": errors}
+    return {"status": "AUDIT_LOG_OK", "errors": []}
+
+
 def validate_protocol_manifest_only(manifest_path: str) -> dict[str, Any]:
     """Validate a protocol manifest JSON via protocol_claim_gate.validate_manifest (closed enums / handoff)."""
     manifest = _load(manifest_path)
@@ -91,6 +100,7 @@ def _resolve_flag_conflicts(args: argparse.Namespace, exclusive_flag: str) -> li
         "--limitations": args.limitations,
         "--check-contract-only": args.check_contract_only is not None,
         "--verify-decision-log": args.verify_decision_log is not None,
+        "--verify-audit-log": args.verify_audit_log is not None,
         "--validate-protocol-manifest": args.validate_protocol_manifest is not None,
         "--conformance": args.conformance,
         "--runtime-manifest": args.runtime_manifest,
@@ -136,6 +146,11 @@ def main(argv: list[str] | None = None) -> int:
         "--verify-decision-log",
         metavar="DECISION_LOG.json",
         help="Verify a saved Decision Log JSON via decision_log.verify only (no resolve / no full response contract)",
+    )
+    parser.add_argument(
+        "--verify-audit-log",
+        metavar="AUDIT_LOG.json",
+        help="Verify a saved Audit Log JSON via audit_log.verify only (shape, closed enums, content-address)",
     )
     parser.add_argument(
         "--validate-protocol-manifest",
@@ -207,6 +222,19 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 0 if result["status"] == "DECISION_LOG_OK" else 1
 
+    if args.verify_audit_log is not None:
+        conflicts = _resolve_flag_conflicts(args, "--verify-audit-log")
+        if conflicts:
+            print(json.dumps({"status": "INVALID_INPUT", "errors": conflicts}, ensure_ascii=False, sort_keys=True))
+            return 2
+        try:
+            result = verify_audit_log_only(args.verify_audit_log)
+        except (OSError, ValueError, json.JSONDecodeError, TypeError) as exc:
+            print(json.dumps({"status": "INVALID_INPUT", "errors": [str(exc)]}, ensure_ascii=False, sort_keys=True))
+            return 2
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0 if result["status"] == "AUDIT_LOG_OK" else 1
+
     if args.validate_protocol_manifest is not None:
         conflicts = _resolve_flag_conflicts(args, "--validate-protocol-manifest")
         if conflicts:
@@ -235,7 +263,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.error(
             "address, evidence, and --now are required unless --limitations, "
             "--runtime-manifest, --check-contract-only, --verify-decision-log, "
-            "--validate-protocol-manifest, or --conformance is set"
+            "--verify-audit-log, --validate-protocol-manifest, or --conformance is set"
         )
 
     claim_type_errors: list[str] = []

@@ -110,6 +110,7 @@ class ConformanceTests(unittest.TestCase):
             ["--runtime-manifest"],
             ["--check-contract-only", str(ROOT / "fixtures" / "golden_contract_ok_response.json")],
             ["--verify-decision-log", str(ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json")],
+            ["--verify-audit-log", "audit.json"],
             ["--validate-protocol-manifest", str(ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json")],
             ["--protocol-manifest", "manifest.json"],
             ["--claim-type", "DESIGN_DESCRIPTION"],

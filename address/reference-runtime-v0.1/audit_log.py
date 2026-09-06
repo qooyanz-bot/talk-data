@@ -6,6 +6,21 @@ import hashlib
 import json
 from typing import Any
 
+import resolution_gate
+
+SCHEMA_VERSION = "ADDRESS-AUDIT-1.0"
+
+REQUIRED_KEYS = frozenset({
+    "schema_version",
+    "address_id",
+    "evaluated_at",
+    "decision",
+    "reason",
+    "detail_digest",
+    "evidence_digests",
+    "audit_id",
+})
+
 
 def content_digest(value: Any) -> str:
     """Canonical content-addressed digest (sha256 of sorted-key JSON).
@@ -52,7 +67,7 @@ def create(address: dict[str, Any], evidence: list[dict[str, Any]], outcome: dic
     """
     evidence_digests = _evidence_digest_entries(evidence)
     record = {
-        "schema_version": "ADDRESS-AUDIT-1.0",
+        "schema_version": SCHEMA_VERSION,
         "address_id": address["address_id"],
         "evaluated_at": evaluated_at,
         "decision": outcome["decision"],
@@ -65,21 +80,33 @@ def create(address: dict[str, Any], evidence: list[dict[str, Any]], outcome: dic
 
 
 def verify(record: Any) -> list[str]:
-    """Verify the record's required shape and self-addressed integrity."""
+    """Verify the record's required shape, closed enums, and self-addressed integrity."""
     if not isinstance(record, dict):
         return ["audit record must be an object"]
-    required = {"schema_version", "address_id", "evaluated_at", "decision", "reason", "detail_digest", "evidence_digests", "audit_id"}
-    missing = required - set(record)
+    missing = REQUIRED_KEYS - set(record)
     if missing:
         return ["missing required fields: " + ", ".join(sorted(missing))]
-    if record["schema_version"] != "ADDRESS-AUDIT-1.0":
+    if record["schema_version"] != SCHEMA_VERSION:
         return ["unsupported audit schema version"]
+    errors: list[str] = []
+    decision = record.get("decision")
+    if not isinstance(decision, str) or decision not in resolution_gate.DECISION_ALLOWED:
+        errors.append(
+            f"decision must be one of {', '.join(sorted(resolution_gate.DECISION_ALLOWED))}"
+        )
+    reason = record.get("reason")
+    if not isinstance(reason, str) or reason not in resolution_gate.REASON_ALLOWED:
+        errors.append(
+            f"reason must be one of {', '.join(sorted(resolution_gate.REASON_ALLOWED))}"
+        )
     if not isinstance(record["evidence_digests"], list) or any(
         not isinstance(item, dict) or set(item) != {"evidence_id", "digest"}
         for item in record["evidence_digests"]
     ):
-        return ["invalid evidence digest list"]
+        errors.append("invalid evidence digest list")
     payload = dict(record)
     actual = payload.pop("audit_id")
     expected = "audit:" + _digest(payload).removeprefix("sha256:")
-    return [] if actual == expected else ["audit_id does not match canonical record hash"]
+    if actual != expected:
+        errors.append("audit_id does not match canonical record hash")
+    return errors

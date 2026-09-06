@@ -235,5 +235,57 @@ class AddressCliTests(unittest.TestCase):
 
 
 
+
+    def test_verify_audit_log_cli_accepts_valid_audit(self):
+        result = address_cli.evaluate(self.address, self.bundle, "2026-09-06T00:00:00Z")
+        record = result["generated_audit"]
+        with tempfile.TemporaryDirectory() as directory:
+            audit_path = Path(directory) / "audit.json"
+            audit_path.write_text(json.dumps(record), encoding="utf-8")
+            buf = StringIO()
+            with contextlib.redirect_stdout(buf):
+                code = address_cli.main(["--verify-audit-log", str(audit_path)])
+            self.assertEqual(code, 0)
+            payload = json.loads(buf.getvalue())
+            self.assertEqual(payload["status"], "AUDIT_LOG_OK")
+            self.assertEqual(payload["errors"], [])
+
+    def test_verify_audit_log_cli_rejects_tampered_id(self):
+        result = address_cli.evaluate(self.address, self.bundle, "2026-09-06T00:00:00Z")
+        record = dict(result["generated_audit"])
+        record["audit_id"] = "audit:0000000000000000000000000000000000000000000000000000000000000000"
+        with tempfile.TemporaryDirectory() as directory:
+            audit_path = Path(directory) / "audit.json"
+            audit_path.write_text(json.dumps(record), encoding="utf-8")
+            buf = StringIO()
+            with contextlib.redirect_stdout(buf):
+                code = address_cli.main(["--verify-audit-log", str(audit_path)])
+            self.assertEqual(code, 1)
+            payload = json.loads(buf.getvalue())
+            self.assertEqual(payload["status"], "AUDIT_LOG_INVALID")
+            self.assertTrue(payload["errors"])
+
+    def test_verify_audit_log_rejects_resolve_and_other_standalone_flags(self):
+        cases = [
+            ["address.json", "evidence.json"],
+            ["--limitations"],
+            ["--runtime-manifest"],
+            ["--conformance"],
+            ["--check-contract-only", str(ROOT / "fixtures" / "golden_contract_ok_response.json")],
+            ["--verify-decision-log", str(ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json")],
+            ["--validate-protocol-manifest", str(ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json")],
+            ["--now", "2026-09-06T00:00:00Z"],
+        ]
+        for extra in cases:
+            with self.subTest(extra=extra):
+                buf = StringIO()
+                with contextlib.redirect_stdout(buf):
+                    code = address_cli.main(["--verify-audit-log", "audit.json", *extra])
+                self.assertEqual(code, 2)
+                payload = json.loads(buf.getvalue())
+                self.assertEqual(payload["status"], "INVALID_INPUT")
+                self.assertTrue(payload["errors"])
+
+
 if __name__ == "__main__":
     unittest.main()

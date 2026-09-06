@@ -19,23 +19,9 @@ REPLAY_STATUSES = replay_verifier.REPLAY_STATUS_ALLOWED
 # Single source: protocol_claim_gate.CLAIM_STATUS_ALLOWED
 PROTOCOL_CLAIM_STATUSES = protocol_claim_gate.CLAIM_STATUS_ALLOWED
 
-# Machine-checkable decision_log shape (matches decision_log.build_decision_log output).
-DECISION_LOG_REQUIRED_KEYS = {
-    "schema_version",
-    "protocol_id",
-    "claim_type",
-    "claim_status",
-    "claim_reason",
-    "unmet",
-    "auditor_handoff",
-    "value",
-    "evidence_state",
-    "experiment_state",
-    "implementation_state",
-    "independent_replay_state",
-    "decision_log_id",
-}
-# Single source of truth: protocol_claim_gate.AUDITOR_HANDOFF_KEYS
+# Single source: decision_log.REQUIRED_KEYS
+DECISION_LOG_REQUIRED_KEYS = decision_log.REQUIRED_KEYS
+# Single source: protocol_claim_gate.AUDITOR_HANDOFF_KEYS
 DECISION_LOG_HANDOFF_KEYS = protocol_claim_gate.AUDITOR_HANDOFF_KEYS
 
 

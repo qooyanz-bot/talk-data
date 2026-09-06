@@ -1,9 +1,9 @@
 {
   "files": [
     {
-      "bytes": 12360,
+      "bytes": 13730,
       "path": "address_cli.py",
-      "sha256": "sha256:9dd8422e46fdd7e0e7e8c3bba8c1ff75079b23704b4fa462ea4e98c80f2c8a0a"
+      "sha256": "sha256:5f0eb9a6f39c570438456d7481f9acdf8ec6a2bb01edf512748077541f7914a4"
     },
     {
       "bytes": 13122,
@@ -11,9 +11,9 @@
       "sha256": "sha256:fd472744b09bdfb59e515f94a03c3163997cec8d1e95658653a1e7a5a18285f4"
     },
     {
-      "bytes": 3421,
+      "bytes": 4093,
       "path": "audit_log.py",
-      "sha256": "sha256:24b6ec3c4e2cb66d32dec34564eec353e33a8cb190e328b3dc122c6283674f24"
+      "sha256": "sha256:942267d5f00baa38d1f15b08b7b4c80bf3e13fc174421eb3b1664da00f60e3ca"
     },
     {
       "bytes": 8185,
@@ -51,9 +51,9 @@
       "sha256": "sha256:b7e88182bcd3eb6b8bfbbbeefcc7afebcc4187f575169b7b8899876a50f0cd9a"
     },
     {
-      "bytes": 6887,
+      "bytes": 6579,
       "path": "response_contract.py",
-      "sha256": "sha256:18624ca4bd3c4669b90dc16fb693a2bc409177c8ac408dae37fa1e1b43bd18dd"
+      "sha256": "sha256:14e1f8ee9e5b45fc5fcf7512c862d6898270795bec81309c19a540fccf96ef34"
     },
     {
       "bytes": 4475,
@@ -61,7 +61,7 @@
       "sha256": "sha256:d682980799c81893ee6f72645fcc0a9ec64a8eec98a2b6bdc593435f2f0f0c42"
     }
   ],
-  "package_digest": "sha256:9d80a21fc24fa89310e9fb07a22347cbf07dfee220205f6635e88153abd1325c",
+  "package_digest": "sha256:65085af2de5584044a4eae4501e236c4100b1ed82ddb1b29727c3eec2ce2b3ee",
   "schema_version": "address-runtime-manifest-v1",
   "status": "RUNTIME_MANIFEST"
 }
