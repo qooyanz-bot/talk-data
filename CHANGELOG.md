@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address protocol manifest closed-enum validation)
+
+- `protocol_claim_gate.validate_manifest(manifest) -> list[str]`：manifest 状態フィールドの閉集合 enum を機械検査（例外なし）。evidence_state / implementation_state / experiment_state / independent_replay_state；protocol_id 非空文字列；auditor_handoff があるときキーは厳密に {decision, primary_run_authorized}、decision=`PENDING|PASS`（FAIL は fixtures/tests 未出現のため未採用）、primary_run_authorized=bool|null。
+- `assess_claim` は先に validate；errors 時は全 claim_type（DESIGN_DESCRIPTION 含む）で BLOCKED / MANIFEST_INVALID / unmet=errors。未知 enum は design すり抜け不可。
+- R6-G FROZEN と既存通過 manifest は green。unittest：未知 evidence_state / typo experiment_state / 余分 handoff キー / 空 protocol_id / DESIGN の無効 enum。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address residual defense in depth)
 
 - Resolution Gate: `target_value.residual` から `resolution.residual` へミラーするとき、非空文字列ラベルのみ emit（空文字・非文字列は例外停止せずスキップ）。
