@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-06 (Cortext9 Reception runtime v0)
+- Reception＋535単位の実装リポジトリを作成・初回実装: https://github.com/qooyanz-bot/cortext9-reception (`3fec520`)
+- カタログ v0.4 全535登録、`/v0/invoke`・`/v0/reception/chat`、Gate0、優先ハンドラ43（N18/N03/N06/N12系ほか）。残りはスタブ。
+- Tiny runtime（logical_id線）とは別リポ・別契約。Concept確定・統一プロンプト改訂はなし。
+
 ## 2026-09-06 (Address REASON_ALLOWED single-source)
 
 - `resolution_gate.REASON_ALLOWED` = {ADDRESS_INVALID, AUDITED_INDEPENDENCE, CONTRACTED_EVIDENCE, CONTRADICTION, EVIDENCE_REJECTED, EVIDENCE_STALE, EVIDENCE_TIME_INVALID, FRESHNESS_REQUIREMENT_INVALID, SEMANTIC_INDEPENDENCE_UNMET} を単一正本（resolve emitters）。`_result` が軽量 assert。
