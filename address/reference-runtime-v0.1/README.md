@@ -26,7 +26,8 @@
 
 - assertion_keyがunknown.slot / residualラベルと文字列衝突しても、residualを消さずvalueにassertion_valueを束縛しない。
 - CLI `--check-contract-only RESPONSE.json` で、Gate再実行なしに保存済み公開応答をresponse_contract検証（OK=0、違反は機械可読errorsで非0）。
-- 保存済み公開応答のgolden fixture（`fixtures/golden_contract_ok_response.json` = READY、`fixtures/golden_contract_abstain_response.json` = ABSTAIN / shared-law EVIDENCE_REJECTED）で `--check-contract-only` / `response_contract.validate` の構造を凍結。value充填や入れ子`lineage.result_sha`刻印は失敗する。ABSTAIN goldenはdecision=ABSTAIN・value=null・residualあり・audit整合を固定。
+- 保存済み公開応答のgolden fixture（`fixtures/golden_contract_ok_response.json` = READY、`fixtures/golden_contract_abstain_response.json` = ABSTAIN / shared-law EVIDENCE_REJECTED、`fixtures/golden_contract_contradiction_response.json` = ABSTAIN / CONTRADICTION・同一assertion_keyで衝突するassertion_value）で `--check-contract-only` / `response_contract.validate` の構造を凍結。value充填や入れ子`lineage.result_sha`刻印は失敗する。各goldenはdecision・value=null・residualあり・audit整合を固定。
+- `tools/regenerate_contract_goldens.py` が固定入力からevaluate()でREADY/ABSTAIN/CONTRADICTION goldenを再生成し、digestの手編集を不要にする。unittestがfixtureとfresh evaluate()の完全一致を検査する。
 - `--check-contract-only` と address/evidence/`--now`/`--audit`/`--protocol-manifest`/`--claim-type` の併用は早期に `INVALID_INPUT`（機械可読JSON・非0）で拒否する。
 
 ## 非対象
@@ -44,6 +45,10 @@ python address/reference-runtime-v0.1/address_cli.py address/reference-runtime-v
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only path/to/saved_response.json
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_ok_response.json
 python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_abstain_response.json
+python address/reference-runtime-v0.1/address_cli.py --check-contract-only address/reference-runtime-v0.1/fixtures/golden_contract_contradiction_response.json
+python address/reference-runtime-v0.1/tools/regenerate_contract_goldens.py
 ```
+
+契約goldenの再生成は `python address/reference-runtime-v0.1/tools/regenerate_contract_goldens.py` （固定Address・Evidence・`--now`相当時刻からevaluate()出力を書き戻す）。手編集しない。
 
 結果は `VALID`、又は機械可読な `INVALID` と違反一覧で返す。統合CLIはResolutionとvalue-free Audit Logを返し、`--audit` 指定時はReplayも検証する。`--check-contract-only` はGateを再実行せず、保存済み公開応答の契約だけを検査する（`CONTRACT_OK` / `CONTRACT_INVALID`）。address/evidence/`--now` など解決用引数と併用すると早期に `INVALID_INPUT` JSONで非0終了する。外部接続・ファイル書込み・Value導出はしない。

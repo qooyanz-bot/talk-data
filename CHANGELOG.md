@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-06 (Address contract-only CONTRADICTION golden + regenerator)
+- 公開応答CONTRADICTION golden `fixtures/golden_contract_contradiction_response.json` を追加（同一assertion_keyで衝突するassertion_valueの実evaluate出力: ABSTAIN / CONTRADICTION / value=null・residualあり・audit整合）。`--check-contract-only` / validate で通過し、value充填・入れ子 `lineage.result_sha`・reason非CONTRADICTIONで失敗する回帰をREADY/ABSTAINと対称に凍結。
+- `tools/regenerate_contract_goldens.py` でREADY/ABSTAIN/CONTRADICTION goldenをevaluate()から再生成可能に。unittestがfixtureとfresh evaluate()の完全一致を検査する。
+
 ## 2026-09-06 (Address contract-only ABSTAIN golden)
 - 公開応答ABSTAIN golden `fixtures/golden_contract_abstain_response.json` を追加（shared-law EVIDENCE_REJECTED の実evaluate出力: value=null・residualあり・audit整合）。`--check-contract-only` / validate で通過し、value充填・入れ子 `lineage.result_sha`・decision非ABSTAINで失敗する回帰をREADY goldenと対称に凍結。
 
