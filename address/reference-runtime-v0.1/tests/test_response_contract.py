@@ -11,6 +11,7 @@ import address_runtime  # noqa: E402
 import replay_verifier  # noqa: E402
 import resolution_gate  # noqa: E402
 import response_contract  # noqa: E402
+import protocol_claim_gate  # noqa: E402
 
 
 def evidence(index: int) -> dict:
@@ -180,3 +181,28 @@ class ResponseContractTests(unittest.TestCase):
         self.assertIn(self.response["resolution"]["decision"], resolution_gate.DECISION_ALLOWED)
         self.assertIn(self.response["resolution"]["reason"], resolution_gate.REASON_ALLOWED)
         self.assertEqual(response_contract.validate(self.response), [])
+
+    def test_all_alias_identities_single_source(self):
+        """Every public vocabulary alias in response_contract is the very same
+        frozenset object as its emitter module (identity, not just equality)."""
+        identity = [
+            (response_contract.DECISIONS, resolution_gate.DECISION_ALLOWED),
+            (response_contract.REASONS, resolution_gate.REASON_ALLOWED),
+            (response_contract.REPLAY_STATUSES, replay_verifier.REPLAY_STATUS_ALLOWED),
+            (response_contract.PROTOCOL_CLAIM_STATUSES, protocol_claim_gate.CLAIM_STATUS_ALLOWED),
+        ]
+        for alias, source in identity:
+            with self.subTest(alias=alias, source=source):
+                self.assertIs(alias, source)
+                self.assertIsInstance(alias, frozenset)
+
+    def test_protocol_claim_statuses_alias_single_source(self):
+        self.assertIs(
+            response_contract.PROTOCOL_CLAIM_STATUSES,
+            protocol_claim_gate.CLAIM_STATUS_ALLOWED,
+        )
+        self.assertIn("BLOCKED", response_contract.PROTOCOL_CLAIM_STATUSES)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 (Address cross-module vocabulary alias identity test)
+
+- `test_response_contract.py` に `test_all_alias_identities_single_source` と `test_protocol_claim_statuses_alias_single_source` を追加。
+- `response_contract` の全公開語彙エイリアス（`DECISIONS`/`REASONS`/`REPLAY_STATUSES`/`PROTOCOL_CLAIM_STATUSES`）が、各 emitter module（`resolution_gate`/`replay_verifier`/`protocol_claim_gate`）の同一 `frozenset` オブジェクトであること（`is` 一致＋値一致）を単一の横断テストで固定。
+- unittest: 284 tests 全緑。
+
+
 ## 2026-09-06 (Address decision_log REQUIRED_KEYS frozenset single-source)
 
 - `decision_log.REQUIRED_KEYS` を `frozenset` に変更し、`response_contract.DECISION_LOG_REQUIRED_KEYS` と単一正本化（同一 object `is` 一致 + 値一致を unittest で固定）。
