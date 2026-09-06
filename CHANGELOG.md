@@ -11,6 +11,13 @@
 - `changelog/2026-09-07-physical-ai-loop-p0-demo-implemented.md` を追加。
 - 実装作業ディレクトリに P0 純関数ループ・合成ログ・デモ UI・`npm test`・README disclaimer を記録（実機未検証／ドラえもん級完成は非主張）。
 
+## 2026-09-07 (Cortext9 Reception implementation history + Grok handoff)
+
+- K明示指示により、`cortext9-reception` の実装経緯・検証値・残課題を正本へ保存。
+- 追加: `changelog/2026-09-07-cortext9-reception-agent-handoff.md`
+- 追加: `future-concept/handoffs/2026-09-07-grok-cortext9-reception-agent-prompt.md`
+- 実装リポジトリ `qooyanz-bot/cortext9-reception` の `codex/reception-212` は remote SHA `bddb2679fc5e747916ed4228bb6003f2faed25f2`、handler 288、SAFE_FALLBACK 247、tests 27/27 green、evaluation 49 fixtures 主要metrics 1.0 と記録。
+
 ## 2026-09-07 (newmo Physical AI demo session + Grok handoff)
 
 - K明示指示により、newmo向けデモ経緯・採用方針・実装状態を正本へ保存。
