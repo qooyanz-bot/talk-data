@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-06 (Address machine-checkable field types / canonical serialization)
+- `address_runtime.validate` に entities / relations / unknown / lineage sha / minimum_sources の機械可読型検査を追加。例外停止せず errors リストで拒否。valid_synthetic_address.json は VALID のまま。
+- `canonical_dumps` を明示し、`canonical_id` が `sort_keys=True` + `separators=(',', ':')` のみを使うことを文書化・unittest固定（キー順・空白は address_id 不変）。
+- Open work「各フィールドの機械可読型と正規直列化」への実装増分。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address semantic_independence closed enum + UNMET golden)
 - `address_runtime.validate` が `evidence_requirements.semantic_independence` を閉集合 enum（`UNVERIFIED` | `CONTRACTED` | `AUDITED`）として強制。他値は例外停止せず明確な errors で拒否。
 - 公開応答 golden `fixtures/golden_contract_semantic_independence_unmet_response.json` を追加（Address `semantic_independence=AUDITED` + CONTRACTED証拠 → ABSTAIN / SEMANTIC_INDEPENDENCE_UNMET / value=null・residualあり・audit整合）。regenerator / match-evaluate に配線。

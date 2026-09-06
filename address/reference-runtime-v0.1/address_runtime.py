@@ -21,13 +21,35 @@ REAL_CAPABILITIES = {"read:declared-public-data", "read:declared-authorized-data
 FORBIDDEN_CAPABILITY_TOKENS = {"secret", "credential", "password", "private_key", "decrypt", "bypass", "hidden_person", "future_direct"}
 # Closed enum for Address.evidence_requirements.semantic_independence (validate rejects others).
 SEMANTIC_INDEPENDENCE_ALLOWED = frozenset({"UNVERIFIED", "CONTRACTED", "AUDITED"})
+# Closed enum for Address.unknown[].status (from architecture / resolution_gate residuals).
+UNKNOWN_STATUS_ALLOWED = frozenset({"NOT_DERIVABLE", "UNRESOLVED", "RESIDUAL", "OPEN"})
+# Canonical serialization for address_id: sorted keys, compact separators, UTF-8.
+# Key order and insignificant whitespace in source JSON must not change address_id.
+CANONICAL_JSON_SEPARATORS = (",", ":")
+
+
+def canonical_dumps(payload: dict[str, Any]) -> str:
+    """Serialize Address payload for hashing: sort_keys=True, separators=(',', ':').
+
+    This is the sole canonical form used by canonical_id. Reordering object keys or
+    changing whitespace outside string values must not change the digest.
+    """
+    return json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=CANONICAL_JSON_SEPARATORS,
+    )
 
 
 def canonical_id(address: dict[str, Any]) -> str:
-    """Return the content address with address_id blanked to avoid self-reference."""
+    """Return the content address with address_id blanked to avoid self-reference.
+
+    Hash input is canonical_dumps over the Address with address_id set to null.
+    """
     payload = dict(address)
     payload["address_id"] = None
-    encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    encoded = canonical_dumps(payload).encode("utf-8")
     return "addr:sha256:" + hashlib.sha256(encoded).hexdigest()
 
 
@@ -54,10 +76,25 @@ def validate(address: Any) -> list[str]:
     goal = address["goal"]
     if not isinstance(goal, dict) or not isinstance(goal.get("id"), str) or not isinstance(goal.get("success_criteria"), list):
         errors.append("goal requires string id and success_criteria list")
-    if not isinstance(address["entities"], list) or not all(isinstance(item, dict) for item in address["entities"]):
+    entities = address["entities"]
+    if not isinstance(entities, list) or not all(isinstance(item, dict) for item in entities):
         errors.append("entities must be a list of objects")
-    if not isinstance(address["relations"], list) or not all(isinstance(item, dict) for item in address["relations"]):
+    else:
+        for index, item in enumerate(entities):
+            if not isinstance(item.get("id"), str) or not item["id"]:
+                errors.append(f"entities[{index}].id must be a non-empty string")
+            if not isinstance(item.get("type"), str) or not item["type"]:
+                errors.append(f"entities[{index}].type must be a non-empty string")
+            if "binding" in item and (not isinstance(item.get("binding"), str) or not item["binding"]):
+                errors.append(f"entities[{index}].binding must be a non-empty string when present")
+    relations = address["relations"]
+    if not isinstance(relations, list) or not all(isinstance(item, dict) for item in relations):
         errors.append("relations must be a list of objects")
+    else:
+        for index, item in enumerate(relations):
+            for key in ("predicate", "subject", "object"):
+                if not isinstance(item.get(key), str) or not item[key]:
+                    errors.append(f"relations[{index}].{key} must be a non-empty string")
     time_range = address["time_range"]
     try:
         if not isinstance(time_range, dict) or not isinstance(time_range.get("start"), str) or not isinstance(time_range.get("end"), str):
@@ -82,6 +119,10 @@ def validate(address: Any) -> list[str]:
                 "evidence_requirements.semantic_independence must be one of "
                 "UNVERIFIED, CONTRACTED, AUDITED"
             )
+        if "minimum_sources" in evidence:
+            minimum_sources = evidence["minimum_sources"]
+            if isinstance(minimum_sources, bool) or not isinstance(minimum_sources, int) or minimum_sources < 1:
+                errors.append("evidence_requirements.minimum_sources must be an int >= 1 when present")
     if address["contradiction_policy"] != "STOP_AND_REPORT_CONFLICT":
         errors.append("contradiction_policy must stop and report conflict")
     target = address["target_value"]
@@ -101,8 +142,20 @@ def validate(address: Any) -> list[str]:
         elif isinstance(residual, list) and residual and target.get("value") is not None:
             errors.append("target_value.value must be null when residual is non-empty")
     unknown = address["unknown"]
-    if not isinstance(unknown, list) or any(not isinstance(item, dict) or item.get("abstain_if_unresolved") is not True for item in unknown):
-        errors.append("every unknown slot must require abstention when unresolved")
+    if not isinstance(unknown, list) or not all(isinstance(item, dict) for item in unknown):
+        errors.append("unknown must be a list of objects")
+    else:
+        for index, item in enumerate(unknown):
+            if item.get("abstain_if_unresolved") is not True:
+                errors.append(f"unknown[{index}] must require abstention when unresolved")
+            if not isinstance(item.get("slot"), str) or not item["slot"]:
+                errors.append(f"unknown[{index}].slot must be a non-empty string")
+            status = item.get("status")
+            if not isinstance(status, str) or status not in UNKNOWN_STATUS_ALLOWED:
+                errors.append(
+                    f"unknown[{index}].status must be one of "
+                    "NOT_DERIVABLE, UNRESOLVED, RESIDUAL, OPEN"
+                )
     lineage = address["lineage"]
     if not isinstance(lineage, dict):
         errors.append("lineage requires input_hashes")
@@ -111,6 +164,10 @@ def validate(address: Any) -> list[str]:
             errors.append("lineage requires input_hashes")
         elif not all(isinstance(item, str) and re.fullmatch(r"sha256:[0-9a-f]{64}", item) for item in lineage["input_hashes"]):
             errors.append("lineage input_hashes must use sha256:<64 lowercase hex>")
+        for key in ("protocol_sha", "schema_sha", "runtime_sha"):
+            value = lineage.get(key)
+            if value is not None and (not isinstance(value, str) or not value):
+                errors.append(f"lineage.{key} must be null or a non-empty string")
         if lineage.get("result_sha") is not None:
             errors.append("lineage.result_sha must be null")
     memory_scope = address["memory_scope"]

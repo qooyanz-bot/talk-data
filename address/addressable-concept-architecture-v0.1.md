@@ -69,7 +69,7 @@ Addressとは、入力された観測、Concept、Goal、状態、時間、関�
 
 ## Open work
 
-- Define machine-checkable types and canonical serialization for each field.
+- Define machine-checkable types and canonical serialization for each field. （参照実装 v0.1: entities/relations/unknown/lineage sha/minimum_sources と canonical_dumps を検査；残フィールドの型閉包は継続）
 - Specify evidence independence contracts that test common-cause failure, not only provenance labels.
 - Implement synthetic-only conformance tests before proposing use with any real data domain.
 - Keep Future Concept choices versioned and K-approved; this document does not choose a final Future Concept.

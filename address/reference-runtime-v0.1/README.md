@@ -21,6 +21,8 @@
 - golden CLI fixtureによる公開契約の構造回帰検査。
 - `evidence_requirements.semantic_independence` は閉集合 enum: `UNVERIFIED` | `CONTRACTED` | `AUDITED`。 それ以外は `address_runtime.validate` が例外停止せず明確な errors で拒否する。
 - typed `target_value` の機械検査: dict、非空`type`、`value=null`、`residual`はnull又はlist、`no_speculation=true`。
+- 機械可読フィールド型の硬化: `entities`は非空`id`/`type`（任意`binding`は非空str）、`relations`は非空`predicate`/`subject`/`object`、`unknown`は非空`slot`＋閉集合status（`NOT_DERIVABLE`|`UNRESOLVED`|`RESIDUAL`|`OPEN`）＋`abstain_if_unresolved=true`、`lineage.protocol_sha`/`schema_sha`/`runtime_sha`はnull又は非空str、`evidence_requirements.minimum_sources`は存在時にint>=1。
+- canonical serialization: `canonical_dumps` / `canonical_id` は `sort_keys=True` と `separators=(',', ':')` のみ。キー順・空白差は `address_id` を変えない（unittestで固定）。
 - 事前検証ランタイムでは`lineage.result_sha`をnullに固定し、非null入力を拒否。
 - Resolution Gateの`resolution.residual`は、未解決unknown slotと`target_value.residual`ラベルの和集合。`target_value.residual`がnullでもunknownはREADY時に残す。どちらからもValueを埋めない。
 - Response Contractは公開応答内の入れ子`lineage.result_sha`非nullを拒否し、事前検証で結果SHAを刻印しない。
