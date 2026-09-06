@@ -15,6 +15,7 @@
 - Memory scopeをauthorized/versioned/revocableへ固定し、Lineageの入力参照をSHA-256形式に制限。未許可・追跡不能な記憶／入力参照を拒否する。
 - Audit Logのevidence digest項目が壊れている場合にも、例外停止せず明示的に拒否するよう修正。
 - Audit Logの`create`が、非list evidenceや欠落／非文字列`evidence_id`でも例外停止せず、digest省略で明示拒否するよう硬化。CLIも同様に落ちないよう整合。
+- Address CLIに`--protocol-manifest`と`--claim-type`を接続。SPEC_ONLY/R6-G凍結manifestではEXPERIMENT_RESULTとCAPABILITY_CLAIMをALLOWED_AS_RESULTにできない。Response Contractも任意の`protocol_claim`状態を検証する。
 
 ## 自己点検
 

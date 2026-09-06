@@ -35,3 +35,7 @@ class ResponseContractTests(unittest.TestCase):
     def test_audit_reason_mismatch_is_rejected(self):
         self.response["generated_audit"]["reason"] = "OTHER"
         self.assertTrue(any("generated_audit" in error for error in response_contract.validate(self.response)))
+
+    def test_invalid_protocol_claim_status_is_rejected(self):
+        self.response["protocol_claim"] = {"status": "ALLOWED_AS_RESULT_FAKE"}
+        self.assertIn("protocol_claim status is invalid", response_contract.validate(self.response))

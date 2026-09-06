@@ -52,6 +52,27 @@ class AddressCliTests(unittest.TestCase):
         self.assertIsInstance(result["generated_audit"], dict)
         self.assertEqual(result["generated_audit"]["evidence_digests"], [])
 
+    def test_protocol_claim_design_allowed_for_frozen_manifest(self):
+        manifest = json.loads((ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json").read_text(encoding="utf-8"))
+        result = address_cli.evaluate(
+            self.address, self.bundle, "2026-09-06T00:00:00Z",
+            protocol_manifest=manifest, claim_type="DESIGN_DESCRIPTION",
+        )
+        self.assertEqual(result["protocol_claim"]["status"], "ALLOWED_AS_DESIGN")
+        self.assertIsNone(result["resolution"]["value"])
+
+    def test_protocol_claim_blocks_experiment_and_capability_for_frozen_manifest(self):
+        manifest = json.loads((ROOT / "fixtures" / "r6g_frozen_protocol_manifest.json").read_text(encoding="utf-8"))
+        for claim_type in ("EXPERIMENT_RESULT", "CAPABILITY_CLAIM"):
+            with self.subTest(claim_type=claim_type):
+                result = address_cli.evaluate(
+                    self.address, self.bundle, "2026-09-06T00:00:00Z",
+                    protocol_manifest=manifest, claim_type=claim_type,
+                )
+                self.assertEqual(result["protocol_claim"]["status"], "BLOCKED")
+                self.assertNotEqual(result["protocol_claim"].get("status"), "ALLOWED_AS_RESULT")
+                self.assertIsNone(result["resolution"]["value"])
+
 
 if __name__ == "__main__":
     unittest.main()

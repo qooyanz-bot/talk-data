@@ -1,0 +1,8 @@
+{
+  "protocol_id": "R6-G",
+  "evidence_state": "SPEC_ONLY",
+  "implementation_state": "NOT_IMPLEMENTED",
+  "experiment_state": "NOT_RUN",
+  "independent_replay_state": "NOT_RUN",
+  "auditor_handoff": {"decision": "PENDING", "primary_run_authorized": false}
+}
