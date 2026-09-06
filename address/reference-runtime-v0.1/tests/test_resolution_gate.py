@@ -328,6 +328,30 @@ class ResolutionGateTests(unittest.TestCase):
         self.assertEqual(stale["decision"], "ABSTAIN")
         self.assertIn(stale["decision"], resolution_gate.DECISION_ALLOWED)
 
+    def test_reason_allowed_covers_emitters(self):
+        self.assertEqual(
+            resolution_gate.REASON_ALLOWED,
+            frozenset(
+                {
+                    "ADDRESS_INVALID",
+                    "AUDITED_INDEPENDENCE",
+                    "CONTRACTED_EVIDENCE",
+                    "CONTRADICTION",
+                    "EVIDENCE_REJECTED",
+                    "EVIDENCE_STALE",
+                    "EVIDENCE_TIME_INVALID",
+                    "FRESHNESS_REQUIREMENT_INVALID",
+                    "SEMANTIC_INDEPENDENCE_UNMET",
+                }
+            ),
+        )
+        ready = resolution_gate.resolve(self.address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertEqual(ready["reason"], "CONTRACTED_EVIDENCE")
+        self.assertIn(ready["reason"], resolution_gate.REASON_ALLOWED)
+        stale = resolution_gate.resolve(self.address, self.bundle, "2026-10-07T00:00:00Z")
+        self.assertEqual(stale["reason"], "EVIDENCE_STALE")
+        self.assertIn(stale["reason"], resolution_gate.REASON_ALLOWED)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -133,6 +133,12 @@ class ResponseContractTests(unittest.TestCase):
         self.response["generated_audit"]["decision"] = "FAKE_DECISION"
         self.assertIn("resolution decision is unknown", response_contract.validate(self.response))
 
+    def test_unknown_resolution_reason_is_rejected(self):
+        self.response["resolution"]["reason"] = "FAKE_REASON"
+        # Keep audit in sync so the failure is the unknown-reason rule, not audit mismatch.
+        self.response["generated_audit"]["reason"] = "FAKE_REASON"
+        self.assertIn("resolution reason is unknown", response_contract.validate(self.response))
+
     def test_unknown_replay_status_is_rejected(self):
         self.response["replay"] = {"status": "FAKE_REPLAY", "errors": [], "value": None}
         self.assertIn("replay status is invalid", response_contract.validate(self.response))
@@ -151,6 +157,26 @@ class ResponseContractTests(unittest.TestCase):
         )
         self.assertIs(response_contract.REPLAY_STATUSES, replay_verifier.REPLAY_STATUS_ALLOWED)
 
+    def test_reasons_shared_from_emitters(self):
+        self.assertEqual(
+            resolution_gate.REASON_ALLOWED,
+            frozenset(
+                {
+                    "ADDRESS_INVALID",
+                    "AUDITED_INDEPENDENCE",
+                    "CONTRACTED_EVIDENCE",
+                    "CONTRADICTION",
+                    "EVIDENCE_REJECTED",
+                    "EVIDENCE_STALE",
+                    "EVIDENCE_TIME_INVALID",
+                    "FRESHNESS_REQUIREMENT_INVALID",
+                    "SEMANTIC_INDEPENDENCE_UNMET",
+                }
+            ),
+        )
+        self.assertIs(response_contract.REASONS, resolution_gate.REASON_ALLOWED)
+
     def test_ready_and_abstain_decisions_in_allowed(self):
         self.assertIn(self.response["resolution"]["decision"], resolution_gate.DECISION_ALLOWED)
+        self.assertIn(self.response["resolution"]["reason"], resolution_gate.REASON_ALLOWED)
         self.assertEqual(response_contract.validate(self.response), [])

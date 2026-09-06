@@ -12,6 +12,8 @@ import resolution_gate
 
 # Single source: resolution_gate.DECISION_ALLOWED
 DECISIONS = resolution_gate.DECISION_ALLOWED
+# Single source: resolution_gate.REASON_ALLOWED
+REASONS = resolution_gate.REASON_ALLOWED
 # Single source: replay_verifier.REPLAY_STATUS_ALLOWED
 REPLAY_STATUSES = replay_verifier.REPLAY_STATUS_ALLOWED
 # Single source: protocol_claim_gate.CLAIM_STATUS_ALLOWED
@@ -67,6 +69,8 @@ def validate(response: Any) -> list[str]:
     errors: list[str] = []
     if resolution["decision"] not in DECISIONS:
         errors.append("resolution decision is unknown")
+    if resolution["reason"] not in REASONS:
+        errors.append("resolution reason is unknown")
     if resolution["value"] is not None:
         errors.append("public resolution value must be null")
     residual = resolution.get("residual")

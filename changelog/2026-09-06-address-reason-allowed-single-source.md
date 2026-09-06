@@ -1,0 +1,10 @@
+# 2026-09-06 Address REASON_ALLOWED single-source
+
+## 追加
+
+- `REASON_ALLOWED` 閉集合（ADDRESS_INVALID | AUDITED_INDEPENDENCE | CONTRACTED_EVIDENCE | CONTRADICTION | EVIDENCE_REJECTED | EVIDENCE_STALE | EVIDENCE_TIME_INVALID | FRESHNESS_REQUIREMENT_INVALID | SEMANTIC_INDEPENDENCE_UNMET）。
+- response_contract.REASONS が同一 frozenset をエイリアス共有し、resolution.reason を検証。
+
+## 非変更
+
+- 新規 evaluate golden なし。Value発見、R6-G実行、Cortext9/CIVA は対象外。

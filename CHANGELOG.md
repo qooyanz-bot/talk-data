@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 (Address REASON_ALLOWED single-source)
+
+- `resolution_gate.REASON_ALLOWED` = {ADDRESS_INVALID, AUDITED_INDEPENDENCE, CONTRACTED_EVIDENCE, CONTRADICTION, EVIDENCE_REJECTED, EVIDENCE_STALE, EVIDENCE_TIME_INVALID, FRESHNESS_REQUIREMENT_INVALID, SEMANTIC_INDEPENDENCE_UNMET} を単一正本（resolve emitters）。`_result` が軽量 assert。
+- `response_contract.REASONS` は同一 frozenset エイリアス；`validate` が `resolution.reason` を検査。
+- unittest：未知 reason は contract 拒否；共有 identity（`is`）；happy path / golden 通過。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
+
 ## 2026-09-06 (Address DECISIONS + REPLAY_STATUSES single-source)
 
 - `resolution_gate.DECISION_ALLOWED` = {ABSTAIN, READY_FOR_VERIFICATION} を単一正本（resolve emitters）。`_result` が軽量 assert。

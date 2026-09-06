@@ -11,6 +11,20 @@ import evidence_contract
 
 # Closed resolution.decision vocabulary (resolve emitters; response_contract single source).
 DECISION_ALLOWED = frozenset({"ABSTAIN", "READY_FOR_VERIFICATION"})
+# Closed resolution.reason vocabulary (resolve emitters; response_contract single source).
+REASON_ALLOWED = frozenset(
+    {
+        "ADDRESS_INVALID",
+        "AUDITED_INDEPENDENCE",
+        "CONTRACTED_EVIDENCE",
+        "CONTRADICTION",
+        "EVIDENCE_REJECTED",
+        "EVIDENCE_STALE",
+        "EVIDENCE_TIME_INVALID",
+        "FRESHNESS_REQUIREMENT_INVALID",
+        "SEMANTIC_INDEPENDENCE_UNMET",
+    }
+)
 
 
 def _parse_time(value: str) -> datetime:
@@ -91,6 +105,7 @@ def _residual_ignoring_assertion_collisions(residual: list[str], evidence: Any) 
 def _result(decision: str, reason: str, details: list[Any], residual: list[str]) -> dict[str, Any]:
     # Typed binding: success stays READY_FOR_VERIFICATION with value=null; residuals stay unfilled.
     assert decision in DECISION_ALLOWED, f"decision not in DECISION_ALLOWED: {decision!r}"
+    assert reason in REASON_ALLOWED, f"reason not in REASON_ALLOWED: {reason!r}"
     return {
         "decision": decision,
         "reason": reason,
