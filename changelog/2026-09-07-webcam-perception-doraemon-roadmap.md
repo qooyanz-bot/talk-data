@@ -78,6 +78,13 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 - feature schemaを明示した場合だけ `EventSemanticsEngine` が時間窓を使用。従来の単フレーム動作は維持。
 - 検証: 全 211 テスト成功。現状はprototype baselineであり、RGB clip encoderや実動画データでの一般化は未検証。
 
+## RGB clip feature encoder
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/d6dee06`
+- RGB frame sequenceから平均RGB、frame-to-frame motion energy、brightness deltaを抽出し、clip単位の evidence-aware action predictionへ接続。
+- 同一shape検証、finite値検証、空clip拒否を実装。3D CNNや実動画モデルの精度とは区別する。
+- 検証: 全 214 テスト成功。未完成: RGB clip encoderの実学習、長時間clip sampling、実webcam条件の精度評価。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
