@@ -22,20 +22,44 @@ def _max_age(requirement: Any) -> timedelta | None:
 
 
 def _unresolved_residuals(address: dict[str, Any]) -> list[str]:
-    """Unknown slots stay residual through READY_FOR_VERIFICATION; never filled here."""
-    unknown = address.get("unknown", [])
-    if not isinstance(unknown, list):
-        return []
+    """Union of unresolved unknown slots and target_value.residual labels.
+
+    Invariant (pre-verification):
+    - Unresolved Address.unknown slots (abstain_if_unresolved / NOT_DERIVABLE /
+      UNRESOLVED / RESIDUAL) always appear in resolution.residual.
+    - If target_value.residual is a non-empty list, those labels are also listed
+      (union). target_value.residual is therefore a subset of resolution.residual
+      when both are lists of strings; never invent a filled value from either.
+    - If target_value.residual is null, unknown labels still appear on READY.
+    """
+    seen: set[str] = set()
     residuals: list[str] = []
-    for item in unknown:
-        if not isinstance(item, dict):
-            continue
-        slot = item.get("slot")
-        label = slot if isinstance(slot, str) and slot else "<unknown>"
-        status = item.get("status")
-        # Pre-verification never resolves unknowns; abstain-required and open statuses remain residual.
-        if item.get("abstain_if_unresolved") is True or status in {"NOT_DERIVABLE", "UNRESOLVED", "RESIDUAL"}:
+
+    def _add(label: str) -> None:
+        if label not in seen:
+            seen.add(label)
             residuals.append(label)
+
+    unknown = address.get("unknown", [])
+    if isinstance(unknown, list):
+        for item in unknown:
+            if not isinstance(item, dict):
+                continue
+            slot = item.get("slot")
+            label = slot if isinstance(slot, str) and slot else "<unknown>"
+            status = item.get("status")
+            # Pre-verification never resolves unknowns; abstain-required and open statuses remain residual.
+            if item.get("abstain_if_unresolved") is True or status in {"NOT_DERIVABLE", "UNRESOLVED", "RESIDUAL"}:
+                _add(label)
+
+    target = address.get("target_value")
+    if isinstance(target, dict):
+        tv_residual = target.get("residual")
+        if isinstance(tv_residual, list):
+            for item in tv_residual:
+                if isinstance(item, str) and item:
+                    _add(item)
+        # target_value.residual never supplies a filled value in this runtime.
     return residuals
 
 

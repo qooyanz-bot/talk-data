@@ -1,3 +1,4 @@
+import copy
 import json
 import sys
 import unittest
@@ -50,3 +51,34 @@ class ResponseContractTests(unittest.TestCase):
         # value non-null alone fails; residual present also forbids fill
         errors = response_contract.validate(self.response)
         self.assertTrue(any("null" in error or "residual" in error for error in errors))
+
+    def test_nested_lineage_result_sha_is_rejected(self):
+        # Public response must never stamp a non-null lineage.result_sha.
+        self.response["lineage"] = {"result_sha": "sha256:" + "c" * 64}
+        errors = response_contract.validate(self.response)
+        self.assertTrue(any("result_sha" in error for error in errors))
+
+    def test_nested_lineage_result_sha_under_audit_is_rejected(self):
+        self.response["generated_audit"]["lineage"] = {"result_sha": "sha256:" + "d" * 64}
+        errors = response_contract.validate(self.response)
+        self.assertTrue(any("result_sha" in error for error in errors))
+
+    def test_null_lineage_result_sha_is_allowed_when_present(self):
+        self.response["lineage"] = {"result_sha": None, "input_hashes": []}
+        self.assertEqual(response_contract.validate(self.response), [])
+
+    def test_cli_evaluate_never_returns_result_sha(self):
+        # Audit/CLI paths must not attach a stamped result_sha.
+        dumped = str(self.response)
+        self.assertNotIn("result_sha", dumped)
+        self.assertIsNone(self.response["resolution"]["value"])
+
+    def test_ready_with_null_target_residual_still_lists_unknown(self):
+        address = copy.deepcopy(self.address)
+        address["target_value"]["residual"] = None
+        address["address_id"] = address_runtime.canonical_id(address)
+        response = address_cli.evaluate(address, [evidence(1), evidence(2)], "2026-09-06T00:00:00Z")
+        self.assertEqual(response["resolution"]["decision"], "READY_FOR_VERIFICATION")
+        self.assertIn("continuity", response["resolution"]["residual"])
+        self.assertIsNone(response["resolution"]["value"])
+        self.assertEqual(response_contract.validate(response), [])

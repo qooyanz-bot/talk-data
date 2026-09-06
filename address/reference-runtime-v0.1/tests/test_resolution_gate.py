@@ -1,3 +1,4 @@
+import copy
 import json
 import sys
 import unittest
@@ -51,6 +52,40 @@ class ResolutionGateTests(unittest.TestCase):
         self.assertIn("continuity", result["residual"])
         # Typed binding must not invent a filled slot payload.
         self.assertNotIn("filled", result)
+
+    def test_ready_exposes_unknown_when_target_value_residual_is_null(self):
+        address = copy.deepcopy(self.address)
+        address["target_value"]["residual"] = None
+        address["address_id"] = address_runtime.canonical_id(address)
+        result = resolution_gate.resolve(address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertEqual(result["decision"], "READY_FOR_VERIFICATION")
+        self.assertIsNone(result["value"])
+        self.assertIn("continuity", result["residual"])
+
+    def test_target_value_residual_labels_appear_in_resolution_residual(self):
+        address = copy.deepcopy(self.address)
+        address["target_value"]["residual"] = ["extra-slot", "continuity"]
+        address["address_id"] = address_runtime.canonical_id(address)
+        result = resolution_gate.resolve(address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertEqual(result["decision"], "READY_FOR_VERIFICATION")
+        self.assertIsNone(result["value"])
+        # Union: unknown slots plus target_value.residual labels; never invent a filled value.
+        self.assertIn("continuity", result["residual"])
+        self.assertIn("extra-slot", result["residual"])
+        for label in address["target_value"]["residual"]:
+            self.assertIn(label, result["residual"])
+        self.assertNotIn("filled", result)
+        self.assertNotIn("value_filled", result)
+
+    def test_target_value_residual_never_fills_value(self):
+        address = copy.deepcopy(self.address)
+        address["target_value"]["residual"] = ["open-slot"]
+        address["address_id"] = address_runtime.canonical_id(address)
+        result = resolution_gate.resolve(address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertIsNone(result["value"])
+        self.assertIn("open-slot", result["residual"])
+        # Residual labels must not be treated as resolved payloads.
+        self.assertNotEqual(result.get("value"), "open-slot")
 
 
 if __name__ == "__main__":

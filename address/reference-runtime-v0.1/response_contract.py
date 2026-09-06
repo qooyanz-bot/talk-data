@@ -11,6 +11,23 @@ REPLAY_STATUSES = {"REPLAY_VERIFIED", "REPLAY_MISMATCH", "LINEAGE_MISMATCH", "IN
 PROTOCOL_CLAIM_STATUSES = {"ALLOWED_AS_DESIGN", "ALLOWED_AS_RESULT", "BLOCKED"}
 
 
+def _nested_result_sha_errors(node: Any, path: str = "") -> list[str]:
+    """Reject any nested lineage.result_sha that is not null in the public response."""
+    errors: list[str] = []
+    if isinstance(node, dict):
+        lineage = node.get("lineage")
+        if isinstance(lineage, dict) and lineage.get("result_sha") is not None:
+            where = f"{path}.lineage" if path else "lineage"
+            errors.append(f"{where}.result_sha must be null in pre-verification response")
+        for key, value in node.items():
+            child = f"{path}.{key}" if path else str(key)
+            errors.extend(_nested_result_sha_errors(value, child))
+    elif isinstance(node, list):
+        for index, item in enumerate(node):
+            errors.extend(_nested_result_sha_errors(item, f"{path}[{index}]"))
+    return errors
+
+
 def validate(response: Any) -> list[str]:
     """Return contract violations; the public response must never contain a Value."""
     if not isinstance(response, dict):
@@ -50,4 +67,6 @@ def validate(response: Any) -> list[str]:
             errors.append("protocol_claim status is invalid")
         elif claim.get("value") is not None:
             errors.append("public protocol_claim value must be null")
+    # Shape-based: forbid stamping lineage.result_sha anywhere in the public object.
+    errors.extend(_nested_result_sha_errors(response))
     return errors

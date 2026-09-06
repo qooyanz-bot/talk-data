@@ -21,6 +21,8 @@
 - golden CLI fixtureによる公開契約の構造回帰検査。
 - typed `target_value` の機械検査: dict、非空`type`、`value=null`、`residual`はnull又はlist、`no_speculation=true`。
 - 事前検証ランタイムでは`lineage.result_sha`をnullに固定し、非null入力を拒否。
+- Resolution Gateの`resolution.residual`は、未解決unknown slotと`target_value.residual`ラベルの和集合。`target_value.residual`がnullでもunknownはREADY時に残す。どちらからもValueを埋めない。
+- Response Contractは公開応答内の入れ子`lineage.result_sha`非nullを拒否し、事前検証で結果SHAを刻印しない。
 
 ## 非対象
 

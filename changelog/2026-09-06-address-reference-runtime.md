@@ -19,6 +19,8 @@
 - CLI公開出力のgolden fixture（`fixtures/golden_cli_output.json`）を追加。必須キー・`value=null`・decision集合の構造検査で契約回帰を検出する。
 - Resolution GateとResponse Contractで、READY_FOR_VERIFICATIONでもunknown slotをresidualのまま残し`value=null`を強制。typed bindingで未解決slotを埋めない。
 - Address runtimeのtyped `target_value`検査を硬化。dict・非空type・value=null・residualはnull/list・no_speculation=trueを機械検証し、事前検証入力の`lineage.result_sha`非nullを拒否。Value発見は行わない。
+- Resolution Gateで`resolution.residual`をunknown未解決slotと`target_value.residual`の和集合として一貫化。`target_value.residual`がnullでもREADY時にunknownを露出。residualからValueを埋めない。
+- Response Contractで公開応答内の入れ子`lineage.result_sha`非nullを拒否。Audit/CLIは結果SHAを刻印しない。
 
 ## 自己点検
 
