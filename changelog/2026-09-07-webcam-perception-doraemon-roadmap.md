@@ -26,6 +26,13 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 8. Stage 24: 明示的consentを要求するbounded memory、subject検索・summary・revoke消去・JSONL persistence・audit。
 9. Stage 25: evidence-grounded assistant response、proactive attention cue、permission gate、session artifactからの質問応答、VLM backend protocol。
 
+## 追加進捗
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/ac3f3dd`
+- `learning/action_recognition.py` に、ラベル付き特徴からクラス別prototypeを学習し、confidence・距離・confusion・JSON persistenceを出す依存軽量baselineを追加。
+- `EventSemanticsEngine` へ任意接続し、初回検出を含む `action:*` eventをtrack/timestamp evidence付きで出力。
+- 検証: 全 200 テスト成功。これは動画モデルの実環境精度を意味せず、学習済みaction認識へ置換・評価するための測定可能な接続点である。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
