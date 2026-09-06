@@ -41,6 +41,14 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 - OpenCVは任意依存で、backend境界に分離。fake moduleによる実経路テストを含む全 202 テスト成功。
 - 未完成: multi-class learned detector、実機条件での精度評価、モデル重みlineage、遮蔽復帰。
 
+## ONNX detector 実行境界
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/165037d`
+- `OnnxWebcamDetectorBackend` を追加。JPEG decode、resize、RGB/CHW/float32正規化、ONNX session実行、明示parser、score thresholdを実装。
+- モデルごとに異なる出力tensorを暗黙解釈せず、parser callbackを必須化。`model_id`・任意digest・入力サイズ・閾値をlineageとしてlive成果物へ出力。
+- fake session/OpenCVを用いた実行経路テストを追加し、全 204 テスト成功。
+- 未完成: 実ONNX重み、multi-class parserの実データ精度、OpenCV/ONNX Runtimeの実機測定。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
