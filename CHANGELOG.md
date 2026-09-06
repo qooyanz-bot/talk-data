@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-06 (Historical Raw Archive documentation)
+- READMEに `archives/md-original/` の目的、利用上の正本性区分、安全な参照手順を追加。
+- Raw Archiveを承認済み判断・再現可能なEvidence・未検証仮説と混同しないこと、秘密情報の再記録・復元をしないことを明記。
+
 ## 2026-09-06 (Address reference runtime v0.1)
 - Replay Verifierを追加。保存された監査ログを自己ハッシュだけでなく、同一Address・Evidence・時刻でGateを再実行して検証する。入力、系譜、判断の不一致を検出する。
 - content-addressed Audit Logを追加。値とassertion本文を記録せず、Address ID、証拠digest、判定、時刻から再計算可能な監査IDを生成・検証する。
