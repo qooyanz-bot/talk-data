@@ -49,6 +49,14 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 - fake session/OpenCVを用いた実行経路テストを追加し、全 204 テスト成功。
 - 未完成: 実ONNX重み、multi-class parserの実データ精度、OpenCV/ONNX Runtimeの実機測定。
 
+## multi-class parser
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/0673437`
+- YOLOv8-style raw tensor（`cx, cy, w, h, class scores`）のmulti-class parserを追加。
+- 元画像への座標復元、score threshold、class-aware NMS、未知class vocabulary拒否を実装。
+- 出力は2D bboxのみとし、未校正の3D geometryはNaN・invalidのまま保持。合成出力で重複抑制とclass分離を検証。
+- 検証: 全 206 テスト成功。未完成: 実ONNX重みとの接続、実webcam条件の精度/速度評価、学習済みtracking。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
