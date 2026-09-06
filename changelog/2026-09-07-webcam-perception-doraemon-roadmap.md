@@ -85,6 +85,13 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 - 同一shape検証、finite値検証、空clip拒否を実装。3D CNNや実動画モデルの精度とは区別する。
 - 検証: 全 214 テスト成功。未完成: RGB clip encoderの実学習、長時間clip sampling、実webcam条件の精度評価。
 
+## sliding clip sampler
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/6bb18ea`
+- live/replay webcam streamから固定長 `clip_size` と `stride` の決定的なclip窓を生成。
+- clip成果物にはwindow ID、frame IDs、開始/終了timestamp、sourceのみ保存し、raw payloadは保存しない。
+- 検証: 全 215 テスト成功。未完成: 長時間clipのモデル推論、実webcam条件のsampling/latency評価。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
