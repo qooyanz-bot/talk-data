@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 (Address decision_log REQUIRED_KEYS frozenset single-source)
+
+- `decision_log.REQUIRED_KEYS` を `frozenset` に変更し、`response_contract.DECISION_LOG_REQUIRED_KEYS` と単一正本化（同一 object `is` 一致 + 値一致を unittest で固定）。
+- `fixtures/runtime_manifest.json` を再凍結。
+- unittest: 282 tests 全緑。
+
+
 ## 2026-09-06 (Address reference-runtime handoff for next agent)
 
 - `address/handoffs/2026-09-06-address-reference-runtime-codex-handoff-continuation.md` を追加（現行 HEAD `3d80682`、実装済み一覧、推奨次増分、検証コマンド）。

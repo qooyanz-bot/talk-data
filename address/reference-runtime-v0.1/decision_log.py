@@ -31,7 +31,7 @@ _STATE_FIELDS = (
 _HANDOFF_KEYS = ("decision", "primary_run_authorized")
 
 # Required keys on a content-addressed decision_log record (includes id).
-REQUIRED_KEYS = {
+REQUIRED_KEYS = frozenset({
     "schema_version",
     "protocol_id",
     "claim_type",
@@ -45,7 +45,7 @@ REQUIRED_KEYS = {
     "implementation_state",
     "independent_replay_state",
     "decision_log_id",
-}
+})
 
 
 def _handoff_snapshot(manifest: Any) -> dict[str, Any]:

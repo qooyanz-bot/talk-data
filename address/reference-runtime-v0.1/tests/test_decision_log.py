@@ -554,5 +554,15 @@ class DecisionLogTests(unittest.TestCase):
         self.assertEqual(decision_log.verify(frozen), [])
 
 
+
+    def test_required_keys_single_source_frozenset(self):
+        import response_contract
+        self.assertIsInstance(decision_log.REQUIRED_KEYS, frozenset)
+        self.assertIn("decision_log_id", decision_log.REQUIRED_KEYS)
+        self.assertIn("schema_version", decision_log.REQUIRED_KEYS)
+        self.assertIs(response_contract.DECISION_LOG_REQUIRED_KEYS, decision_log.REQUIRED_KEYS)
+        self.assertEqual(response_contract.DECISION_LOG_REQUIRED_KEYS, decision_log.REQUIRED_KEYS)
+
+
 if __name__ == "__main__":
     unittest.main()

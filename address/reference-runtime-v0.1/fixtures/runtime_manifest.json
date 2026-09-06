@@ -21,9 +21,9 @@
       "sha256": "sha256:433f7209a4d8e8b8b1cdff85743f082f3f084c6ac9be04e43bc4b5283e8d68c3"
     },
     {
-      "bytes": 6942,
+      "bytes": 6953,
       "path": "decision_log.py",
-      "sha256": "sha256:9c0de983c4aff12bbf9981e4bbe73d44a3e959259b8628a0e723b0b8acc38b78"
+      "sha256": "sha256:b9d1a9aad29d5e1465483592cf6fcadc52a61c378b014f7f742ef46d42df39ed"
     },
     {
       "bytes": 12858,
@@ -61,7 +61,7 @@
       "sha256": "sha256:d682980799c81893ee6f72645fcc0a9ec64a8eec98a2b6bdc593435f2f0f0c42"
     }
   ],
-  "package_digest": "sha256:948138726f20b4accd0e7d50c84c98e0f7ea818854edfeada379fe4f308609e8",
+  "package_digest": "sha256:8b86f541f273c8b15ae52b844a34c9ca3ec4ad7bc0f785bde472a6118388854f",
   "schema_version": "address-runtime-manifest-v1",
   "status": "RUNTIME_MANIFEST"
 }
