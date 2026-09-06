@@ -5,6 +5,7 @@
 - Raw Archiveを承認済み判断・再現可能なEvidence・未検証仮説と混同しないこと、秘密情報の再記録・復元をしないことを明記。
 
 ## 2026-09-06 (Address reference runtime v0.1)
+- read-only Address CLIを追加。Address JSONとEvidence JSONを一括評価し、Resolution、value-free Audit Log、任意のReplay検証を返す。Value導出・外部接続・ファイル書込みは行わない。
 - Protocol Claim Gateを追加。R6-Gの直接確認済みmanifest状態を対象に、`NOT_RUN`・監査未完了・未実装から実験結果／能力主張へ飛躍することをブロックする。
 - Address Runtimeの型・時間・scope境界を強化。malformed inputを例外停止せず `INVALID` として返し、時間逆転、真偽値threshold、非JSON値などを拒否する。
 - Replay Verifierを追加。保存された監査ログを自己ハッシュだけでなく、同一Address・Evidence・時刻でGateを再実行して検証する。入力、系譜、判断の不一致を検出する。

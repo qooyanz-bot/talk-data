@@ -26,6 +26,7 @@
 ```text
 python -m unittest discover -s address/reference-runtime-v0.1/tests -v
 python address/reference-runtime-v0.1/address_runtime.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json
+python address/reference-runtime-v0.1/address_cli.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json address/reference-runtime-v0.1/fixtures/valid_evidence_bundle.json --now 2026-09-06T00:00:00Z
 ```
 
-結果は `VALID`、又は機械可読な `INVALID` と違反一覧で返す。
+結果は `VALID`、又は機械可読な `INVALID` と違反一覧で返す。統合CLIはResolutionとvalue-free Audit Logを返し、`--audit` 指定時はReplayも検証する。外部接続・ファイル書込み・Value導出はしない。

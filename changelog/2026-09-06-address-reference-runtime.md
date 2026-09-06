@@ -10,6 +10,7 @@
 - Replay Verifierを追加。同じAddress・Evidence・時刻でGateを再実行し、監査ログの自己hashだけでなく、判断と系譜も照合する。
 - malformed inputの型・時間・scope境界検査を強化。入力不備による例外停止を避け、`INVALID` として明示的に拒否する。
 - Protocol Claim Gateを追加。R6-Gの直接確認済みmanifest状態を基準に、凍結・未実行・監査未完了のProtocolから結果又は能力を主張しないようブロックする。
+- read-only Address CLIを追加。Address JSONとEvidence JSONからResolution、value-free Audit Log、任意のReplay検証までを一貫して実行する。Value導出、外部接続、ファイル書込みは実装しない。
 
 ## 自己点検
 
