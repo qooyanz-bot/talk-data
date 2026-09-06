@@ -92,6 +92,13 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 - clip成果物にはwindow ID、frame IDs、開始/終了timestamp、sourceのみ保存し、raw payloadは保存しない。
 - 検証: 全 215 テスト成功。未完成: 長時間clipのモデル推論、実webcam条件のsampling/latency評価。
 
+## live clip processor dispatch
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/c8674a3`
+- `process_live_source` が生成済みclip窓を任意の `clip_processor` へ dispatchし、processorのdict/`to_dict()`結果をclip artifactへ格納。
+- window metadataと結果だけを返し、raw frame payloadは成果物へ含めない。RGB encoder、ONNX parser、将来のVLMを同じ窓境界へ接続できる。
+- 検証: 全 216 テスト成功。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
