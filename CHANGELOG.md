@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-09-06 (Address regenerator --check + CI drift)
+
+- `tools/regenerate_limitations.py` / `regenerate_conformance_report.py` / `regenerate_all_frozen_docs.py` に `--check`：dry-run；on-disk fixture が生成内容と一致すれば exit 0、書き換えが必要なら非0（書込みなし）。
+- CI `.github/workflows/address-reference-runtime.yml` に `python address/reference-runtime-v0.1/tools/regenerate_all_frozen_docs.py --check` ステップを追加。
+- unittest：`--check` 成功（一致）と失敗（temp mutate / mismatch・書込みなし）。tools/README + package README 更新。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
+## 2026-09-06 (Address regenerate_limitations + all_frozen_docs)
+
+- `tools/regenerate_limitations.py`：`limitations()` から `fixtures/limitations.json` を決定的に再生成。`tools/regenerate_all_frozen_docs.py` で limitations + conformance 一括再生成。unittest が fixture 一致と regenerator 安定性を検査。
+- tools/README 追加。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address regenerate_conformance_report helper)
 
 - `tools/regenerate_conformance_report.py`：`run_conformance()` から `fixtures/conformance_report.json` を決定的に再生成（手編集不要）。unittest の fixture 一致検査と対。

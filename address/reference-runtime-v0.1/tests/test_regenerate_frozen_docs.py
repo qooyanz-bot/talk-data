@@ -54,6 +54,48 @@ class RegenerateFrozenDocsTests(unittest.TestCase):
         after = (ROOT / "fixtures" / "limitations.json").read_text(encoding="utf-8")
         self.assertEqual(after, before)
 
+    def test_check_succeeds_when_fixtures_match(self):
+        for script in (
+            "regenerate_limitations.py",
+            "regenerate_conformance_report.py",
+            "regenerate_all_frozen_docs.py",
+        ):
+            with self.subTest(script=script):
+                code = _load_main(script)(["--check"])
+                self.assertEqual(code, 0)
+
+    def test_check_fails_on_limitations_mismatch_without_write(self):
+        path = ROOT / "fixtures" / "limitations.json"
+        original = path.read_text(encoding="utf-8")
+        try:
+            path.write_text(original.replace('"LIMITATIONS"', '"TAMPERED"', 1), encoding="utf-8")
+            mutated = path.read_text(encoding="utf-8")
+            self.assertNotEqual(mutated, original)
+            code = _load_main("regenerate_limitations.py")(["--check"])
+            self.assertNotEqual(code, 0)
+            self.assertEqual(path.read_text(encoding="utf-8"), mutated)
+            code_all = _load_main("regenerate_all_frozen_docs.py")(["--check"])
+            self.assertNotEqual(code_all, 0)
+            self.assertEqual(path.read_text(encoding="utf-8"), mutated)
+        finally:
+            path.write_text(original, encoding="utf-8")
+
+    def test_check_fails_on_conformance_mismatch_without_write(self):
+        path = ROOT / "fixtures" / "conformance_report.json"
+        original = path.read_text(encoding="utf-8")
+        try:
+            path.write_text(original.replace('"CONFORMANT"', '"TAMPERED"', 1), encoding="utf-8")
+            mutated = path.read_text(encoding="utf-8")
+            self.assertNotEqual(mutated, original)
+            code = _load_main("regenerate_conformance_report.py")(["--check"])
+            self.assertNotEqual(code, 0)
+            self.assertEqual(path.read_text(encoding="utf-8"), mutated)
+            code_all = _load_main("regenerate_all_frozen_docs.py")(["--check"])
+            self.assertNotEqual(code_all, 0)
+            self.assertEqual(path.read_text(encoding="utf-8"), mutated)
+        finally:
+            path.write_text(original, encoding="utf-8")
+
 
 if __name__ == "__main__":
     unittest.main()
