@@ -28,9 +28,14 @@ class ResolutionGateTests(unittest.TestCase):
         self.bundle = [evidence(1), evidence(2)]
 
     def test_contracted_fresh_evidence_is_ready_but_value_is_null(self):
+        # Fixture semantic_independence is UNVERIFIED; CONTRACTED evidence still READY.
+        self.assertEqual(self.address["evidence_requirements"]["semantic_independence"], "UNVERIFIED")
         result = resolution_gate.resolve(self.address, self.bundle, "2026-09-06T00:00:00Z")
         self.assertEqual(result["decision"], "READY_FOR_VERIFICATION")
+        self.assertEqual(result["reason"], "CONTRACTED_EVIDENCE")
         self.assertIsNone(result["value"])
+        contract = evidence_contract.assess(self.bundle, self.address["evidence_requirements"]["minimum_sources"])
+        self.assertEqual(contract["independence"], "CONTRACTED")
 
     def test_stale_evidence_abstains(self):
         result = resolution_gate.resolve(self.address, self.bundle, "2026-10-07T00:00:00Z")
@@ -45,6 +50,37 @@ class ResolutionGateTests(unittest.TestCase):
         self.bundle[1]["semantic_law_id"] = self.bundle[0]["semantic_law_id"]
         result = resolution_gate.resolve(self.address, self.bundle, "2026-09-06T00:00:00Z")
         self.assertEqual(result["reason"], "EVIDENCE_REJECTED")
+        contract = evidence_contract.assess(self.bundle, self.address["evidence_requirements"]["minimum_sources"])
+        self.assertEqual(contract["independence"], "COMMON_CAUSE_SUSPECT")
+
+    def test_ready_requires_contracted_independence_not_common_cause(self):
+        self.bundle[1]["generator_id"] = self.bundle[0]["generator_id"]
+        result = resolution_gate.resolve(self.address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertEqual(result["decision"], "ABSTAIN")
+        self.assertEqual(result["reason"], "EVIDENCE_REJECTED")
+        self.assertIsNone(result["value"])
+
+    def test_audited_requirement_with_only_contracted_evidence_abstains(self):
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "AUDITED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        result = resolution_gate.resolve(address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertEqual(result["decision"], "ABSTAIN")
+        self.assertEqual(result["reason"], "SEMANTIC_INDEPENDENCE_UNMET")
+        self.assertIsNone(result["value"])
+        self.assertTrue(any("AUDITED" in str(item) for item in result["details"]))
+        self.assertTrue(any("CONTRACTED" in str(item) for item in result["details"]))
+        # Must not silently upgrade to READY or claim independence beyond CONTRACTED.
+        self.assertNotEqual(result["decision"], "READY_FOR_VERIFICATION")
+
+    def test_contracted_requirement_with_contracted_evidence_is_ready(self):
+        address = copy.deepcopy(self.address)
+        address["evidence_requirements"]["semantic_independence"] = "CONTRACTED"
+        address["address_id"] = address_runtime.canonical_id(address)
+        result = resolution_gate.resolve(address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertEqual(result["decision"], "READY_FOR_VERIFICATION")
+        self.assertEqual(result["reason"], "CONTRACTED_EVIDENCE")
+        self.assertIsNone(result["value"])
 
     def test_ready_keeps_unknown_slots_as_residual_and_value_null(self):
         result = resolution_gate.resolve(self.address, self.bundle, "2026-09-06T00:00:00Z")

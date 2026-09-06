@@ -34,6 +34,9 @@
 
 - LIMITATIONS / synthetic-only conformance surface（`limitations.py` / `fixtures/limitations.json`）を追加。world_scope=SYNTHETIC_ONLY、value_discovery=NOT_IMPLEMENTED、r6g_experiment=NOT_RUN（reference SPEC_ONLY）、real_domain_extrapolation / secret_access / crypto_bypass / future_direct=FORBIDDEN を機械可読に宣言。CLI `--limitations` でJSON出力（address/evidence不要・exit 0）。resolve / `--check-contract-only` と相互排他。evaluate公開応答は value=null を維持し value_discovery の NOT_IMPLEMENTED と矛盾しない。R6-G実行・Value発見・宇宙DB/秘密/暗号回避を事実として書かない。
 
+- Evidence Contract `assess()` に明示的な `independence` 判定を追加。 共有authority/generator/semantic_law（又は重複identity）は `COMMON_CAUSE_SUSPECT`（CONFLICT）、 metadata分離通過は `CONTRACTED`、不足・不正は `UNVERIFIED`。 このランタイムは path ID だけでは `INDEPENDENT` / `AUDITED` を返さない。
+- Resolution Gateは READY_FOR_VERIFICATION を `independence=CONTRACTED` のときのみ許可。 Addressが `semantic_independence: AUDITED` なのに証拠がCONTRACTED止まりなら `ABSTAIN` / `SEMANTIC_INDEPENDENCE_UNMET`（静かに昇格しない）。 fixtureの `UNVERIFIED` 要求はCONTRACTED証拠でREADY可。value=null維持。
+
 ## 自己点検
 
 - E系: 外部接続、秘密読取り、認証回避、個人の隠れた情報、未来値取得を実装していない。

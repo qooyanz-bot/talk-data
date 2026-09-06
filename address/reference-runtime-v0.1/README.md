@@ -10,8 +10,8 @@
 - `world_id`、Memory / Capability scope、Evidence / Law contract、残差のabstain表現
 - real worldでの公開・許可済みread/verify scope以外の拒否
 - canonical JSONからの安定した `address_id` 再計算
-- Evidence Contractの共通authority / generator / semantic law検出。path IDだけの相違は独立性と扱わない。
-- Resolution Gateによる `READY_FOR_VERIFICATION` / `ABSTAIN` 判定。証拠不足、共通原因、鮮度切れ、矛盾ではValueを返さない。
+- Evidence Contractの共通authority / generator / semantic law検出。path IDだけの相違は独立性と扱わない。 `assess()` は明示的な `independence` 判定を返す: 共有軸は `COMMON_CAUSE_SUSPECT`（status CONFLICT / accepted=False）、 metadata分離通過は `CONTRACTED`（accepted=True）、 不足・不正は `UNVERIFIED`。 このランタイム単体では `INDEPENDENT` / `AUDITED` を決して返さない。
+- Resolution Gateによる `READY_FOR_VERIFICATION` / `ABSTAIN` 判定。 READYは `independence=CONTRACTED` のときのみ。 Addressが `semantic_independence: AUDITED` を要求しても証拠がCONTRACTED止まりなら `ABSTAIN` / `SEMANTIC_INDEPENDENCE_UNMET`（静かに昇格しない）。 fixtureの `UNVERIFIED` 要求はCONTRACTED証拠でREADY可。証拠不足、共通原因、鮮度切れ、矛盾ではValueを返さない。
 - content-addressed Audit Log。Valueやassertion本文を保存せず、Address・証拠digest・判定を再検算可能にする。
 - Replay Verifier。保存済み監査ログに対して同じAddress・Evidence・時刻でGateを再実行し、判断と系譜の完全一致を検証する。
 - Protocol Claim Gate。凍結・未実行・監査未完了のProtocolから、実験結果又は能力を主張することを防ぐ。

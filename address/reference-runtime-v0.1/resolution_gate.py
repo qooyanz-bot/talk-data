@@ -89,7 +89,12 @@ def _result(decision: str, reason: str, details: list[Any], residual: list[str])
 
 
 def resolve(address: Any, evidence: Any, now: str) -> dict[str, Any]:
-    """Decide whether verification may proceed; never returns a target Value."""
+    """Decide whether verification may proceed; never returns a target Value.
+
+    READY_FOR_VERIFICATION requires evidence independence == CONTRACTED (metadata
+    separation only). This gate never upgrades past CONTRACTED and never claims
+    semantic independence / AUDITED / INDEPENDENT from path IDs alone.
+    """
     address_errors = address_runtime.validate(address)
     residual = _unresolved_residuals(address) if isinstance(address, dict) else []
     if address_errors:
@@ -97,6 +102,9 @@ def resolve(address: Any, evidence: Any, now: str) -> dict[str, Any]:
     minimum = address["evidence_requirements"].get("minimum_sources", 2)
     contract = evidence_contract.assess(evidence, minimum)
     if not contract["accepted"]:
+        return _result("ABSTAIN", "EVIDENCE_REJECTED", contract["reasons"], residual)
+    # accepted=True from this runtime means independence is CONTRACTED only.
+    if contract.get("independence") != evidence_contract.INDEPENDENCE_CONTRACTED:
         return _result("ABSTAIN", "EVIDENCE_REJECTED", contract["reasons"], residual)
     max_age = _max_age(address["freshness_requirement"])
     if max_age is None:
@@ -115,6 +123,20 @@ def resolve(address: Any, evidence: Any, now: str) -> dict[str, Any]:
     conflicts = sorted(key for key, values in assertions.items() if len(values) > 1)
     if conflicts:
         return _result("ABSTAIN", "CONTRADICTION", conflicts, residual)
+    # Address may require AUDITED semantic independence; this runtime cannot grant it.
+    required_independence = address["evidence_requirements"].get("semantic_independence")
+    if required_independence == "AUDITED":
+        return _result(
+            "ABSTAIN",
+            "SEMANTIC_INDEPENDENCE_UNMET",
+            [
+                "Address.evidence_requirements.semantic_independence is AUDITED but "
+                "evidence independence is only CONTRACTED; audited independence unmet",
+                "independence=CONTRACTED",
+            ],
+            residual,
+        )
     # Residual is Address-derived only; assertion_key collisions never fill slots.
     residual = _residual_ignoring_assertion_collisions(residual, evidence)
+    # UNVERIFIED or CONTRACTED requirement + CONTRACTED evidence → READY; value stays null.
     return _result("READY_FOR_VERIFICATION", "CONTRACTED_EVIDENCE", contract["reasons"], residual)

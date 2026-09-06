@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-06 (Address evidence independence / common-cause verdict)
+- Evidence Contract `assess()` に明示的な `independence` 判定を追加: 共有authority/generator/semantic_law（又は重複identity）は `COMMON_CAUSE_SUSPECT`（CONFLICT）、metadata分離通過は `CONTRACTED`、不足・不正は `UNVERIFIED`。path IDだけでは `INDEPENDENT` / `AUDITED` を返さない。
+- Resolution Gateは READY_FOR_VERIFICATION を `independence=CONTRACTED` のときのみ許可。Addressが `semantic_independence: AUDITED` なのに証拠がCONTRACTED止まりの場合は `ABSTAIN` / `SEMANTIC_INDEPENDENCE_UNMET`。`UNVERIFIED` 要求（valid_synthetic_address.json）は従来どおりCONTRACTEDでREADY。value=null維持。
+
 ## 2026-09-06 (Address LIMITATIONS / synthetic-only conformance)
 - `limitations.py` と `fixtures/limitations.json` を追加。world_scope=SYNTHETIC_ONLY、value_discovery=NOT_IMPLEMENTED、r6g_experiment=NOT_RUN（SPEC_ONLY）、real_domain_extrapolation / secret_access / crypto_bypass / future_direct=FORBIDDEN を機械可読に宣言。CLI `--limitations` でJSON出力（exit 0）。resolve / `--check-contract-only` と相互排他。R6-G実行・Value発見・現実外挿は主張しない。
 
