@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-07 (Physical AI Loop demo readiness gate)
+
+- `changelog/2026-09-07-physical-ai-loop-readiness-gate.md` を追加。
+- 実装作業ディレクトリにデモ前自己診断 `assessDemoReadiness` と `Demo readiness` UIを追加。
+- 検証: `npm test` 14/14 pass、`npm run build` exit 0、既存dev server HTTP 200、HTML内にreadiness panel文言あり。
+
 ## 2026-09-07 (Physical AI Loop replay inspector)
 
 - `changelog/2026-09-07-physical-ai-loop-replay-inspector.md` を追加。
