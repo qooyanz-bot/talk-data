@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-07 (Physical AI Loop newmo fit / CSV / export)
+
+- `changelog/2026-09-07-physical-ai-loop-newmo-fit-csv-export.md` を追加。
+- 実装作業ディレクトリに CSV貼り付け解析、newmo fit score、Robot class comparison、Markdown incident report downloadを追加。
+- 検証: `npm test` 11/11 pass、`npm run build` exit 0、既存dev server HTTP 200、HTML内に新パネル文言あり。
+
 ## 2026-09-07 (Physical AI Loop demo controls)
 
 - `changelog/2026-09-07-physical-ai-loop-demo-controls.md` を追加。
