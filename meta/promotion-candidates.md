@@ -10,6 +10,7 @@
 | 2026-09-05 | 自動化委任v1 | meta/automation-delegation-v1.md | 委任として採用 |
 | 2026-09-05 | GSM / QPS / SMQ / CSR-1 / DF-1 / NUFC | future-concept/* | 草案群 |
 | 2026-09-05 | **Cortext9**（分散NUFC配備） | future-concept/Cortext9-v0.md | **K命名・正本保存** |
+| 2026-09-07 | Cortext9 Physical AI Improvement Loop（newmoデモ方針） | future-concept/cortext9-physical-ai-improvement-loop-v0.md | K実装採用・FC最終ではない |
 
 ## 保留（いま決めない）
 - 知的存在／低質存続／連続性の確定

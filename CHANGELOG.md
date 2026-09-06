@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-07 (newmo Physical AI demo session + Grok handoff)
+
+- K明示指示により、newmo向けデモ経緯・採用方針・実装状態を正本へ保存。
+- 追加: `changelog/2026-09-07-newmo-physical-ai-demo-session.md`
+- 追加: `future-concept/cortext9-physical-ai-improvement-loop-v0.md`（採用デモ方針草案。FC最終ではない）
+- 追加: `future-concept/handoffs/2026-09-07-grok-physical-ai-loop-agent-prompt.md`（次担当Grok用プロンプト）
+- 実装作業ディレクトリはローカルにスターター生成済みだが、デモ本体ロジックは未実装と記録。
+
 ## 2026-09-06 (CharacterOS platform v1 approved specification)
 
 - `characteros/` を新設し、K承認済みのCharacterOS-Engine / Operation / Client / Tool / Pay / Market / Gate / BASE初版仕様を追加。
