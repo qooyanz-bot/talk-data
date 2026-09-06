@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild READY / ABSTAIN / CONTRADICTION / EVIDENCE_STALE contract goldens from evaluate().
+"""Rebuild READY / ABSTAIN / CONTRADICTION / EVIDENCE_STALE / SEMANTIC_INDEPENDENCE_UNMET contract goldens from evaluate().
 
 Fixed Address + evidence + now inputs keep digests reproducible without hand edits.
 Run from repository root:
@@ -13,6 +13,7 @@ Or from this package directory:
 
 from __future__ import annotations
 
+import copy
 import json
 import sys
 from pathlib import Path
@@ -52,26 +53,34 @@ def _evidence(index: int, assertion_value: str = "verified", **overrides: Any) -
     return item
 
 
-def golden_specs() -> list[tuple[str, list[dict[str, Any]], str, str]]:
-    """Return (filename, evidence, expected_decision, expected_reason)."""
+def golden_specs() -> list[tuple[str, list[dict[str, Any]], str, str, str | None]]:
+    """Return (filename, evidence, expected_decision, expected_reason, semantic_independence_or_None).
+
+    None keeps the fixture Address (UNVERIFIED). AUDITED builds the
+    SEMANTIC_INDEPENDENCE_UNMET golden: contracted evidence cannot satisfy an
+    audited independence requirement.
+    """
     return [
         (
             "golden_contract_ok_response.json",
             [_evidence(1), _evidence(2)],
             "READY_FOR_VERIFICATION",
             "CONTRACTED_EVIDENCE",
+            None,
         ),
         (
             "golden_contract_abstain_response.json",
             [_evidence(1), _evidence(2, semantic_law_id="law-1")],
             "ABSTAIN",
             "EVIDENCE_REJECTED",
+            None,
         ),
         (
             "golden_contract_contradiction_response.json",
             [_evidence(1), _evidence(2, assertion_value="rejected")],
             "ABSTAIN",
             "CONTRADICTION",
+            None,
         ),
         (
             "golden_contract_stale_response.json",
@@ -81,14 +90,30 @@ def golden_specs() -> list[tuple[str, list[dict[str, Any]], str, str]]:
             ],
             "ABSTAIN",
             "EVIDENCE_STALE",
+            None,
+        ),
+        (
+            "golden_contract_semantic_independence_unmet_response.json",
+            [_evidence(1), _evidence(2)],
+            "ABSTAIN",
+            "SEMANTIC_INDEPENDENCE_UNMET",
+            "AUDITED",
         ),
     ]
 
 
+def _address_for_spec(semantic_independence: str | None) -> dict[str, Any]:
+    address = copy.deepcopy(_load_address())
+    if semantic_independence is not None:
+        address["evidence_requirements"]["semantic_independence"] = semantic_independence
+        address["address_id"] = address_runtime.canonical_id(address)
+    return address
+
+
 def build_goldens() -> dict[str, dict[str, Any]]:
-    address = _load_address()
     built: dict[str, dict[str, Any]] = {}
-    for filename, evidence, decision, reason in golden_specs():
+    for filename, evidence, decision, reason, semantic_independence in golden_specs():
+        address = _address_for_spec(semantic_independence)
         response = address_cli.evaluate(address, evidence, NOW)
         resolution = response["resolution"]
         if resolution["decision"] != decision or resolution["reason"] != reason:

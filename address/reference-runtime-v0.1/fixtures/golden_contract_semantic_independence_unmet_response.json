@@ -1,0 +1,33 @@
+{
+  "generated_audit": {
+    "address_id": "addr:sha256:5c5c99e408d4af0f03b35879f270c01bb1d74b867b18b7a0bf87ca70bcc2f719",
+    "audit_id": "audit:e1b4c9af24967892b65c66ac8cbf659113c02af2f4ee39994084d71c88808a95",
+    "decision": "ABSTAIN",
+    "detail_digest": "sha256:7f7c0c9b7f0d06a1f1255d513547bc631f30c98e8a54877c37b3aa06d8e84c57",
+    "evaluated_at": "2026-09-06T00:00:00Z",
+    "evidence_digests": [
+      {
+        "digest": "sha256:70d6503b34257def879da34d99cfb40c8e8804538b25023d8778860b3168d213",
+        "evidence_id": "e-1"
+      },
+      {
+        "digest": "sha256:a7d2ac85578d84fb73e16d4107b49c87528f63ed6b72e9cf68ed9e4af1c33c2d",
+        "evidence_id": "e-2"
+      }
+    ],
+    "reason": "SEMANTIC_INDEPENDENCE_UNMET",
+    "schema_version": "ADDRESS-AUDIT-1.0"
+  },
+  "resolution": {
+    "decision": "ABSTAIN",
+    "details": [
+      "Address.evidence_requirements.semantic_independence is AUDITED but evidence independence is only CONTRACTED; audited independence unmet",
+      "independence=CONTRACTED"
+    ],
+    "reason": "SEMANTIC_INDEPENDENCE_UNMET",
+    "residual": [
+      "continuity"
+    ],
+    "value": null
+  }
+}

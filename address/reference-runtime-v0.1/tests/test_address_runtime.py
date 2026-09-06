@@ -86,5 +86,41 @@ class AddressRuntimeTests(unittest.TestCase):
         self.assertEqual(address_runtime.validate(address), [])
 
 
+
+    def test_semantic_independence_closed_enum_accepts_allowed_values(self):
+        for value in ("UNVERIFIED", "CONTRACTED", "AUDITED"):
+            with self.subTest(value=value):
+                address = copy.deepcopy(self.address)
+                address["evidence_requirements"]["semantic_independence"] = value
+                address["address_id"] = address_runtime.canonical_id(address)
+                self.assertEqual(address_runtime.validate(address), [])
+
+    def test_semantic_independence_rejects_invalid_enum_without_raising(self):
+        for bad in ("INDEPENDENT", "independent", "audited", "", None, 1, True, ["AUDITED"]):
+            with self.subTest(bad=bad):
+                address = copy.deepcopy(self.address)
+                if bad is None and "semantic_independence" in address["evidence_requirements"]:
+                    del address["evidence_requirements"]["semantic_independence"]
+                else:
+                    address["evidence_requirements"]["semantic_independence"] = bad
+                address["address_id"] = address_runtime.canonical_id(address)
+                errors = address_runtime.validate(address)
+                self.assertTrue(errors)
+                self.assertTrue(
+                    any(
+                        "evidence_requirements.semantic_independence must be one of"
+                        in error
+                        for error in errors
+                    )
+                )
+
+    def test_unverified_fixture_remains_valid(self):
+        self.assertEqual(
+            self.address["evidence_requirements"]["semantic_independence"],
+            "UNVERIFIED",
+        )
+        self.assertEqual(address_runtime.validate(self.address), [])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -19,6 +19,8 @@ REQUIRED_FIELDS = {
 DIMENSIONS = {"concept", "state", "goal", "binding", "relation", "context", "temporal", "owner", "dependency", "provenance"}
 REAL_CAPABILITIES = {"read:declared-public-data", "read:declared-authorized-data", "verify:declared-schema"}
 FORBIDDEN_CAPABILITY_TOKENS = {"secret", "credential", "password", "private_key", "decrypt", "bypass", "hidden_person", "future_direct"}
+# Closed enum for Address.evidence_requirements.semantic_independence (validate rejects others).
+SEMANTIC_INDEPENDENCE_ALLOWED = frozenset({"UNVERIFIED", "CONTRACTED", "AUDITED"})
 
 
 def canonical_id(address: dict[str, Any]) -> str:
@@ -73,6 +75,13 @@ def validate(address: Any) -> list[str]:
         errors.append("evidence_requirements.law_assumption must be explicit")
     if not isinstance(evidence, dict) or evidence.get("provenance_required") is not True:
         errors.append("evidence_requirements.provenance_required must be true")
+    if isinstance(evidence, dict):
+        si = evidence.get("semantic_independence")
+        if not isinstance(si, str) or si not in SEMANTIC_INDEPENDENCE_ALLOWED:
+            errors.append(
+                "evidence_requirements.semantic_independence must be one of "
+                "UNVERIFIED, CONTRACTED, AUDITED"
+            )
     if address["contradiction_policy"] != "STOP_AND_REPORT_CONFLICT":
         errors.append("contradiction_policy must stop and report conflict")
     target = address["target_value"]

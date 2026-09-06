@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-09-06 (Address semantic_independence closed enum + UNMET golden)
+- `address_runtime.validate` が `evidence_requirements.semantic_independence` を閉集合 enum（`UNVERIFIED` | `CONTRACTED` | `AUDITED`）として強制。他値は例外停止せず明確な errors で拒否。
+- 公開応答 golden `fixtures/golden_contract_semantic_independence_unmet_response.json` を追加（Address `semantic_independence=AUDITED` + CONTRACTED証拠 → ABSTAIN / SEMANTIC_INDEPENDENCE_UNMET / value=null・residualあり・audit整合）。regenerator / match-evaluate に配線。
+- 無効 enum・AUDITED+CONTRACTED ABSTAIN・UNVERIFIED fixture READY の回帰をunittestで固定。
+
 ## 2026-09-06 (Address evidence independence / common-cause verdict)
 - Evidence Contract `assess()` に明示的な `independence` 判定を追加: 共有authority/generator/semantic_law（又は重複identity）は `COMMON_CAUSE_SUSPECT`（CONFLICT）、metadata分離通過は `CONTRACTED`、不足・不正は `UNVERIFIED`。path IDだけでは `INDEPENDENT` / `AUDITED` を返さない。
 - Resolution Gateは READY_FOR_VERIFICATION を `independence=CONTRACTED` のときのみ許可。Addressが `semantic_independence: AUDITED` なのに証拠がCONTRACTED止まりの場合は `ABSTAIN` / `SEMANTIC_INDEPENDENCE_UNMET`。`UNVERIFIED` 要求（valid_synthetic_address.json）は従来どおりCONTRACTEDでREADY。value=null維持。
