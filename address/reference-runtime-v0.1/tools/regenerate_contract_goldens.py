@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild READY / ABSTAIN / CONTRADICTION contract goldens from evaluate().
+"""Rebuild READY / ABSTAIN / CONTRADICTION / EVIDENCE_STALE contract goldens from evaluate().
 
 Fixed Address + evidence + now inputs keep digests reproducible without hand edits.
 Run from repository root:
@@ -26,6 +26,8 @@ import address_runtime  # noqa: E402
 
 NOW = "2026-09-06T00:00:00Z"
 FIXTURES = ROOT / "fixtures"
+# Older than address freshness_requirement.max_age P30D relative to NOW.
+STALE_OBSERVED_AT = "2026-07-01T00:00:00Z"
 
 
 def _load_address() -> dict[str, Any]:
@@ -70,6 +72,15 @@ def golden_specs() -> list[tuple[str, list[dict[str, Any]], str, str]]:
             [_evidence(1), _evidence(2, assertion_value="rejected")],
             "ABSTAIN",
             "CONTRADICTION",
+        ),
+        (
+            "golden_contract_stale_response.json",
+            [
+                _evidence(1, observed_at=STALE_OBSERVED_AT),
+                _evidence(2, observed_at=STALE_OBSERVED_AT),
+            ],
+            "ABSTAIN",
+            "EVIDENCE_STALE",
         ),
     ]
 

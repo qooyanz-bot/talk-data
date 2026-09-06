@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-06 (Address contract-only EVIDENCE_STALE golden)
+- 公開応答EVIDENCE_STALE golden `fixtures/golden_contract_stale_response.json` を追加（observed_atが`--now`とfreshness max_ageに対して古い実evaluate出力: ABSTAIN / EVIDENCE_STALE / value=null・residualあり・audit整合）。`--check-contract-only` / validate で通過し、value充填・入れ子 `lineage.result_sha`・reason非EVIDENCE_STALEで失敗する回帰をREADY/ABSTAIN/CONTRADICTIONと対称に凍結。
+- `tools/regenerate_contract_goldens.py` と match-evaluate unittest に EVIDENCE_STALE を追加。
+
 ## 2026-09-06 (Address contract-only CONTRADICTION golden + regenerator)
 - 公開応答CONTRADICTION golden `fixtures/golden_contract_contradiction_response.json` を追加（同一assertion_keyで衝突するassertion_valueの実evaluate出力: ABSTAIN / CONTRADICTION / value=null・residualあり・audit整合）。`--check-contract-only` / validate で通過し、value充填・入れ子 `lineage.result_sha`・reason非CONTRADICTIONで失敗する回帰をREADY/ABSTAINと対称に凍結。
 - `tools/regenerate_contract_goldens.py` でREADY/ABSTAIN/CONTRADICTION goldenをevaluate()から再生成可能に。unittestがfixtureとfresh evaluate()の完全一致を検査する。

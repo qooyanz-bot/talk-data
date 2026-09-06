@@ -1,0 +1,33 @@
+{
+  "generated_audit": {
+    "address_id": "addr:sha256:35db9ba1578f7586bf08939fd499e4c71015ea21e018b7b4cc34062fb605b0dc",
+    "audit_id": "audit:00ef09ebdaaaef1928415d5b62662461f9f774d6702660bcdd61a6972095f6a7",
+    "decision": "ABSTAIN",
+    "detail_digest": "sha256:132e08589d023179a8d2b943af3b45c7d5ef22ab43a2296e8daf0a7ee4937643",
+    "evaluated_at": "2026-09-06T00:00:00Z",
+    "evidence_digests": [
+      {
+        "digest": "sha256:a55c729b78fc5d85af8d6b4a1a33811c5d543d0d4f9e00cb9402f82ed54e8088",
+        "evidence_id": "e-1"
+      },
+      {
+        "digest": "sha256:06b6e17276595a87d0e1bbe8298beb65e0f676bd37f0430dd8df5601dc1182a1",
+        "evidence_id": "e-2"
+      }
+    ],
+    "reason": "EVIDENCE_STALE",
+    "schema_version": "ADDRESS-AUDIT-1.0"
+  },
+  "resolution": {
+    "decision": "ABSTAIN",
+    "details": [
+      "e-1",
+      "e-2"
+    ],
+    "reason": "EVIDENCE_STALE",
+    "residual": [
+      "continuity"
+    ],
+    "value": null
+  }
+}
