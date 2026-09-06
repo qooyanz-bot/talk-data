@@ -312,3 +312,47 @@ class EvidenceContractTests(unittest.TestCase):
             evidence_contract.INDEPENDENCE_ASSESS_ALLOWED,
         )
 
+    def test_assess_status_allowed_covers_emitters(self):
+        self.assertEqual(
+            evidence_contract.ASSESS_STATUS_ALLOWED,
+            frozenset({"INSUFFICIENT", "INVALID", "CONFLICT", "CONTRACTED"}),
+        )
+        contracted = evidence_contract.assess([record(1), record(2)])
+        self.assertEqual(contracted["status"], evidence_contract.ASSESS_STATUS_CONTRACTED)
+        self.assertIn(contracted["status"], evidence_contract.ASSESS_STATUS_ALLOWED)
+        insufficient = evidence_contract.assess([record(1)])
+        self.assertEqual(insufficient["status"], evidence_contract.ASSESS_STATUS_INSUFFICIENT)
+        self.assertIn(insufficient["status"], evidence_contract.ASSESS_STATUS_ALLOWED)
+        invalid = evidence_contract.assess(["not-an-object", "also-bad"])
+        self.assertEqual(invalid["status"], evidence_contract.ASSESS_STATUS_INVALID)
+        self.assertIn(invalid["status"], evidence_contract.ASSESS_STATUS_ALLOWED)
+        shared = [record(1), record(2)]
+        shared[1]["authority_id"] = shared[0]["authority_id"]
+        conflict = evidence_contract.assess(shared)
+        self.assertEqual(conflict["status"], evidence_contract.ASSESS_STATUS_CONFLICT)
+        self.assertIn(conflict["status"], evidence_contract.ASSESS_STATUS_ALLOWED)
+        # assess() status never leaks audit-path vocabulary.
+        for result in (contracted, insufficient, invalid, conflict):
+            self.assertNotIn(result["status"], ("AUDITED", "UNMET", "INDEPENDENT"))
+            self.assertIn(result["status"], evidence_contract.ASSESS_STATUS_ALLOWED)
+
+    def test_audit_status_allowed_covers_emitters(self):
+        self.assertEqual(
+            evidence_contract.AUDIT_STATUS_ALLOWED,
+            frozenset({"AUDITED", "UNMET"}),
+        )
+        evidence = [record(1), record(2)]
+        audited = evidence_contract.assess_audited_independence(
+            valid_independence_audit(evidence), evidence=evidence
+        )
+        self.assertEqual(audited["status"], evidence_contract.AUDIT_STATUS_AUDITED)
+        self.assertIn(audited["status"], evidence_contract.AUDIT_STATUS_ALLOWED)
+        unmet = evidence_contract.assess_audited_independence(None)
+        self.assertEqual(unmet["status"], evidence_contract.AUDIT_STATUS_UNMET)
+        self.assertIn(unmet["status"], evidence_contract.AUDIT_STATUS_ALLOWED)
+        # Audit status set is distinct from assess() status set.
+        self.assertTrue(
+            evidence_contract.ASSESS_STATUS_ALLOWED.isdisjoint(
+                evidence_contract.AUDIT_STATUS_ALLOWED
+            )
+        )

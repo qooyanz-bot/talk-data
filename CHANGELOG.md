@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 (Address evidence_contract status closed enum)
+
+- `evidence_contract.ASSESS_STATUS_ALLOWED` = {INSUFFICIENT, INVALID, CONFLICT, CONTRACTED} を単一正本（assess emitters）。`_result` が status も軽量 assert。
+- `evidence_contract.AUDIT_STATUS_ALLOWED` = {AUDITED, UNMET} を単一正本（assess_audited_independence emitters）。`_audit_result` が status も軽量 assert（independence とは別フィールド）。
+- unittest：全 status emitters が閉集合内；assess status は AUDITED/UNMET を含めない；両集合は disjoint。新規 evaluate golden なし。Value発見・R6-G実行は行わない。
+
+
 ## 2026-09-06 (Address independence verdict closed enum single-source)
 
 - `evidence_contract.INDEPENDENCE_ASSESS_ALLOWED` = {COMMON_CAUSE_SUSPECT, CONTRACTED, UNVERIFIED} を単一正本（assess emitters）。`_result` が軽量 assert。決して INDEPENDENT / AUDITED を含まない。

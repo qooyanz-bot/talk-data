@@ -9,6 +9,20 @@ import audit_log
 REQUIRED = {"evidence_id", "claim_hash", "path_id", "authority_id", "generator_id", "semantic_law_id", "observed_at"}
 INDEPENDENCE_AXES = ("authority_id", "generator_id", "semantic_law_id")
 
+# assess() status field: closed vocabulary (single source). Distinct from independence.
+ASSESS_STATUS_INSUFFICIENT = "INSUFFICIENT"
+ASSESS_STATUS_INVALID = "INVALID"
+ASSESS_STATUS_CONFLICT = "CONFLICT"
+ASSESS_STATUS_CONTRACTED = "CONTRACTED"
+ASSESS_STATUS_ALLOWED = frozenset(
+    {
+        ASSESS_STATUS_INSUFFICIENT,
+        ASSESS_STATUS_INVALID,
+        ASSESS_STATUS_CONFLICT,
+        ASSESS_STATUS_CONTRACTED,
+    }
+)
+
 # assess() may emit these independence verdicts only. Never INDEPENDENT / AUDITED:
 # this runtime cannot grant semantic independence from path IDs or metadata alone.
 INDEPENDENCE_COMMON_CAUSE_SUSPECT = "COMMON_CAUSE_SUSPECT"
@@ -37,10 +51,18 @@ INDEPENDENCE_AUDIT_UNMET = "UNMET"
 INDEPENDENCE_AUDIT_ALLOWED = frozenset(
     {INDEPENDENCE_AUDITED, INDEPENDENCE_AUDIT_UNMET}
 )
+# assess_audited_independence() status field: closed vocabulary (single source).
+# Same string values as independence on this path, but a distinct field.
+AUDIT_STATUS_AUDITED = "AUDITED"
+AUDIT_STATUS_UNMET = "UNMET"
+AUDIT_STATUS_ALLOWED = frozenset({AUDIT_STATUS_AUDITED, AUDIT_STATUS_UNMET})
 
 
 def _result(status: str, accepted: bool, independence: str, reasons: list[str]) -> dict[str, Any]:
-    # Closed assess() independence only; never INDEPENDENT / AUDITED here.
+    # Closed assess() status + independence only; never INDEPENDENT / AUDITED here.
+    assert status in ASSESS_STATUS_ALLOWED, (
+        f"status not in ASSESS_STATUS_ALLOWED: {status!r}"
+    )
     assert independence in INDEPENDENCE_ASSESS_ALLOWED, (
         f"independence not in INDEPENDENCE_ASSESS_ALLOWED: {independence!r}"
     )
@@ -69,14 +91,14 @@ def assess(evidence: Any, minimum_sources: int = 2) -> dict[str, Any]:
     """
     if not isinstance(evidence, list) or len(evidence) < minimum_sources:
         return _result(
-            "INSUFFICIENT",
+            ASSESS_STATUS_INSUFFICIENT,
             False,
             INDEPENDENCE_UNVERIFIED,
             ["fewer than minimum_sources evidence records"],
         )
     if any(not isinstance(item, dict) for item in evidence):
         return _result(
-            "INVALID",
+            ASSESS_STATUS_INVALID,
             False,
             INDEPENDENCE_UNVERIFIED,
             ["evidence records must be objects"],
@@ -87,7 +109,7 @@ def assess(evidence: Any, minimum_sources: int = 2) -> dict[str, Any]:
         if REQUIRED - set(item)
     ]
     if missing:
-        return _result("INVALID", False, INDEPENDENCE_UNVERIFIED, missing)
+        return _result(ASSESS_STATUS_INVALID, False, INDEPENDENCE_UNVERIFIED, missing)
     reasons: list[str] = []
     for field in ("evidence_id", "claim_hash", "path_id"):
         values = [item[field] for item in evidence]
@@ -98,9 +120,9 @@ def assess(evidence: Any, minimum_sources: int = 2) -> dict[str, Any]:
         if len(values) != len(set(values)):
             reasons.append(f"shared {axis}: path diversity is not semantic independence")
     if reasons:
-        return _result("CONFLICT", False, INDEPENDENCE_COMMON_CAUSE_SUSPECT, reasons)
+        return _result(ASSESS_STATUS_CONFLICT, False, INDEPENDENCE_COMMON_CAUSE_SUSPECT, reasons)
     return _result(
-        "CONTRACTED",
+        ASSESS_STATUS_CONTRACTED,
         True,
         INDEPENDENCE_CONTRACTED,
         ["metadata separation passed; semantic independence remains unaudited"],
@@ -134,6 +156,9 @@ def audited_independence_checklist() -> dict[str, Any]:
 def _audit_result(
     status: str, accepted: bool, independence: str, reasons: list[str]
 ) -> dict[str, Any]:
+    assert status in AUDIT_STATUS_ALLOWED, (
+        f"status not in AUDIT_STATUS_ALLOWED: {status!r}"
+    )
     assert independence in INDEPENDENCE_AUDIT_ALLOWED, (
         f"independence not in INDEPENDENCE_AUDIT_ALLOWED: {independence!r}"
     )
@@ -146,7 +171,7 @@ def _audit_result(
 
 
 def _audit_unmet(reasons: list[str]) -> dict[str, Any]:
-    return _audit_result("UNMET", False, INDEPENDENCE_AUDIT_UNMET, reasons)
+    return _audit_result(AUDIT_STATUS_UNMET, False, INDEPENDENCE_AUDIT_UNMET, reasons)
 
 
 def _digest_entry_ok(item: Any) -> bool:
@@ -254,7 +279,7 @@ def assess_audited_independence(audit_record: Any, evidence: Any = None) -> dict
                 ]
             )
     return _audit_result(
-        "AUDITED",
+        AUDIT_STATUS_AUDITED,
         True,
         INDEPENDENCE_AUDITED,
         [
