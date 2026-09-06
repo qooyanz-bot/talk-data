@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 (Address reference-runtime handoff for next agent)
+
+- `address/handoffs/2026-09-06-address-reference-runtime-codex-handoff-continuation.md` を追加（現行 HEAD `3d80682`、実装済み一覧、推奨次増分、検証コマンド）。
+- `address/handoffs/2026-09-06-next-agent-prompt.md` を追加（次担当エージェント実行用プロンプト）。
+- tests 281 件全緑・conformance CONFORMANT・runtime_manifest 正常・frozen docs --check ok を確認済み。
+
+
 ## 2026-09-06 (Address contradiction_policy closed enum & evidence_contract frozensets)
 
 - `address_runtime.py`: `CONTRADICTION_POLICY_ALLOWED = frozenset({"STOP_AND_REPORT_CONFLICT"})` を単一正本として export し、`validate()` での閉集合検証を適用。
