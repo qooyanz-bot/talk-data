@@ -99,6 +99,13 @@ webcamからの動画入力を、単発フレーム処理から、時系列理�
 - window metadataと結果だけを返し、raw frame payloadは成果物へ含めない。RGB encoder、ONNX parser、将来のVLMを同じ窓境界へ接続できる。
 - 検証: 全 216 テスト成功。
 
+## JPEG clip action inference bridge
+
+- 追加コミット: `https://github.com/qooyanz-bot/perception-mvp/commit/ab9ee7a`
+- `OpenCVRGBClipProcessor` が clip window のJPEG bytesをdecodeし、RGB clip feature extractorとaction recognizerへ接続。
+- 出力は特徴、prediction、clip/frame evidenceのみで、raw画像は成果物に残さない。
+- 検証: 全 217 テスト成功。未完成: 3D CNN/transformer等の実動画モデル、長時間clipの性能評価。
+
 ## 現在の境界
 
 - webcam画像からの本物のlearned detectorは未統合。`WebcamContractProcessor` は backend-neutral detector境界と health/latency/failureを提供するが、実運用モデルの精度を証明しない。
