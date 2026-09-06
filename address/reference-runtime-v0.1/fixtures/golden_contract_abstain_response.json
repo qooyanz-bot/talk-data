@@ -1,0 +1,32 @@
+{
+  "generated_audit": {
+    "address_id": "addr:sha256:35db9ba1578f7586bf08939fd499e4c71015ea21e018b7b4cc34062fb605b0dc",
+    "audit_id": "audit:166e9dfe1fdd7c0e9894b4d83f3fd549baa8448d055fa5059dba6296e4348da1",
+    "decision": "ABSTAIN",
+    "detail_digest": "sha256:e0d9ca23cbf15990352594919bfdc3687a8ef6c6bc7efb398d2b4f33757a82fe",
+    "evaluated_at": "2026-09-06T00:00:00Z",
+    "evidence_digests": [
+      {
+        "digest": "sha256:70d6503b34257def879da34d99cfb40c8e8804538b25023d8778860b3168d213",
+        "evidence_id": "e-1"
+      },
+      {
+        "digest": "sha256:dc2006a230f1d53195a7956ef24423929437280020bc793791a136c1303a9a91",
+        "evidence_id": "e-2"
+      }
+    ],
+    "reason": "EVIDENCE_REJECTED",
+    "schema_version": "ADDRESS-AUDIT-1.0"
+  },
+  "resolution": {
+    "decision": "ABSTAIN",
+    "details": [
+      "shared semantic_law_id: path diversity is not semantic independence"
+    ],
+    "reason": "EVIDENCE_REJECTED",
+    "residual": [
+      "continuity"
+    ],
+    "value": null
+  }
+}

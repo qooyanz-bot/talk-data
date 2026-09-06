@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-09-06 (Address contract-only ABSTAIN golden)
+- 公開応答ABSTAIN golden `fixtures/golden_contract_abstain_response.json` を追加（shared-law EVIDENCE_REJECTED の実evaluate出力: value=null・residualあり・audit整合）。`--check-contract-only` / validate で通過し、value充填・入れ子 `lineage.result_sha`・decision非ABSTAINで失敗する回帰をREADY goldenと対称に凍結。
+
 ## 2026-09-06 (Address contract-only golden fixture + argparse harden)
 - 公開応答golden fixture `fixtures/golden_contract_ok_response.json` を追加（value=null・residualあり・audit整合）。`--check-contract-only` / validate で通過し、value充填や入れ子 `lineage.result_sha` 刻印で失敗する回帰を凍結。
 - `--check-contract-only` と address/evidence/`--now`/resolve系フラグの併用を早期 `INVALID_INPUT` JSON で拒否。
