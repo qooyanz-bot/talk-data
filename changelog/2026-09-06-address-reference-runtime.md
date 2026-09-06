@@ -22,6 +22,9 @@
 - Resolution Gateで`resolution.residual`をunknown未解決slotと`target_value.residual`の和集合として一貫化。`target_value.residual`がnullでもREADY時にunknownを露出。residualからValueを埋めない。
 - Response Contractで公開応答内の入れ子`lineage.result_sha`非nullを拒否。Audit/CLIは結果SHAを刻印しない。
 
+- Evidence assertion_keyがunknown.slot / residualラベルと衝突しても、resolution.residualから消さず、assertion_valueをvalueへ束縛しない。READY_FOR_VERIFICATIONでもvalue=nullを維持。
+- Address CLIに`--check-contract-only RESPONSE.json`を追加。Gate再実行なしで保存済み公開応答をresponse_contract検証。契約OKでexit 0、違反は機械可読errorsで非0。address/evidence/--nowは不要。
+
 ## 自己点検
 
 - E系: 外部接続、秘密読取り、認証回避、個人の隠れた情報、未来値取得を実装していない。

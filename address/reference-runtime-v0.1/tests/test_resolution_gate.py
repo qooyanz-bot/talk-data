@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import address_runtime  # noqa: E402
+import evidence_contract  # noqa: E402
 import resolution_gate  # noqa: E402
 
 
@@ -86,6 +87,23 @@ class ResolutionGateTests(unittest.TestCase):
         self.assertIn("open-slot", result["residual"])
         # Residual labels must not be treated as resolved payloads.
         self.assertNotEqual(result.get("value"), "open-slot")
+
+    def test_assertion_key_collision_with_unknown_slot_does_not_fill_residual(self):
+        """assertion_key matching unknown.slot must not clear residual or bind value."""
+        address = copy.deepcopy(self.address)
+        # Fixture unknown.slot is "continuity"; collide assertion_key with that label.
+        for item in self.bundle:
+            item["assertion_key"] = "continuity"
+            item["assertion_value"] = "supposedly-resolved"
+        result = resolution_gate.resolve(address, self.bundle, "2026-09-06T00:00:00Z")
+        self.assertEqual(result["decision"], "READY_FOR_VERIFICATION")
+        self.assertIsNone(result["value"])
+        self.assertIn("continuity", result["residual"])
+        self.assertNotEqual(result["value"], "supposedly-resolved")
+        self.assertNotIn("filled", result)
+        # Collision set is detectable but must not remove the residual label.
+        colliding = evidence_contract.assertion_key_set(self.bundle) & set(result["residual"])
+        self.assertIn("continuity", colliding)
 
 
 if __name__ == "__main__":

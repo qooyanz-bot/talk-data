@@ -41,15 +41,46 @@ def _load(path: str) -> Any:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
-def main() -> int:
+def check_contract_only(response_path: str) -> dict[str, Any]:
+    """Validate a saved public response JSON against response_contract without re-running the gate."""
+    response = _load(response_path)
+    errors = response_contract.validate(response)
+    if errors:
+        return {"status": "CONTRACT_INVALID", "errors": errors}
+    return {"status": "CONTRACT_OK", "errors": []}
+
+
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Read-only Address resolution and replay verifier")
-    parser.add_argument("address", help="Address JSON path")
-    parser.add_argument("evidence", help="Evidence bundle JSON path")
-    parser.add_argument("--now", required=True, help="Evaluation time in ISO-8601 UTC")
+    parser.add_argument(
+        "--check-contract-only",
+        metavar="RESPONSE.json",
+        help="Validate a saved public response JSON against response_contract without re-running the gate",
+    )
+    parser.add_argument("address", nargs="?", help="Address JSON path")
+    parser.add_argument("evidence", nargs="?", help="Evidence bundle JSON path")
+    parser.add_argument("--now", help="Evaluation time in ISO-8601 UTC")
     parser.add_argument("--audit", help="Optional prior audit JSON to replay")
     parser.add_argument("--protocol-manifest", help="Optional protocol manifest JSON for claim gating")
     parser.add_argument("--claim-type", help="Claim type to assess against the protocol manifest")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+
+    if args.check_contract_only is not None:
+        if args.address is not None or args.evidence is not None:
+            parser.error("address/evidence must not be supplied with --check-contract-only")
+        if args.now is not None or args.audit is not None or args.protocol_manifest is not None or args.claim_type is not None:
+            parser.error("resolve options must not be supplied with --check-contract-only")
+        try:
+            result = check_contract_only(args.check_contract_only)
+        except (OSError, ValueError, json.JSONDecodeError, TypeError) as exc:
+            print(json.dumps({"status": "INVALID_INPUT", "errors": [str(exc)]}, ensure_ascii=False, sort_keys=True))
+            return 2
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0 if result["status"] == "CONTRACT_OK" else 1
+
+    if args.address is None or args.evidence is None or args.now is None:
+        parser.error("address, evidence, and --now are required unless --check-contract-only is set")
+
     try:
         result = evaluate(
             _load(args.address),

@@ -1,7 +1,9 @@
+import contextlib
 import json
 import sys
 import tempfile
 import unittest
+from io import StringIO
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -72,6 +74,56 @@ class AddressCliTests(unittest.TestCase):
                 self.assertEqual(result["protocol_claim"]["status"], "BLOCKED")
                 self.assertNotEqual(result["protocol_claim"].get("status"), "ALLOWED_AS_RESULT")
                 self.assertIsNone(result["resolution"]["value"])
+
+    def test_check_contract_only_accepts_valid_response(self):
+        response = address_cli.evaluate(self.address, self.bundle, "2026-09-06T00:00:00Z")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "response.json"
+            path.write_text(json.dumps(response), encoding="utf-8")
+            buf = StringIO()
+            with contextlib.redirect_stdout(buf):
+                code = address_cli.main(["--check-contract-only", str(path)])
+            self.assertEqual(code, 0)
+            self.assertEqual(json.loads(buf.getvalue())["status"], "CONTRACT_OK")
+
+    def test_check_contract_only_rejects_non_null_value(self):
+        response = address_cli.evaluate(self.address, self.bundle, "2026-09-06T00:00:00Z")
+        response["resolution"]["value"] = "invented"
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "bad_value.json"
+            path.write_text(json.dumps(response), encoding="utf-8")
+            buf = StringIO()
+            with contextlib.redirect_stdout(buf):
+                code = address_cli.main(["--check-contract-only", str(path)])
+            self.assertEqual(code, 1)
+            payload = json.loads(buf.getvalue())
+            self.assertEqual(payload["status"], "CONTRACT_INVALID")
+            self.assertTrue(any("null" in err for err in payload["errors"]))
+
+    def test_check_contract_only_rejects_nested_result_sha(self):
+        response = address_cli.evaluate(self.address, self.bundle, "2026-09-06T00:00:00Z")
+        response["lineage"] = {"result_sha": "sha256:" + "a" * 64}
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "bad_sha.json"
+            path.write_text(json.dumps(response), encoding="utf-8")
+            buf = StringIO()
+            with contextlib.redirect_stdout(buf):
+                code = address_cli.main(["--check-contract-only", str(path)])
+            self.assertEqual(code, 1)
+            payload = json.loads(buf.getvalue())
+            self.assertEqual(payload["status"], "CONTRACT_INVALID")
+            self.assertTrue(any("result_sha" in err for err in payload["errors"]))
+
+    def test_check_contract_only_does_not_require_address_evidence(self):
+        response = address_cli.evaluate(self.address, self.bundle, "2026-09-06T00:00:00Z")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "response.json"
+            path.write_text(json.dumps(response), encoding="utf-8")
+            # Must succeed without address/evidence/--now positionals.
+            buf = StringIO()
+            with contextlib.redirect_stdout(buf):
+                code = address_cli.main(["--check-contract-only", str(path)])
+            self.assertEqual(code, 0)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-06 (Address assertion/residual collision + contract-only CLI)
+- Evidence `assertion_key` が unknown.slot / residual ラベルと衝突しても residual を解消せず、`assertion_value` を value に束縛しない（READYでも value=null）。
+- Address CLI に `--check-contract-only RESPONSE.json` を追加。Gate再実行なしで公開応答の response_contract を検証（OK=0、違反は機械可読 errors で非0）。
+
 ## 2026-09-06 (Audit Log malformed-input hardening)
 - Audit Logのevidence digest項目がobjectでない場合も、例外停止せず明示的に拒否するよう修正。
 

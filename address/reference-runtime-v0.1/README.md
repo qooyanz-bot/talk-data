@@ -24,6 +24,9 @@
 - Resolution Gateの`resolution.residual`は、未解決unknown slotと`target_value.residual`ラベルの和集合。`target_value.residual`がnullでもunknownはREADY時に残す。どちらからもValueを埋めない。
 - Response Contractは公開応答内の入れ子`lineage.result_sha`非nullを拒否し、事前検証で結果SHAを刻印しない。
 
+- assertion_keyがunknown.slot / residualラベルと文字列衝突しても、residualを消さずvalueにassertion_valueを束縛しない。
+- CLI `--check-contract-only RESPONSE.json` で、Gate再実行なしに保存済み公開応答をresponse_contract検証（OK=0、違反は機械可読errorsで非0）。
+
 ## 非対象
 
 - Valueの発見、現実の秘密・個人情報・未来値の取得
@@ -36,6 +39,7 @@
 python -m unittest discover -s address/reference-runtime-v0.1/tests -v
 python address/reference-runtime-v0.1/address_runtime.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json
 python address/reference-runtime-v0.1/address_cli.py address/reference-runtime-v0.1/fixtures/valid_synthetic_address.json address/reference-runtime-v0.1/fixtures/valid_evidence_bundle.json --now 2026-09-06T00:00:00Z
+python address/reference-runtime-v0.1/address_cli.py --check-contract-only path/to/saved_response.json
 ```
 
-結果は `VALID`、又は機械可読な `INVALID` と違反一覧で返す。統合CLIはResolutionとvalue-free Audit Logを返し、`--audit` 指定時はReplayも検証する。外部接続・ファイル書込み・Value導出はしない。
+結果は `VALID`、又は機械可読な `INVALID` と違反一覧で返す。統合CLIはResolutionとvalue-free Audit Logを返し、`--audit` 指定時はReplayも検証する。`--check-contract-only` はGateを再実行せず、保存済み公開応答の契約だけを検査する（`CONTRACT_OK` / `CONTRACT_INVALID`）。外部接続・ファイル書込み・Value導出はしない。

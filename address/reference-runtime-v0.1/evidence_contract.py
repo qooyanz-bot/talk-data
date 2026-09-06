@@ -39,3 +39,23 @@ def assess(evidence: Any, minimum_sources: int = 2) -> dict[str, Any]:
         "accepted": True,
         "reasons": ["metadata separation passed; semantic independence remains unaudited"],
     }
+
+
+def assertion_key_set(evidence: Any) -> set[str]:
+    """Return assertion_key strings present on evidence records.
+
+    These keys are for contradiction detection only. Matching an Address
+    unknown.slot or residual label must never be treated as filling that slot.
+    """
+    keys: set[str] = set()
+    if not isinstance(evidence, list):
+        return keys
+    for item in evidence:
+        if isinstance(item, dict) and "assertion_key" in item:
+            key = item["assertion_key"]
+            if isinstance(key, str) and key:
+                keys.add(key)
+            else:
+                keys.add(str(key))
+    return keys
+

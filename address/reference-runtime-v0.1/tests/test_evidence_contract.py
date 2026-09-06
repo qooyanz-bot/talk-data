@@ -38,3 +38,13 @@ class EvidenceContractTests(unittest.TestCase):
         records = [record(1), record(2)]
         records[1]["claim_hash"] = records[0]["claim_hash"]
         self.assertTrue(any("duplicate claim_hash" == reason for reason in evidence_contract.assess(records)["reasons"]))
+
+    def test_assertion_key_set_extracts_keys_without_implying_fill(self):
+        records = [record(1), record(2)]
+        records[0]["assertion_key"] = "continuity"
+        records[1]["assertion_key"] = "other"
+        keys = evidence_contract.assertion_key_set(records)
+        self.assertEqual(keys, {"continuity", "other"})
+        # Helper documents keys for contradiction only; does not resolve slots.
+        self.assertNotIn("filled", evidence_contract.assess(records))
+

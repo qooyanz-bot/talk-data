@@ -63,6 +63,20 @@ def _unresolved_residuals(address: dict[str, Any]) -> list[str]:
     return residuals
 
 
+
+def _residual_ignoring_assertion_collisions(residual: list[str], evidence: Any) -> list[str]:
+    """Return residual unchanged; assertion_key name collisions never fill slots.
+
+    Evidence may assert the same string as an unknown.slot / residual label.
+    That collision is never treated as resolving the slot: residual stays listed,
+    and assertion_value is never bound into resolution.value.
+    """
+    # Touch the collision set so callers/tests can rely on the helper existing,
+    # while deliberately not removing any labels.
+    _ = evidence_contract.assertion_key_set(evidence) & set(residual)
+    return list(residual)
+
+
 def _result(decision: str, reason: str, details: list[Any], residual: list[str]) -> dict[str, Any]:
     # Typed binding: success stays READY_FOR_VERIFICATION with value=null; residuals stay unfilled.
     return {
@@ -96,9 +110,11 @@ def resolve(address: Any, evidence: Any, now: str) -> dict[str, Any]:
         return _result("ABSTAIN", "EVIDENCE_STALE", stale, residual)
     assertions: dict[str, set[str]] = {}
     for item in evidence:
-        if "assertion_key" in item and "assertion_value" in item:
+        if isinstance(item, dict) and "assertion_key" in item and "assertion_value" in item:
             assertions.setdefault(str(item["assertion_key"]), set()).add(str(item["assertion_value"]))
     conflicts = sorted(key for key, values in assertions.items() if len(values) > 1)
     if conflicts:
         return _result("ABSTAIN", "CONTRADICTION", conflicts, residual)
+    # Residual is Address-derived only; assertion_key collisions never fill slots.
+    residual = _residual_ignoring_assertion_collisions(residual, evidence)
     return _result("READY_FOR_VERIFICATION", "CONTRACTED_EVIDENCE", contract["reasons"], residual)
