@@ -53,7 +53,7 @@ class DecisionLogTests(unittest.TestCase):
         log = decision_log.build_decision_log(self.manifest, "DESIGN_DESCRIPTION", assessment)
         self.assertEqual(log["claim_status"], "ALLOWED_AS_DESIGN")
         self.assertEqual(log["claim_reason"], "NO_RESULT_CLAIM")
-        self.assertIsNone(log["unmet"])
+        self.assertEqual(log["unmet"], [])
         self.assertIsNone(log["value"])
         self.assertEqual(log["protocol_id"], "R6-G")
         self.assertEqual(log["schema_version"], decision_log.SCHEMA_VERSION)
@@ -207,6 +207,51 @@ class DecisionLogTests(unittest.TestCase):
         )
         result["decision_log"]["schema_version"] = "address-decision-log-v0-fake"
         self.assertIn("decision_log schema_version is invalid", response_contract.validate(result))
+
+
+    def test_response_contract_rejects_claim_reason_mismatch(self):
+        result = address_cli.evaluate(
+            self.address,
+            self.bundle,
+            "2026-09-06T00:00:00Z",
+            protocol_manifest=self.manifest,
+            claim_type="EXPERIMENT_RESULT",
+        )
+        result["decision_log"]["claim_reason"] = "OTHER_REASON"
+        errors = response_contract.validate(result)
+        self.assertIn("decision_log claim_reason contradicts protocol_claim.reason", errors)
+
+    def test_response_contract_rejects_unmet_non_list(self):
+        result = address_cli.evaluate(
+            self.address,
+            self.bundle,
+            "2026-09-06T00:00:00Z",
+            protocol_manifest=self.manifest,
+            claim_type="EXPERIMENT_RESULT",
+        )
+        result["decision_log"]["unmet"] = "not-a-list"
+        errors = response_contract.validate(result)
+        self.assertIn("decision_log unmet must be null or a list of strings", errors)
+
+    def test_response_contract_rejects_unmet_mismatch(self):
+        result = address_cli.evaluate(
+            self.address,
+            self.bundle,
+            "2026-09-06T00:00:00Z",
+            protocol_manifest=self.manifest,
+            claim_type="EXPERIMENT_RESULT",
+        )
+        result["decision_log"]["unmet"] = list(result["decision_log"]["unmet"]) + ["extra_gate!=true"]
+        errors = response_contract.validate(result)
+        self.assertIn("decision_log unmet contradicts protocol_claim.unmet", errors)
+
+    def test_decision_log_always_emits_unmet_list(self):
+        for claim_type in ("DESIGN_DESCRIPTION", "EXPERIMENT_RESULT", "CAPABILITY_CLAIM", "UNKNOWN"):
+            with self.subTest(claim_type=claim_type):
+                assessment = protocol_claim_gate.assess_claim(self.manifest, claim_type)
+                log = decision_log.build_decision_log(self.manifest, claim_type, assessment)
+                self.assertIsInstance(log["unmet"], list)
+                self.assertTrue(all(isinstance(item, str) for item in log["unmet"]))
 
 
 if __name__ == "__main__":

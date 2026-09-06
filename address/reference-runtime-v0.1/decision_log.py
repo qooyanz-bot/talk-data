@@ -51,7 +51,8 @@ def build_decision_log(
         "claim_type": claim_type if isinstance(claim_type, str) else "",
         "claim_status": assessment.get("status"),
         "claim_reason": assessment.get("reason"),
-        "unmet": assessment.get("unmet") if isinstance(assessment.get("unmet"), list) else None,
+        # Always a list for machine-checkability (empty when assess_claim omits unmet).
+        "unmet": list(assessment["unmet"]) if isinstance(assessment.get("unmet"), list) else [],
         "auditor_handoff": _handoff_snapshot(manifest),
         "value": None,
     }

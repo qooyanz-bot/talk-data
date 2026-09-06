@@ -103,10 +103,26 @@ def validate(response: Any) -> list[str]:
                 errors.append("decision_log auditor_handoff must be an object")
             elif set(handoff) != DECISION_LOG_HANDOFF_KEYS:
                 errors.append("decision_log auditor_handoff keys are invalid")
+            unmet = log.get("unmet")
+            if unmet is not None and (
+                not isinstance(unmet, list) or not all(isinstance(item, str) for item in unmet)
+            ):
+                errors.append("decision_log unmet must be null or a list of strings")
             claim = response.get("protocol_claim")
             if isinstance(claim, dict) and claim.get("status") in PROTOCOL_CLAIM_STATUSES:
                 if log.get("claim_status") != claim.get("status"):
                     errors.append("decision_log claim_status contradicts protocol_claim.status")
+                if "reason" in claim and log.get("claim_reason") != claim.get("reason"):
+                    errors.append("decision_log claim_reason contradicts protocol_claim.reason")
+                if "unmet" in claim:
+                    claim_unmet = claim.get("unmet")
+                    log_unmet = log.get("unmet")
+                    if not (
+                        isinstance(claim_unmet, list)
+                        and isinstance(log_unmet, list)
+                        and sorted(claim_unmet) == sorted(log_unmet)
+                    ):
+                        errors.append("decision_log unmet contradicts protocol_claim.unmet")
     # Shape-based: forbid stamping lineage.result_sha anywhere in the public object.
     errors.extend(_nested_result_sha_errors(response))
     return errors

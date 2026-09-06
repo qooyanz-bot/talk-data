@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-09-06 (Address decision_log claim_reason / unmet align)
+
+- Response Contract：`decision_log` と `protocol_claim` が両方あるとき、`claim_reason` を `protocol_claim.reason`（reason がある場合）と一致要求；`unmet` は null 又は文字列 list；`protocol_claim.unmet` があるときは sorted 等価（multiset）で一致要求。
+- `decision_log.py` は `unmet` を常に list（空可）で出力（機械可読）。R6-G 凍結 BLOCKED fixture は list のまま変更なし。新規 CLI evaluate golden なし。
+- unittest：reason mismatch / unmet non-list / unmet mismatch；happy path は R6-G frozen BLOCKED log で通過。Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address decision_log Response Contract shape)
 - Response Contract が `decision_log` 存在時に機械可読 shape を強制：必須キー（schema_version / protocol_id / claim_type / claim_status / claim_reason / unmet / auditor_handoff / value / 状態4フィールド）、schema_version=`decision_log.SCHEMA_VERSION`、value=null、既知 claim_status、protocol_claim.status 非矛盾、auditor_handoff は厳密に {decision, primary_run_authorized}。
 - unittest で missing schema_version / wrong handoff keys / non-null value / status mismatch を固定。新規 golden なし。Value発見・R6-G実行は行わない。
