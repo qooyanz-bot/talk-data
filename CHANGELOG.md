@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-06 (Address check-contract-only decision_log response)
+
+- 公開応答 golden `fixtures/golden_contract_decision_log_blocked_response.json` を追加（evaluate(..., protocol_manifest=R6-G, claim_type=EXPERIMENT_RESULT): READY / CONTRACTED_EVIDENCE + protocol_claim BLOCKED + frozen decision_log；value=null throughout）。regenerator には未配線（golden 増殖を抑制）。
+- `--check-contract-only` が decision_log 付き応答を通過；改ざん decision_log_id / 非null decision_log.value で CONTRACT_INVALID。
+- CLI `--verify-decision-log DECISION_LOG.json` を追加（decision_log.verify のみ；`--limitations` / `--check-contract-only` / resolve と相互排他）。
+- Value発見・R6-G実行は行わない。
+
 ## 2026-09-06 (Address content-addressed decision_log_id)
 
 - `decision_log.build_decision_log` / `create` が `decision_log_id` = `decision_log:` + sha256（`audit_log.content_digest` と同じ canonical dumps）を id 除外 payload から付与。`verify()` で必須 shape と自己アドレス整合を検査。

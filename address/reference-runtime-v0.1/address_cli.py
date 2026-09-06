@@ -64,13 +64,26 @@ def check_contract_only(response_path: str) -> dict[str, Any]:
     return {"status": "CONTRACT_OK", "errors": []}
 
 
+def verify_decision_log_only(decision_log_path: str) -> dict[str, Any]:
+    """Verify a saved Decision Log JSON via decision_log.verify (shape + content-address)."""
+    record = _load(decision_log_path)
+    errors = decision_log.verify(record)
+    if errors:
+        return {"status": "DECISION_LOG_INVALID", "errors": errors}
+    return {"status": "DECISION_LOG_OK", "errors": []}
+
+
 def _resolve_flag_conflicts(args: argparse.Namespace, exclusive_flag: str) -> list[str]:
     """Collect mutual-exclusion errors for standalone modes (no resolve inputs)."""
     conflicts: list[str] = []
-    if exclusive_flag == "--limitations" and args.check_contract_only is not None:
-        conflicts.append("--check-contract-only must not be supplied with --limitations")
-    if exclusive_flag == "--check-contract-only" and args.limitations:
-        conflicts.append("--limitations must not be supplied with --check-contract-only")
+    exclusive_modes = {
+        "--limitations": args.limitations,
+        "--check-contract-only": args.check_contract_only is not None,
+        "--verify-decision-log": args.verify_decision_log is not None,
+    }
+    for flag, active in exclusive_modes.items():
+        if flag != exclusive_flag and active:
+            conflicts.append(f"{flag} must not be supplied with {exclusive_flag}")
     if args.address is not None:
         conflicts.append(f"address positional must not be supplied with {exclusive_flag}")
     if args.evidence is not None:
@@ -99,6 +112,11 @@ def main(argv: list[str] | None = None) -> int:
         "--check-contract-only",
         metavar="RESPONSE.json",
         help="Validate a saved public response JSON against response_contract without re-running the gate",
+    )
+    parser.add_argument(
+        "--verify-decision-log",
+        metavar="DECISION_LOG.json",
+        help="Verify a saved Decision Log JSON via decision_log.verify only (no resolve / no full response contract)",
     )
     parser.add_argument("address", nargs="?", help="Address JSON path")
     parser.add_argument("evidence", nargs="?", help="Evidence bundle JSON path")
@@ -133,8 +151,24 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 0 if result["status"] == "CONTRACT_OK" else 1
 
+    if args.verify_decision_log is not None:
+        conflicts = _resolve_flag_conflicts(args, "--verify-decision-log")
+        if conflicts:
+            print(json.dumps({"status": "INVALID_INPUT", "errors": conflicts}, ensure_ascii=False, sort_keys=True))
+            return 2
+        try:
+            result = verify_decision_log_only(args.verify_decision_log)
+        except (OSError, ValueError, json.JSONDecodeError, TypeError) as exc:
+            print(json.dumps({"status": "INVALID_INPUT", "errors": [str(exc)]}, ensure_ascii=False, sort_keys=True))
+            return 2
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0 if result["status"] == "DECISION_LOG_OK" else 1
+
     if args.address is None or args.evidence is None or args.now is None:
-        parser.error("address, evidence, and --now are required unless --limitations or --check-contract-only is set")
+        parser.error(
+            "address, evidence, and --now are required unless --limitations, "
+            "--check-contract-only, or --verify-decision-log is set"
+        )
 
     try:
         result = evaluate(

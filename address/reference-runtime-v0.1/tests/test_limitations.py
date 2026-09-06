@@ -83,6 +83,7 @@ class LimitationsTests(unittest.TestCase):
             ["--protocol-manifest", "manifest.json"],
             ["--claim-type", "DESIGN_DESCRIPTION"],
             ["--check-contract-only", str(ROOT / "fixtures" / "golden_contract_ok_response.json")],
+            ["--verify-decision-log", str(ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json")],
         ]
         for extra in cases:
             with self.subTest(extra=extra):
@@ -139,6 +140,17 @@ class LimitationsTests(unittest.TestCase):
         doc = limitations.limitations()
         self.assertEqual(doc["protocol_result_claims"], "GATED")
         self.assertFalse(limitations.is_claiming_status(doc["protocol_result_claims"]))
+
+
+    def test_limitations_rejects_verify_decision_log_combo(self):
+        fixture = ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json"
+        buf = StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = address_cli.main(["--limitations", "--verify-decision-log", str(fixture)])
+        self.assertEqual(code, 2)
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(payload["status"], "INVALID_INPUT")
+        self.assertTrue(any("verify-decision-log" in err for err in payload["errors"]))
 
 
 if __name__ == "__main__":

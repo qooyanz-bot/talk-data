@@ -1,7 +1,10 @@
 import copy
 import json
 import sys
+import tempfile
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -305,6 +308,52 @@ class DecisionLogTests(unittest.TestCase):
         self.assertTrue(fixture["decision_log_id"].startswith("decision_log:"))
 
 
+
+
+    def test_verify_decision_log_cli_accepts_frozen_fixture(self):
+        fixture = ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json"
+        buf = StringIO()
+        with redirect_stdout(buf):
+            code = address_cli.main(["--verify-decision-log", str(fixture)])
+        self.assertEqual(code, 0)
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(payload["status"], "DECISION_LOG_OK")
+        self.assertEqual(payload["errors"], [])
+
+    def test_verify_decision_log_cli_rejects_tampered_id(self):
+        fixture = json.loads(
+            (ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json").read_text(encoding="utf-8")
+        )
+        fixture["decision_log_id"] = "decision_log:" + ("0" * 64)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "tampered.json"
+            path.write_text(json.dumps(fixture), encoding="utf-8")
+            buf = StringIO()
+            with redirect_stdout(buf):
+                code = address_cli.main(["--verify-decision-log", str(path)])
+            self.assertEqual(code, 1)
+            payload = json.loads(buf.getvalue())
+            self.assertEqual(payload["status"], "DECISION_LOG_INVALID")
+            self.assertTrue(any("decision_log_id" in err for err in payload["errors"]))
+
+    def test_verify_decision_log_rejects_resolve_and_other_standalone_flags(self):
+        fixture = str(ROOT / "fixtures" / "r6g_frozen_decision_log_blocked.json")
+        cases = [
+            ["address.json", "evidence.json"],
+            ["--now", "2026-09-06T00:00:00Z"],
+            ["--limitations"],
+            ["--check-contract-only", str(ROOT / "fixtures" / "golden_contract_ok_response.json")],
+            ["--independence-audit", "audit.json"],
+        ]
+        for extra in cases:
+            with self.subTest(extra=extra):
+                buf = StringIO()
+                with redirect_stdout(buf):
+                    code = address_cli.main(["--verify-decision-log", fixture, *extra])
+                self.assertEqual(code, 2)
+                payload = json.loads(buf.getvalue())
+                self.assertEqual(payload["status"], "INVALID_INPUT")
+                self.assertTrue(payload["errors"])
 
 
 if __name__ == "__main__":
